@@ -8,9 +8,12 @@
 
 <template>
     <div id="chat-pan"
-        :class=" 'chat-pan sys-not-pan' +
-            (runtimeData.tags.openSideBar ? ' open' : '') +
-            (['linux', 'win32'].includes(backend.platform ?? '') ? ' withBar' : '')">
+        :class="{
+            'chat-pan': true,
+            'sys-not-pan': true,
+            'open': runtimeData.tags.openSideBar,
+            'withBar': needBar()
+        }">
         <div>
             <font-awesome-icon :icon="['fas', 'angle-left']" @click="exit" />
             <span>{{ $t('系统消息') }}</span>
@@ -95,7 +98,7 @@
     import { defineComponent } from 'vue'
 
     import { runtimeData } from '@renderer/function/msg'
-    import { getTrueLang } from '@renderer/function/utils/systemUtil'
+    import { getTrueLang, needBar } from '@renderer/function/utils/systemUtil'
     import { backend } from '@renderer/runtime/backend'
 
     export default defineComponent({
@@ -104,6 +107,7 @@
         data() {
             return {
                 backend,
+                needBar,
                 trueLang: getTrueLang(),
                 runtimeData: runtimeData,
                 dev: import.meta.env.DEV,

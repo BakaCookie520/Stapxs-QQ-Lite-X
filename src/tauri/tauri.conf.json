@@ -28,7 +28,7 @@
         "homepage": "https://github.com/Chzxxuanzheng/Stapxs-QQ-Lite-X",
         "longDescription": "一个兼容 OneBot 协议的非官方 QQ 全平台客户端实现。",
         "shortDescription": "一个兼容 OneBot 协议的非官方 QQ 全平台客户端实现。",
-        "publisher": "stapxs",
+        "publisher": "Mr.Lee",
         "license": "AGPL-3.0-only",
         "targets": "all",
         "useLocalToolsDir": true,

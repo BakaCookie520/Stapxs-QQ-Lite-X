@@ -16,7 +16,7 @@
         :class="{
             'chat-pan': true,
             'open': runtimeData.tags.openSideBar,
-            'withBar': ['linux', 'win32'].includes(backend.platform ?? '')
+            'withBar': needBar()
         }"
         :style="`background-image: url(${runtimeData.sysConfig.chat_background});`"
         @touchstart="chatMoveStartEvent"
@@ -481,6 +481,7 @@ import {
     copyToClipboard,
     delay,
     getViewTime,
+    needBar,
 } from '@renderer/function/utils/systemUtil'
 import {
     sendMsgRaw,

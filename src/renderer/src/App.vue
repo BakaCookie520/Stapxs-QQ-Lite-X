@@ -5,11 +5,10 @@
         {{ ' / client: ' + backend.type }}
         {{ ' / fps: ' + fps.value }}
     </div>
-    <div v-if="['linux', 'win32'].includes(backend.platform ?? '')"
+    <div v-if="needBar()"
         :class="'top-bar' + ((backend.platform == 'win32' && dev) ? ' win' : '')"
         name="appbar"
         data-tauri-drag-region="true">
-        <!-- TODO: 诸如hyprland等窗口管理器不支持最小化和全屏按钮(其实关闭按钮虽然能用但也是不合法的...) -->
         <div class="bar-button" @click="barMainClick()" />
         <div class="space" />
         <div class="controller">
@@ -129,7 +128,7 @@ import { Logger, popList as appMsgs, PopInfo, LogType } from '@renderer/function
 import { runtimeData } from '@renderer/function/msg'
 import { Notify } from './function/notify'
 import { changeSession } from './function/utils/msgUtil'
-import { getDeviceType } from './function/utils/systemUtil'
+import { getDeviceType, needBar } from './function/utils/systemUtil'
 import { uptime } from '@renderer/main'
 import driver from './function/driver'
 import PopBox from './components/PopBox.vue'
@@ -197,6 +196,7 @@ window.onbeforeunload = () => {
     logger.system('开发者阁下—— 唔，阁下离开的太匆忙了！让我来帮开发者阁下收拾下东西吧。')
     new Notify().clear()
     runtimeData.nowAdapter?.close()
+    runtimeData.nowAdapter = undefined
 }
 //#endregion
 
@@ -205,8 +205,6 @@ window.onbeforeunload = () => {
  * 初始化
  */
 async function init() {
-    await backend.init() // Desktop：初始化客户端功能
-
     if(dev)
         // eslint-disable-next-line
         console.log('[ SSystem Bootloader Complete took ' + (new Date().getTime() - uptime) + 'ms, welcome to sar-dos on stapxs-qq-lite.su ]')
@@ -244,9 +242,13 @@ async function init() {
         'merge_forward_width_type',
         Option.get('merge_forward_width_type'),
     )
-    if (['linux', 'win32'].includes(backend.platform ?? '')) {
+    if (needBar()) {
         const app = document.getElementById('base-app')
         if (app) app.classList.add('withBar')
+    }
+    if (backend.isTiling) {
+        const dom = document.getElementById('app')
+        if (dom) dom.classList.add('tiling')
     }
     // 基础初始化完成
     logger.system('欢迎回来，开发者。Stapxs QQ Lite X 正处于 ' + (dev ? 'development' : 'production') + ' 模式。正在为您加载更多功能。')

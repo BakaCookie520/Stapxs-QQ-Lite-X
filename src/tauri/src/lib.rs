@@ -56,12 +56,14 @@ pub fn run() {
 
             log4rs::init_config(config).unwrap();
 
+
             println!("");
-            println!(" _____ _____ _____ _____ __ __ ");
-            println!("|   __|_   _|  _  |  _  |  |  |");
-            println!("|__   | | | |     |   __|-   -|");
-            println!("|_____| |_| |__|__|__|  |__|__| CopyRight © Stapx Steve");
-            println!("=======================================================");
+            println!("  ___ _                           _ _ _      __  __");
+            println!(" / __| |_ __ _ _ ____ ____ _ __ _| (_) |_ ___\\ \\/ /");
+            println!(" \\__ \\  _/ _` | '_ \\ \\ / _` / _` | | |  _/ -_)>  < ");
+            println!(" |___/\\__\\__,_| .__/_\\_\\__, \\__, |_|_|\\__\\___/_/\\_\\");
+            println!("              |_|         |_|  |_|                 ");
+            println!("====CopyRight © Mr.Lee=============================");
             println!("日志等级:{}", log_level);
 
             if PROXY_PORT.get().is_some() {
@@ -202,6 +204,7 @@ pub fn run() {
             commands::sys::sys_get_html,
             commands::sys::sys_get_api,
             commands::sys::sys_download,
+            commands::win::win_is_tiling,
             commands::onebot::onebot_connect,
             commands::onebot::onebot_send,
             commands::onebot::onebot_close,
