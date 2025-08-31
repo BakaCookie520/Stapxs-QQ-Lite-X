@@ -27,9 +27,11 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
         super.init()
         this.segParsers['markdown'] = this.mdParser.bind(this)
         this.segParsers['mface'] = this.mfaceParser.bind(this)
+        this.segParsers['file'] = this.fileParser.bind(this)
 
         this.segSerializer['markdown'] = this.mdSerializer.bind(this)
         this.segSerializer['mface'] = this.mfaceSerializer.bind(this)
+        this.segSerializer['file'] = this.fileSerializer.bind(this)
     }
 
     //#region == API ===============================================
@@ -194,16 +196,18 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
         if (type === 'user') {
             data = await this.connector.send('get_friend_msg_history', {
                 user_id: id,
-                count: count,
-                message_id: start,
+                count: count + 1,
+                message_id: start?.message_id,
             })
         } else {
             data = await this.connector.send('get_group_msg_history', {
                 group_id: id,
-                count: count,
-                message_id: start,
+                count: count + 1,
+                message_id: start?.message_id,
             })
         }
+
+        if (start) data.data.messages.pop() // 去掉第一条，避免重复
 
         const out: Promise<MsgData>[] = data.data.messages.map(msg => this.parseMsg(msg))
 
