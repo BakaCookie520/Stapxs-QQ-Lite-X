@@ -143,7 +143,7 @@
                             </div>
                             <div v-else-if="item instanceof FileSeg" :class="{
                                 'msg-file': true,
-                                'me': true,
+                                'me': needSpecialMe(),
                             }">
                                 <div>
                                     <div>
