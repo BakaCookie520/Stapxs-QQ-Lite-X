@@ -1,11 +1,13 @@
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
-import { EssenceData, EssenceSeg, FriendData, GroupAnnouncementData, ImplInfo, MsgData, UserData } from '../interface'
+import { EssenceData, EssenceSeg, FilesData, FileSegData, ForwardNodeData, ForwardSegData, FriendData, GroupAnnouncementData, ImgSegData, ImplInfo, JsonSegData, MdSegData, MsgData, PokeEventData, UserData } from '../interface'
 import { api, OneBotAdapter } from './adapter'
-import { NcObGetStrangerInfo, NcObGetFriendsWithCategory, ObGetVersionInfo, NcObGetGroupNotices, NcObGetEssenceMsgList, NcObFetchCustomFace, NcObGetHistoryMsg } from './type'
+import { NcObGetStrangerInfo, NcObGetFriendsWithCategory, ObGetVersionInfo, NcObGetGroupNotices, NcObGetEssenceMsgList, NcObFetchCustomFace, NcObGetHistoryMsg, NcObGetFileUrl, NcObGetGroupFile, NcObMdSeg, NcObImgSeg, NcObFileSeg, NcObGetForwardMsg, NcObForwardSeg, ObForwardSeg, NcForwardData, ObSendMsg, ObForwardNodeSeg, ObJsonSeg, ObMsg, NcObPokeEvent, NcObMfaceSeg } from './type'
 import { createSender, getGender, ObConnector } from './utils'
 import { Msg } from '@renderer/function/model/msg'
-import { ForwardSeg } from '@renderer/function/model/seg'
+import { FileSeg, ForwardSeg, ImgSeg, MdSeg, MfaceSeg } from '@renderer/function/model/seg'
 import { Member } from '@renderer/function/model/user'
+import { GroupFile } from '@renderer/function/model/file'
+import { Resource } from '@renderer/function/model/ressource'
 
 export default class NapCapOneBot extends OneBotAdapter {
     override name = 'NapCap OneBot'
@@ -19,6 +21,16 @@ export default class NapCapOneBot extends OneBotAdapter {
 
     static match(implInfo: ImplInfo): boolean {
         return implInfo.name === 'NapCat.Onebot'
+    }
+
+    protected override init(): void {
+        super.init()
+        this.segParsers['markdown'] = this.mdParser.bind(this)
+        this.segParsers['file'] = this.fileParser.bind(this)
+
+        this.segSerializer['markdown'] = this.mdSerializer.bind(this)
+        this.segSerializer['mface'] = this.mfaceSerializer.bind(this)
+        this.segSerializer['file'] = this.fileSerializer.bind(this)
     }
 
     //#region == API ===============================================
@@ -108,31 +120,30 @@ export default class NapCapOneBot extends OneBotAdapter {
     }
     //#endregion
     //#region == 消息相关 ======================
-    // @api
-    // override async sendMsg(msg: Msg): Promise<string> {
-    //     if (!this.isCustomForward(msg)) return await super.sendMsg(msg)
+    @api
+    override async sendMsg(msg: Msg): Promise<string> {
+        if (!this.isForward(msg)) return await super.sendMsg(msg)
 
-    //     // 自定义合并转发
-    //     const message = await this.customForwardSerializer(msg.message[0] as ForwardSeg)
-    //     let data: ObSendMsg
-    //     if (msg.session instanceof UserSession) {
-    //         data = await this.connector.send('send_private_forward_msg', {
-    //             user_id: msg.session.id,
-    //             messages: message,
-    //         })
-    //     } else if (msg.session instanceof GroupSession) {
-    //         data = await this.connector.send('send_group_forward_msg', {
-    //             group_id: msg.session.id,
-    //             messages: message,
-    //         })
-    //     } else {
-    //         throw new Error('OneBot 不支持发送临时会话消息')
-    //     }
-    //     if (!data.data.message_id) throw new Error('发送消息失败，返回值无message_id')
+        // 合并转发
+        const message = await this.forwardSegSerializer(msg.message[0] as ForwardSeg)
+        let data: ObSendMsg
+        if (msg.session instanceof UserSession) {
+            data = await this.connector.send('send_private_forward_msg', {
+                user_id: msg.session.id,
+                messages: message,
+            })
+        } else if (msg.session instanceof GroupSession) {
+            data = await this.connector.send('send_group_forward_msg', {
+                group_id: msg.session.id,
+                messages: message,
+            })
+        } else {
+            throw new Error('OneBot 不支持发送临时会话消息')
+        }
+        if (!data.data.message_id) throw new Error('发送消息失败，返回值无message_id')
 
-    //     return data.data.message_id.toString()
-    // }
-    //#endregion
+        return data.data.message_id.toString()
+    }
 
     @api
     async getHistoryMsg(session: Session, count: number, start?: Msg): Promise<MsgData[] | undefined> {
@@ -150,16 +161,20 @@ export default class NapCapOneBot extends OneBotAdapter {
         if (type === 'user') {
             data = await this.connector.send('get_friend_msg_history', {
                 user_id: session.id.toString(),
-                count: count,
-                message_id: start,
+                count: count + 1,
+                message_seq: start?.message_id,
+                reverseOrder: true,
             })
         } else {
             data = await this.connector.send('get_group_msg_history', {
                 group_id: session.id.toString(),
-                count: count,
-                message_id: start,
+                count: count + 1,
+                message_seq: start?.message_id,
+                reverseOrder: true,
             })
         }
+
+        if (start) data.data.messages.pop() // 去掉第一条，避免重复
 
         const out: Promise<MsgData>[] = data.data.messages.map(msg => this.parseMsg(msg))
 
@@ -189,6 +204,13 @@ export default class NapCapOneBot extends OneBotAdapter {
         })
         return true
     }
+    @api
+    override async getForwardMsg(forwardId: string): Promise<ForwardNodeData[]> {
+        const { data }: NcObGetForwardMsg = await this.connector.send('get_forward_msg', {
+            id: forwardId,
+        })
+        return await Promise.all(data.messages.map(node => this.ncNodeParser(node)))
+    }
     //#endregion
     //#region == 群聊相关 ======================
     @api
@@ -205,17 +227,230 @@ export default class NapCapOneBot extends OneBotAdapter {
         return true
     }
     //#endregion
+    //#region == 文件相关 ======================
+    @api
+    async getGroupFile?(group: GroupSession): Promise<FilesData> {
+        const data: NcObGetGroupFile = await this.connector.send('get_group_root_files', {
+            group_id: group.id,
+            file_count: 1000
+        })
+        return this.parseFileData(data)
+    }
+
+    @api
+    async getGroupFolderFile(group: GroupSession, folderId: string): Promise<FilesData | undefined> {
+        const data: NcObGetGroupFile = await this.connector.send('get_group_files_by_folder', {
+            group_id: group.id,
+            folder_id: folderId,
+            file_count: 1000
+        })
+        return this.parseFileData(data)
+    }
+
+    @api
+    async getGroupFileUrl(file: GroupFile): Promise<string | undefined> {
+        const data: NcObGetFileUrl = await this.connector.send('get_group_file_url', {
+            group_id: file.group.id,
+            file_id: file.id,
+        })
+
+        return data.data.url
+    }
     //#endregion
+    //#endregion
+
+    //#region == 消息相关 ===========================================
+    //#region == 反序列化 ===========================
+    async mdParser(data: NcObMdSeg): Promise<MdSegData> {
+        return {
+            type: 'md',
+            content: data.data.content,
+        }
+    }
+    override async imageParser(data: NcObImgSeg): Promise<ImgSegData> {
+        if (!('key' in data.data)) {
+            return {
+                type: 'image',
+                url: Resource.fromUrl(data.data.url),
+                isFace: data.data.sub_type === 7 || data.data.sub_type === 1,
+                summary: data.data.summary,
+            }
+        }else {
+            return {
+                type: 'mface',
+                url: data.data.url,
+                summary: data.data.summary,
+                packageId: data.data.emoji_package_id,
+                id: data.data.emoji_id,
+                key: data.data.key,
+            } as any as ImgSegData
+        }
+    }
+    async fileParser(data: NcObFileSeg): Promise<FileSegData> {
+        return {
+            type: 'file',
+            name: data.data.file,
+            size: data.data.file_size,
+            url: data.data.url,
+            file_id: data.data.file_id,
+        }
+    }
+    override async forwardParser(_data: ObForwardSeg): Promise<ForwardSegData> {
+            const data = _data as any as NcObForwardSeg
+            const id = data.data.id
+            const nodes = await Promise.all(data.data.content.map(node => this.ncNodeParser(node)))
+            return {
+                type: 'forward',
+                id,
+                content: nodes,
+            }
+    }
+    override async jsonParser(data: ObJsonSeg): Promise<JsonSegData> {
+        const jsonData = JSON.parse(data.data.data)
+        if (jsonData['app'] !== 'com.tencent.multimsg') return super.jsonParser(data)
+
+        const forwardId = jsonData['meta']['detail']['resid']
+
+        const out: ForwardSegData = {
+            type: 'forward',
+            id: forwardId,
+            content: await this.getForwardMsg(forwardId),
+        }
+        return out as any as JsonSegData
+    }
+    async ncNodeParser(data: NcForwardData): Promise<ForwardNodeData> {
+        return {
+            sender: {
+                nickname: data.sender.nickname,
+                face: `https://q1.qlogo.cn/g?b=qq&s=0&nk=${data.sender.user_id}`,
+            },
+            content: await this.parseSeg(data.message),
+        }
+    }
+    //#endregion
+
+    //#region == 序列化 =============================
+    async mdSerializer(seg: MdSeg): Promise<NcObMdSeg> {
+        return {
+            type: 'markdown',
+            data: {
+                content: seg.content,
+            }
+        }
+    }
+    override async imageSerializer(seg: ImgSeg): Promise<NcObImgSeg> {
+        return {
+            type: 'image',
+            data: {
+                url: seg.url,
+                file: seg.url,
+                sub_type: seg.isFace ? 7 : 0, // 0表示普通图片，7表示表情
+                summary: seg.summary,
+                file_size: 0,
+            }
+        }
+    }
+    async mfaceSerializer(seg: MfaceSeg): Promise<NcObMfaceSeg> {
+        return {
+            type: 'mface',
+            data: {
+                file: seg.url,
+                url: seg.url,
+                summary: seg.summary,
+                key: seg.key,
+                emoji_id: seg.id,
+                emoji_package_id: seg.packageId,
+            }
+        }
+    }
+    async fileSerializer(seg: FileSeg): Promise<NcObFileSeg> {
+        if (!seg.file_id) throw new Error('文件消息必须有 file_id')
+        return {
+            type: 'file',
+            data: {
+                file: seg.url,
+                file_id: seg.file_id,
+                file_size: seg.size,
+                url: seg.url,
+            }
+        }
+    }
+    async forwardSegSerializer(seg: ForwardSeg): Promise<ObForwardNodeSeg[]> {
+        const serializer = async (msg: Msg)=>{
+            if (!this.isForward(msg)) return await this.serializeMsg(msg)
+            else return this.forwardSegSerializer(msg.message[0] as ForwardSeg)
+        }
+        const msgs = seg.content as Msg[]
+        const messagesList = await Promise.all(msgs.map(msg => serializer(msg)))
+        const out: ObForwardNodeSeg[] = []
+        for (let i = 0;i < messagesList.length;i++) {
+            out.push({
+                type: 'node',
+                data: {
+                    nickname: msgs[i].sender.name,
+                    user_id: msgs[i].sender.user_id.toString(),
+                    content: messagesList[i],
+                }
+            })
+        }
+        return out
+    }
+    //#endregion
+
+    //#endregion
+
+    //#region == 事件处理 ===========================================
+    override async pokeEvent(event: NcObPokeEvent): Promise<PokeEventData> {
+        return {
+            type: 'poke',
+            session: {
+                id: event.group_id,
+                type: 'group',
+            },
+            sender: createSender(event.user_id),
+            target: createSender(event.target_id),
+            action: event.raw_info[2].txt,
+            suffix: event.raw_info[4].txt,
+            ico: event.raw_info[1].src,
+            time: event.time,
+        }
+    }
+    //#endregion
+
+    override isDelete(msg: ObMsg): boolean {
+        // 判断消息是否为[已删除]消息
+        return msg.message.length === 0
+    }
 
     /**
      * 判断一个消息是否为构建转发
      * @param msg
      * @returns
      */
-    private isCustomForward(msg: Msg): boolean {
+    private isForward(msg: Msg): boolean {
         const firstSeg = msg.message.at(0)
-        if (!(firstSeg instanceof ForwardSeg)) return false
-        if (!firstSeg.id) return true
+        if (firstSeg instanceof ForwardSeg) return true
         return false
+    }
+
+    private parseFileData(data: NcObGetGroupFile): FilesData {
+        return {
+            files: data.data.files.map(file => ({
+                file_id: file.file_id,
+                file_name: file.file_name,
+                size: file.file_size,
+                download_times: file.download_times,
+                dead_time: file.dead_time,
+                upload_time: file.upload_time,
+                uploader_name: file.uploader_name,
+            })),
+            folders: data.data.folders.map(folder => ({
+                folder_id: folder.folder_id,
+                folder_name: folder.folder_name,
+                count: folder.total_file_count,
+                create_time: folder.create_time,
+                creater_name: folder.creator_name,
+            }))
+        }
     }
 }

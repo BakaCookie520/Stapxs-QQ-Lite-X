@@ -104,16 +104,16 @@ export class MdSeg extends Seg {
 export class ImgSeg extends Seg {
     static readonly type = 'image'
     _url: Resource
-    summary?: string
+    summary: string
     isFace: boolean = false
     imgData: Img
     constructor(url: string, isFace?: boolean)
     constructor(data: ImgSegData)
     constructor(arg1: string | ImgSegData, arg2: boolean = false) {
         super()
+        const { $t } = app.config.globalProperties
         if (typeof arg1 === 'string') {
             // constructor(url: string, isFace ?: boolean)
-            const { $t } = app.config.globalProperties
             const url = arg1 as string
             const isFace = arg2 as boolean | undefined
             this._url = Resource.fromUrl(url)
@@ -123,7 +123,7 @@ export class ImgSeg extends Seg {
             // constructor(data: ImgSegData)
             const data = arg1 as ImgSegData
             this._url = data.url
-            this.summary = data.summary
+            this.summary = data.summary ?? $t('[图片]')
             this.isFace = data.isFace
         }
         this.imgData = new Img(this._url.proxyUrl)
