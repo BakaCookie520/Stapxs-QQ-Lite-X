@@ -68,8 +68,6 @@ export function scrollToMsg(msg: Message, showAnimation: boolean, showHighlight 
         }, 3000)
     }
     return true
-
-    return false
 }
 
 /**
