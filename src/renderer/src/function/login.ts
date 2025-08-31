@@ -6,7 +6,7 @@ import { PopInfo, PopType } from './base'
 import { AdapterInterface } from './adapter/interface'
 import { resetRuntime, runtimeData } from './msg'
 import app from '@renderer/main'
-import { reloadUsers, updateMenu } from './utils/appUtil'
+import { reloadUsers, sendStatEvent, updateMenu } from './utils/appUtil'
 import { User } from './model/user'
 import { backend } from '@renderer/runtime/backend'
 
@@ -76,6 +76,13 @@ async function tryLogin(originUrl: string, token: string): Promise<true | string
 
     // 设置个人信息
     runtimeData.selfInfo = new User(selfInfo)
+
+    // 上报协议端类型
+    if (runtimeData.sysConfig.open_ga_bot) {
+        const implInfo = await runtimeData.nowAdapter.getImplInfo()
+        sendStatEvent('connect', { method: implInfo?.name ?? '（未知）' })
+    }
+
 
     // 显示账户菜单
     updateMenu({
