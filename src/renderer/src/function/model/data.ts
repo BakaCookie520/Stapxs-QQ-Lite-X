@@ -103,19 +103,25 @@ export class URL {
     }
 
     private parse(url: string): void {
-        try {
-            const parsedUrl = new globalThis.URL(url)
-            this.parseProtocol(parsedUrl.protocol)
-            this._host = parsedUrl.hostname
-            this._port = parsedUrl.port ? parseInt(parsedUrl.port) : null
-            this._path = parsedUrl.pathname
-            this._hash = parsedUrl.hash.replace('#', '')
-            this._query = {}
-            parsedUrl.searchParams.forEach((value, key) => {
-                this._query[key] = value
-            })
-        } catch (error) {
+        // 兼容所有环境的自定义 URL 解析
+        // 正则解析协议
+    const urlPattern = /^(\w+):\/\/([^/?#:]*)(?::(\d+))?([^?#]*)?(?:\?([^#]*))?(?:#(.*))?/
+        const match = url.match(urlPattern)
+        if (!match) {
             throw new Error(`无效的URL  ${url}`)
+        }
+        // match[1]: protocol, match[2]: host, match[3]: port, match[4]: path, match[5]: query, match[6]: hash
+        this.parseProtocol(match[1] || '')
+        this._host = match[2] || ''
+        this._port = match[3] ? parseInt(match[3]) : null
+        this._path = match[4] || ''
+        this._hash = match[6] || ''
+        this._query = {}
+        if (match[5]) {
+            match[5].split('&').forEach(pair => {
+                const [key, value] = pair.split('=')
+                if (key) this._query[decodeURIComponent(key)] = value ? decodeURIComponent(value) : ''
+            })
         }
     }
 

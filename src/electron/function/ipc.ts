@@ -47,12 +47,12 @@ export function regIpcListener() {
             'GET'
         )
     })
-    ipcMain.on('onebot:post', (_, args:{
+    ipcMain.handle('onebot:post', async (_, args:{
         url: string,
         data: Record<string, any>,
         header: Record<string, any>
     }) => {
-        return Connector.httpRequest(
+        return await Connector.httpRequest(
             args.url,
             args.data,
             args.header,
