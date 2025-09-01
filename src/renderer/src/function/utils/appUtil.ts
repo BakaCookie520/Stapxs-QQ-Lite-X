@@ -5,7 +5,6 @@ import semver from 'semver'
 import appInfo from '../../../../../package.json'
 import Umami from '@stapxs/umami-logger-typescript'
 
-import AboutPan from '@renderer/components/AboutPan.vue'
 import UpdatePan from '@renderer/components/UpdatePan.vue'
 import WelPan from '@renderer/components/WelPan.vue'
 
@@ -626,6 +625,7 @@ import { htmlPopBox, popBox } from './popBox'
 import { ProxyUrl } from '../model/proxyUrl'
 import { backend } from '@renderer/runtime/backend'
 import { Message } from '../model/message'
+import AboutPan from '@renderer/popboxes/AboutPan.vue'
 
 /**
 * 装载补充样式

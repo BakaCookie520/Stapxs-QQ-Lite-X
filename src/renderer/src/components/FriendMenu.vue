@@ -65,7 +65,6 @@
 
 <script setup lang="ts">
 import Menu from './Menu.vue'
-import ConfigBox from './ConfigBox.vue'
 
 import {
     shallowRef,
@@ -81,8 +80,9 @@ import { GroupSession, Session } from '@renderer/function/model/session'
 import { BubbleBox, SessionBox } from '@renderer/function/model/box'
 import { i18n } from '@renderer/main'
 import { runtimeData } from '@renderer/function/msg'
-import SelectBox from './SelectBox.vue'
 import { ensurePopBox, popBox } from '@renderer/function/utils/popBox'
+import ConfigBox from '@renderer/popboxes/ConfigBox.vue'
+import SelectBox from '@renderer/popboxes/SelectBox.vue'
 
 //#region == 声明变量 ================================================================
 const $t = i18n.global.t
@@ -352,7 +352,7 @@ function clickNoticeClose() {
 function clickPutInBox() {
     popBox({
         title: $t('放入收纳盒'),
-        template: markRaw(SelectBox),
+        template: SelectBox,
         templateValue: { session: markRaw(getTarget()) },
         button: [
             {
@@ -366,7 +366,7 @@ function clickPutInBox() {
 function clickConfigBox() {
     popBox({
         title: $t('收纳盒设置'),
-        template: markRaw(ConfigBox),
+        template: ConfigBox,
         templateModel: markRaw(getTarget()),
         button: [{
             text: $t('确定'),

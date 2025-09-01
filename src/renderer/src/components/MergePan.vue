@@ -119,7 +119,6 @@
     import { Msg } from '@renderer/function/model/msg'
     import { MenuEventData } from '@renderer/function/elements/information'
     import { Logger, PopInfo, PopType } from '@renderer/function/base'
-    import app from '@renderer/main'
     import { downloadFile } from '@renderer/function/utils/appUtil'
     import { copyToClipboard, getViewTime } from '@renderer/function/utils/systemUtil'
     import { Message } from '@renderer/function/model/message'

@@ -123,7 +123,7 @@ function runForward(){
 
     popBox({
         title: title,
-        template: markRaw(MsgBar),
+        template: MsgBar,
         templateValue: markRaw({ msgs: previewMsg, config: {
             canInteraction: false,
             showIcon: false,

@@ -157,11 +157,11 @@ export function isImportant(user: IUser | number): boolean {
  */
 export async function singleForward(msgList: Msg[]) {
     const $t = app.config.globalProperties.$t
-    const ForwardPan = (await import('@renderer/components/ForwardPan.vue')).default
+    const ForwardPan = (await import('@renderer/popboxes/ForwardPan.vue')).default
     popBox({
         title: $t('转发消息'),
         svg: 'fa-arrows-turn-right',
-        template: markRaw(ForwardPan),
+        template: ForwardPan,
         templateValue: {
             msgs: msgList,
             type: 'single',
@@ -175,11 +175,11 @@ export async function singleForward(msgList: Msg[]) {
  */
 export async function mergeForward(msgList: Msg[]) {
     const $t = app.config.globalProperties.$t
-    const ForwardPan = (await import('@renderer/components/ForwardPan.vue')).default
+    const ForwardPan = (await import('@renderer/popboxes/ForwardPan.vue')).default
     popBox({
         title: $t('合并转发消息'),
         svg: 'fa-share-from-square',
-        template: markRaw(ForwardPan),
+        template: ForwardPan,
         templateValue: {
             msgs: msgList,
             type: 'merge',

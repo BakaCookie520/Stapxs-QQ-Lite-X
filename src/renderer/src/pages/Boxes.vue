@@ -82,7 +82,6 @@
 
 <script setup lang="tsx">
 import FriendMenu from '@renderer/components/FriendMenu.vue'
-import ConfigBox from '@renderer/components/ConfigBox.vue'
 import BoxBody from '@renderer/components/BoxBody.vue'
 
 import {
@@ -98,6 +97,7 @@ import { i18n } from '@renderer/main'
 import { SessionBox, BubbleBox } from '@renderer/function/model/box'
 import driver from '@renderer/function/driver'
 import { popBox } from '@renderer/function/utils/popBox'
+import ConfigBox from '@renderer/popboxes/ConfigBox.vue'
 
 const $t = i18n.global.t
 
@@ -119,7 +119,7 @@ function newBox() {
     const newBox = new SessionBox($t('新收纳盒'), '', 0)
     popBox({
         title: $t('新建收纳盒'),
-        template: markRaw(ConfigBox),
+        template: ConfigBox,
         templateValue: { init: true },
         templateModel: markRaw(newBox),
         button: [

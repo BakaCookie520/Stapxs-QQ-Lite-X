@@ -91,7 +91,7 @@
     import OptFunction from './options/OptFunction.vue'
 
     import { openLink } from '@renderer/function/utils/appUtil'
-    import AboutPan from '@renderer/components/AboutPan.vue'
+import AboutPan from '@renderer/popboxes/AboutPan.vue'
 
     export default defineComponent({
         name: 'ViewOption',

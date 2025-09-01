@@ -54,8 +54,6 @@
 </template>
 
 <script setup lang="ts">
-import TinySessionBody from './TinySessionBody.vue'
-import BoxBody from './BoxBody.vue'
 
 import { SessionBox } from '@renderer/function/model/box'
 import { randomChoice, randomNum } from '@renderer/function/utils/systemUtil'
@@ -68,6 +66,8 @@ import {
 } from 'vue'
 import { Session } from '@renderer/function/model/session'
 import { vAutoFocus, vSearch } from '@renderer/function/utils/vcmd'
+import TinySessionBody from '@renderer/components/TinySessionBody.vue'
+import BoxBody from '@renderer/components/BoxBody.vue'
 
 const allIcons = [
     // 常用分组图标
