@@ -75,9 +75,9 @@ pub fn run() {
             let manager =
                 get_notification_manager(app_id, Some("stapxs-qq-lite-x".to_owned()));
             let categories = vec![NotificationCategory {
-                identifier: "cn.stapxs.qqweb.reply".to_string(),
+                identifier: "cn.stapxs.qqwebx.reply".to_string(),
                 actions: vec![NotificationCategoryAction::TextInputAction {
-                    identifier: "cn.stapxs.qqweb.reply.action".to_string(),
+                    identifier: "cn.stapxs.qqwebx.reply.action".to_string(),
                     title: "回复".to_string(),
                     input_button_title: "发送".to_string(),
                     input_placeholder: "输入以快速回复".to_string(),
@@ -116,7 +116,7 @@ pub fn run() {
                                     // action_id 前面可能会有个斜杠，去除
                                     let action_id = action_id.trim_start_matches('/');
                                     if parts.len() >= 3 && !user_text.is_empty()
-                                            && action_id == "cn.stapxs.qqweb.reply.action" {
+                                            && action_id == "cn.stapxs.qqwebx.reply.action" {
                                         let user_id = parts[0];
                                         let message_id = parts[1];
                                         let chat_type = parts[2];

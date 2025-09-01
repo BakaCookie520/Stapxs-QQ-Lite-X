@@ -1,4 +1,4 @@
-package cn.stapxs.qqweb.connector;
+package cn.stapxs.qqwebx.connector;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

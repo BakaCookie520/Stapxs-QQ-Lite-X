@@ -209,7 +209,7 @@ pub async fn sys_send_notice(
             .body(data.get("body").unwrap().as_str().unwrap())
             .set_thread_id(data.get("tag").unwrap().as_str().unwrap())
             .set_xdg_category(user_notify::XdgNotificationCategory::ImReceived)
-            .set_category_id("cn.stapxs.qqweb.reply");
+            .set_category_id("cn.stapxs.qqwebx.reply");
         // 设置 payload
         let mut user_info = HashMap::new();
         user_info.insert(

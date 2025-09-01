@@ -32,13 +32,15 @@ async function createWindow() {
     logger.level = logLevel
 
     /* eslint-disable no-console */
-    console.log('')
-    console.log(' _____ _____ _____ _____ __ __  \n' +
-                '|   __|_   _|  _  |  _  |  |  | \n' +
-                '|__   | | | |     |   __|-   -| \n' +
-                '|_____| |_| |__|__|__|  |__|__| CopyRight © Stapx Steve')
-    console.log('=======================================================')
+    console.log('');
+    console.log('  ___ _                           _ _ _      __  __')
+    console.log(' / __| |_ __ _ _ ____ ____ _ __ _| (_) |_ ___\\ \\/ /')
+    console.log(' \\__ \\  _/ _` | \'_ \\ \\ / _` / _` | | |  _/ -_)>  < ')
+    console.log(' |___/\\__\\__,_| .__/_\\_\\__, \\__, |_|_|\\__\\___/_/\\_\\')
+    console.log('              |_|         |_|  |_|                 ')
+    console.log('====CopyRight © Mr.Lee=============================')
     console.log('日志等级:', logLevel)
+
     /* eslint-enable no-console */
     logger.info('欢迎使用 Stapxs QQ Lite, 当前版本: ' + packageInfo.version)
 
