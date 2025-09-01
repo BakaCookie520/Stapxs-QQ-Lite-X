@@ -1922,3 +1922,63 @@ msgstr ""
 
 msgid "小黄脸长大了，变成了大黄脸！"
 msgstr ""
+
+msgid "如何连接？"
+msgstr ""
+
+msgid "前排警告"
+msgstr ""
+
+msgid "协议端"
+msgstr ""
+
+msgid "使用"
+msgstr ""
+
+msgid "可能会有一定的风险，此风险并不由 Stapxs QQ Lite X 所造成，而是使用"
+msgstr ""
+
+msgid "本身的风险。请自行检查你使用的"
+msgstr ""
+
+msgid "的相关文档以了解关于风险的信息。"
+msgstr ""
+
+msgid "由于不同协议采用不同的连接方式和协议，将不再指定http/ws等协议进行连接。"
+msgstr ""
+
+msgid "在连接地址处输入你的"
+msgstr ""
+
+msgid "采用的"
+msgstr ""
+
+msgid "协议类型地址://ip地址:端口号"
+msgstr ""
+
+msgid "，在密码处填入token（如有），然后点击连接按钮。"
+msgstr ""
+
+msgid "如，你要连接运行在"
+msgstr ""
+
+msgid "的lgr.ob，你可以输入"
+msgstr ""
+
+msgid "附录: 一些常协议端连接方式"
+msgstr ""
+
+msgid "输入"
+msgstr ""
+
+msgid "附录: 当前支持的协议"
+msgstr ""
+
+msgid "非标准obv11额外适配"
+msgstr ""
+
+msgid "详情可以看"
+msgstr ""
+
+msgid "适配器情况详情"
+msgstr ""

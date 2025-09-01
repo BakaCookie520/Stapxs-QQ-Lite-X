@@ -55,8 +55,7 @@
                 </template>
             </button>
         </form>
-        <a href="https://github.com/Chzxxuanzheng/Stapxs-QQ-Lite-X#%E5%BF%AB%E9%80%9F%E4%BD%BF%E7%94%A8"
-            target="_blank">{{ $t('如何连接') }}</a>
+        <a @click="howToConnect">{{ $t('如何连接') }}</a>
     </div>
 </template>
 
@@ -65,10 +64,11 @@ import driver from '@renderer/function/driver'
 import { login } from '@renderer/function/login'
 import { runtimeData } from '@renderer/function/msg'
 import Option from '@renderer/function/option'
-import { noticePopBox } from '@renderer/function/utils/popBox'
+import { noticePopBox, popBox } from '@renderer/function/utils/popBox'
 import { i18n } from '@renderer/main'
 import { shallowReactive, shallowRef, computed } from 'vue'
 import Icon from './Icon.vue'
+import HowToConnect from '@renderer/popboxes/HowToConnect.vue'
 const loginInfo = shallowReactive({
     savePassword: false,
     quickLoginSelect: '',
@@ -157,6 +157,23 @@ function saveAutoConnect(event: Event) {
     if (!runtimeData.sysConfig.save_password) {
         savePassword(event)
     }
+}
+
+/**
+ * 阅读如何连接
+ */
+function howToConnect() {
+    popBox({
+        title: $t('如何连接？'),
+        template: HowToConnect,
+        svg: 'book',
+        button: [
+            {
+                master: true,
+                text: $t('确定'),
+            }
+        ]
+    })
 }
 
 function afd(event: MouseEvent) {
