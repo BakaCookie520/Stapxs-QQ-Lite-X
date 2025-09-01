@@ -118,7 +118,7 @@ input {
     z-index: 1;
     flex: 1;
 }
-.chat-pan > div.chat > div:last-child {
+.chat-pan > div.chat {
     height: calc(100% - var(--safe-area-bottom));
 }
 .chat-pan > div.chat::-webkit-scrollbar {
