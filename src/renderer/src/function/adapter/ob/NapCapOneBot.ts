@@ -8,6 +8,7 @@ import { FileSeg, ForwardSeg, ImgSeg, MdSeg, MfaceSeg } from '@renderer/function
 import { Member } from '@renderer/function/model/user'
 import { GroupFile } from '@renderer/function/model/file'
 import { Resource } from '@renderer/function/model/ressource'
+import { runtimeData } from '@renderer/function/msg'
 
 export default class NapCapOneBot extends OneBotAdapter {
     override name = 'NapCap OneBot'
@@ -257,6 +258,28 @@ export default class NapCapOneBot extends OneBotAdapter {
         return data.data.url
     }
     //#endregion
+    //#endregion
+    //#region == 个人信息 ======================
+    @api
+    async setNickname(nickname: string): Promise<true | undefined> {
+        const selfInfo = await this.getUserInfo(runtimeData.loginInfo.uin)
+        await this.connector.send('set_qq_profile', {
+            nickname: nickname,
+            personal_note: selfInfo.longNick,
+            sex: selfInfo.sex,
+        })
+        return true
+    }
+    @api
+    async setSign(sign: string): Promise<true | undefined> {
+        const selfInfo = await this.getUserInfo(runtimeData.loginInfo.uin)
+        await this.connector.send('set_qq_profile', {
+            nickname: selfInfo.nickname,
+            personal_note: sign,
+            sex: selfInfo.sex,
+        })
+        return true
+    }
     //#endregion
 
     //#region == 消息相关 ===========================================

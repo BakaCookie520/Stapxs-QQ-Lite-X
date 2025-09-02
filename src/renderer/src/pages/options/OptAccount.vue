@@ -135,7 +135,6 @@ function goLogin() {
  * @param event 事件
  */
 async function setNick(event: KeyboardEvent) {
-    // TODO: 这玩意的返回好像永远是错误的 …… 所以干脆不处理返回了
     if (event.key === 'Enter' && selfNick.value !== '') {
         if (!runtimeData.nowAdapter?.setNickname) {
             new PopInfo().add(PopType.ERR, $t('当前适配器不支持设置昵称'))
@@ -158,7 +157,6 @@ async function setNick(event: KeyboardEvent) {
  * @param event 事件
  */
 async function setLNick(event: KeyboardEvent) {
-    // TODO: 这玩意的返回好像永远是错误的 …… 所以干脆不处理返回了
     if (event.key === 'Enter' && selfSign.value !== '') {
         if (!runtimeData.nowAdapter?.setSign) {
             new PopInfo().add(PopType.ERR, $t('当前适配器不支持设置个性签名'))
@@ -186,6 +184,7 @@ async function refreshSelfInfo() {
     }
     if (selfInfo) {
         runtimeData.selfInfo = new User(selfInfo)
+        runtimeData.loginInfo.nickname = selfInfo.nickname?.toString() ?? ''
         new PopInfo().add(PopType.INFO, $t('设置成功'))
     }else {
         new PopInfo().add(PopType.ERR, $t('设置失败'))
