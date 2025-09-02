@@ -847,12 +847,21 @@ export class OneBotAdapter implements AdapterInterface {
         }
     }
     async pokeEvent(event: ObPokeEvent): Promise<PokeEventData> {
-        return {
-            type: 'poke',
-            session: {
+        let session: SessionData
+        if (event.group_id) {
+            session = {
                 id: event.group_id,
                 type: 'group',
-            },
+            }
+        } else {
+            session = {
+                id: event.user_id,
+                type: 'user',
+            }
+        }
+        return {
+            type: 'poke',
+            session,
             sender: createSender(event.user_id),
             target: createSender(event.target_id),
             action: '戳了戳',

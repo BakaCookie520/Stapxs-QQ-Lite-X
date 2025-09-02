@@ -401,19 +401,12 @@ export default class NapCapOneBot extends OneBotAdapter {
 
     //#region == 事件处理 ===========================================
     override async pokeEvent(event: NcObPokeEvent): Promise<PokeEventData> {
-        return {
-            type: 'poke',
-            session: {
-                id: event.group_id,
-                type: 'group',
-            },
-            sender: createSender(event.user_id),
-            target: createSender(event.target_id),
-            action: event.raw_info[2].txt,
-            suffix: event.raw_info[4].txt,
-            ico: event.raw_info[1].src,
-            time: event.time,
-        }
+        const re = await super.pokeEvent(event)
+        re.action = event.raw_info[2].txt
+        re.suffix = event.raw_info[4].txt
+        re.ico = event.raw_info[1].src
+        re.time = event.time
+        return re
     }
     //#endregion
 

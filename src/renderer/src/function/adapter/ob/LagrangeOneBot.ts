@@ -394,19 +394,11 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
     //#endregion
     //#region == 事件处理 ===========================================
     override async pokeEvent(event: LgrObPokeEvent): Promise<PokeEventData> {
-        return {
-            type: 'poke',
-            session: {
-                id: event.group_id,
-                type: 'group',
-            },
-            sender: createSender(event.user_id),
-            target: createSender(event.target_id),
-            action: event.action,
-            suffix: event.suffix,
-            ico: event.action_img_url,
-            time: event.time,
-        }
+        const re = await super.pokeEvent(event)
+        re.action = event.action
+        re.suffix = event.suffix
+        re.ico = event.action_img_url
+        return re
     }
     override async groupDecreaseEvent(event: ObGroupDecreaseEvent): Promise<LeaveEventData> {
         if (event.operator_id === 0) event.operator_id = event.user_id
