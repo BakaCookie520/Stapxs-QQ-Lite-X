@@ -247,8 +247,7 @@ async function init() {
         if (app) app.classList.add('withBar')
     }
     if (backend.isTiling) {
-        const dom = document.getElementById('app')
-        if (dom) dom.classList.add('tiling')
+        document.body.classList.add('tiling')
     }
     // 基础初始化完成
     logger.system('欢迎回来，开发者。Stapxs QQ Lite X 正处于 ' + (dev ? 'development' : 'production') + ' 模式。正在为您加载更多功能。')
