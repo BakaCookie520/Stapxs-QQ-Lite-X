@@ -10,14 +10,24 @@ pub fn win_close(app_handle: tauri::AppHandle) {
     }
 }
 
-#[tauri::command]
+#[command]
 pub fn win_minimize(window: tauri::Window) {
     window.minimize().unwrap();
 }
 
-#[tauri::command]
+#[command]
 pub fn win_maximize(window: tauri::Window) {
     window.maximize().unwrap();
+}
+
+#[command]
+pub fn win_unmaximize(window: tauri::Window) {
+    window.unmaximize().unwrap();
+}
+
+#[command]
+pub fn win_is_maximized(window: tauri::Window) -> bool {
+    return window.is_maximized().unwrap();
 }
 
 // #[command]
@@ -64,4 +74,31 @@ pub fn win_open_dev_tools(app: tauri::AppHandle) {
 #[command]
 pub fn win_set_title(window: tauri::Window, data: String) {
     window.set_title(&data).unwrap();
+}
+
+
+#[command]
+pub fn win_is_tiling() -> bool {
+    #[cfg(target_os = "linux")]
+    {
+        const TILING_WMS: [&str; 6] = [
+            "i3",
+            "sway",
+            "bspwm",
+            "awesome",
+            "herbstluftwm",
+            "hyprland"
+        ];
+        use std::env;
+        let wm = env::var("XDG_CURRENT_DESKTOP")
+            .or_else(|_| env::var("DESKTOP_SESSION"))
+            .or_else(|_| env::var("GDMSESSION"))
+            .unwrap_or_default()
+            .to_lowercase();
+        return TILING_WMS.contains(&wm.as_str());
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        return false;
+    }
 }

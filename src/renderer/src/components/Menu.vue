@@ -14,7 +14,6 @@
             <div v-if="show" ref="space"
                 :class="{
                     'menu': true,
-                    'with-bar': ['linux', 'win32'].includes(backend.type ?? '')
                 }"
                 @click="spaceClick">
                 <div ref="content" class="content">

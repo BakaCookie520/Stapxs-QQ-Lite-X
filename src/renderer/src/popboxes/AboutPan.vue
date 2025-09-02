@@ -190,14 +190,14 @@
 </template>
 
 <script setup lang="ts">
-import Icon from './Icon.vue'
-import DepPan from './DepPan.vue'
 import packageInfo from '../../../../package.json'
 
 import { shallowReactive, onMounted } from 'vue'
 import { openLink, sendStatEvent } from '@renderer/function/utils/appUtil'
 import { popBox } from '@renderer/function/utils/popBox'
 import app from '@renderer/main'
+import DepPan from './DepPan.vue'
+import Icon from '@renderer/components/Icon.vue'
 
 const {
     showUI

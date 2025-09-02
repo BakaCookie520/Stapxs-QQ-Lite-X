@@ -780,4 +780,96 @@ export type NcObFetchCustomFace = ObResponse<string[]>
 export type NcObGetHistoryMsg = ObResponse<{
     messages: ObMsg[]
 }>
+export type NcObGetGroupFileRoot = ObResponse<{
+    files: NcGroupFileData[]
+    folders: NcGroupFolderData[]
+}>
+export type NcObGetGroupFile = ObResponse<{
+    files: NcGroupFileData[]
+    folders: NcGroupFolderData[]
+}>
+
+export interface NcGroupFileData{
+    group_id: number
+    file_id: string
+    file_name: string
+    busid: number
+    size: number
+    file_size: number
+    upload_time: number
+    dead_time: number
+    modify_time: number
+    modify_time: number
+    download_times: number
+    uploader: number
+    uploader_name: string
+}
+export interface NcGroupFolderData {
+    group_id: number
+    folder_id: string
+    folder: string
+    folder_name: string
+    create_time: number
+    creator: number
+    creator_name: string
+    total_file_count: number
+}
+export type NcObGetFileUrl = ObResponse<{url:string}>
+
+export type NcObMdSeg = ObSeg<'markdown', {
+    content: string
+}>
+export type NcObImgSeg = ObSeg<'image', {
+    file: string
+    url: string
+    sub_type: number
+    summary: string
+    file_size: number,
+} | {
+    file: string
+    url: string
+    summary: string
+    key: string
+    emoji_id: string
+    emoji_package_id: number
+}>
+export type NcObMfaceSeg = ObSeg<'mface', {
+    file: string
+    url: string
+    summary: string
+    key: string
+    emoji_id: string
+    emoji_package_id: number
+}>
+export type NcObFileSeg = ObSeg<'file', {
+    file: string
+    file_id: string
+    file_size: number
+    url: string
+}>
+interface NcForwardData {
+    user_id: string
+    sender: {
+        user_id: number
+        nickname: string
+        card: string
+    }
+    message: ObSeg[]
+}
+export type NcObForwardSeg = ObSeg<'forward', {
+    id: string
+    content: NcForwardData[]
+}>
+export type NcObGetForwardMsg = ObResponse<{
+    messages: NcForwardData[]
+}>
+export interface NcObPokeEvent extends ObPokeEvent {
+    raw_info: [
+        {uid: string},
+        {src: string},
+        {txt: string},
+        {uid: string},
+        {txt: string}
+    ]
+}
 //#endregion

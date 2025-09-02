@@ -8,9 +8,11 @@
 
 <template>
     <div id="chat-pan"
-        :class=" 'chat-pan sys-not-pan' +
-            (runtimeData.tags.openSideBar ? ' open' : '') +
-            (['linux', 'win32'].includes(backend.platform ?? '') ? ' withBar' : '')">
+        :class="{
+            'chat-pan': true,
+            'sys-not-pan': true,
+            'open': runtimeData.tags.openSideBar,
+        }">
         <div>
             <font-awesome-icon :icon="['fas', 'angle-left']" @click="exit" />
             <span>{{ $t('系统消息') }}</span>

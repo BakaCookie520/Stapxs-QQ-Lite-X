@@ -47,12 +47,12 @@ export function regIpcListener() {
             'GET'
         )
     })
-    ipcMain.on('onebot:post', (_, args:{
+    ipcMain.handle('onebot:post', async (_, args:{
         url: string,
         data: Record<string, any>,
         header: Record<string, any>
     }) => {
-        return Connector.httpRequest(
+        return await Connector.httpRequest(
             args.url,
             args.data,
             args.header,
@@ -122,6 +122,10 @@ export function regIpcListener() {
     ipcMain.on('win:maximize', () => {
         if (win) win.maximize()
     })
+    // 取消最大化
+    ipcMain.on('win:unmaximize', () => {
+        if (win) win.unmaximize()
+    })
     // 重启应用
     ipcMain.on('win:relaunch', () => {
         app.relaunch()
@@ -154,6 +158,29 @@ export function regIpcListener() {
     ipcMain.on('win:move', (_, point) => {
         if (win) {
             win.setPosition(point.x, point.y)
+        }
+    })
+    // 判断是否为平铺窗口管理器
+    ipcMain.handle('win:isTiling', () => {
+        const TILING_WMS = [
+            'i3',
+            'sway',
+            'bspwm',
+            'awesome',
+            'herbstluftwm',
+            'hyprland'
+        ]
+
+        // 仅在 Linux 下尝试读取环境变量
+        if (process.platform === 'linux') {
+            const wm =
+                process.env.XDG_CURRENT_DESKTOP?.toLowerCase() ||
+                process.env.DESKTOP_SESSION?.toLowerCase() ||
+                process.env.GDMSESSION?.toLowerCase() ||
+                ''
+            return TILING_WMS.includes(wm)
+        } else {
+            return false
         }
     })
     // 保存信息
@@ -568,5 +595,18 @@ export function regIpcListener() {
         if(touchBarInstance) {
             touchBarInstance.flushFriendSearch(list)
         }
+    })
+
+    // 最大化相关
+    ipcMain.handle('win:isMaximized', () => {
+        if (!win) return false
+        return win.isMaximized()
+    })
+
+    win!.on('maximize', () => {
+        win!.webContents.send('win:maximizedChanged', true)
+    })
+    win!.on('unmaximize', () => {
+        win!.webContents.send('win:maximizedChanged', false)
     })
 }

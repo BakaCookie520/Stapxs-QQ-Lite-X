@@ -10,11 +10,10 @@
 <template>
     <div
         id="chat-pan"
-        :class="
-            'chat-pan' +
-                (runtimeData.tags.openSideBar ? ' open' : '') +
-                (['linux', 'win32'].includes(backend.platform ?? '') ? ' withBar' : '')
-        ">
+        :class="{
+            'chat-pan': true,
+            'open': runtimeData.tags.openSideBar,
+        }">
         <div class="danmu-pan">
             <vue-danmaku
                 ref="danmakuRef"

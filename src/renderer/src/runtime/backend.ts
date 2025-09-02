@@ -38,10 +38,8 @@ export const backend = {
 
     /**
      * 初始化后端功能
-     *
-     * @returns {Promise<void>}
      */
-    async init() {
+    async init(): Promise<void> {
         const { $t } = app.config.globalProperties
         if (window.electron != undefined) {
             this.type = 'electron'

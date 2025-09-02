@@ -16,7 +16,6 @@
         :class="{
             'chat-pan': true,
             'open': runtimeData.tags.openSideBar,
-            'withBar': ['linux', 'win32'].includes(backend.platform ?? '')
         }"
         :style="`background-image: url(${runtimeData.sysConfig.chat_background});`"
         @touchstart="chatMoveStartEvent"

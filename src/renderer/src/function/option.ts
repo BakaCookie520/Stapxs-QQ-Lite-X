@@ -298,7 +298,7 @@ function changeColorMode(mode: 'light' | 'dark') {
     if (!runtimeData.tags.firstLoad) {
         // 启用颜色渐变动画
         document.body.style.transition =
-            'background, color, background-color .3s'
+            '0.3s'
     } else {
         runtimeData.tags.firstLoad = false
     }

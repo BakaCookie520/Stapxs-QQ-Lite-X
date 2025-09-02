@@ -2,7 +2,7 @@
     "$schema": "https://schema.tauri.app/config/2",
     "productName": "Stapxs QQ Lite X",
     "version": "../../package.json",
-    "identifier": "cn.stapxs.qqweb",
+    "identifier": "cn.stapxs.qqwebx",
     "build": {
         "beforeDevCommand": "yarn dev",
         "devUrl": "http://localhost:8080",
@@ -26,9 +26,9 @@
         "active": true,
         "copyright": "Copyright © 2022-2025 Mr.Lee",
         "homepage": "https://github.com/Chzxxuanzheng/Stapxs-QQ-Lite-X",
-        "longDescription": "一个兼容 OneBot 协议的非官方 QQ 全平台客户端实现。",
-        "shortDescription": "一个兼容 OneBot 协议的非官方 QQ 全平台客户端实现。",
-        "publisher": "stapxs",
+        "longDescription": "一个跨协议的 Stapxs QQ Lite 发行版。",
+        "shortDescription": "一个跨协议的 Stapxs QQ Lite 发行版。",
+        "publisher": "Mr.Lee",
         "license": "AGPL-3.0-only",
         "targets": "all",
         "useLocalToolsDir": true,
@@ -38,7 +38,7 @@
             "../../build/icon-client-others.ico"
         ],
         "macOS": {
-            "signingIdentity": "NL8AW5AD94",
+            "signingIdentity": "NL8AW5A495",
             "dmg": {
                 "appPosition": {
                     "x": 112,

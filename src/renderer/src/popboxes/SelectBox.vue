@@ -33,7 +33,7 @@ import {
     onUnmounted,
 } from 'vue'
 import { vAutoFocus, vSearch } from '@renderer/function/utils/vcmd'
-import TinySessionBody from './TinySessionBody.vue'
+import TinySessionBody from '@renderer/components/TinySessionBody.vue';
 
 const { session } = defineProps<{
     session: Session

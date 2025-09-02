@@ -103,41 +103,41 @@ body {
     margin-right: 0;
 }
 
+.box-body,
 .friend-body {
-    margin-bottom: 5px;
-    margin-top: 0;
+    margin: 5px;
 }
 .friend-body img {
     height: 30px;
     width: 30px;
 }
+
 .friend-body > div:nth-child(1) {
     height: 34px;
 }
+.box-body > div:nth-child(1) > div p,
 .friend-body > div p {
     font-size: 0.8rem;
 }
+.box-body > div:nth-child(1) > div > div a,
 .friend-body > div > div a {
     font-size: 0.75rem;
 }
-.friend-body:hover {
-    background: transparent !important;
-}
+.box-body > div:nth-child(1) > div > div a.time,
 .friend-body > div > div a.time {
     font-size: 0.7rem;
 }
+.box-body > div:nth-child(1) > svg,
 .friend-body > svg {
     padding: 10px;
     height: 14px;
     width: 14px;
 }
 
-.member-info > div:first-child {
-    padding: 15px;
+.box-content {
+    height: calc(var(--content-num) * (34px + 20px + 5px) + 5px);
 }
-.member-info > div:first-child > div {
-    margin-left: 15px;
-}
+
 .member-info > div:first-child > div > div > a {
     font-size: 0.8rem;
 }
@@ -149,7 +149,7 @@ body {
     font-size: 0.75rem;
 }
 .member-info > div:first-child > div > div > div > span {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
 }
 
 .chat-pan {
@@ -224,7 +224,7 @@ body {
     margin-bottom: 0 !important;
 }
 
-.jin-ppan {
+.jin-pan {
     max-width: 350px;
 }
 .jin-pan > div:first-child {
@@ -265,7 +265,7 @@ body {
     width: 30px;
 }
 .message-body > span {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
 }
 .message-body > a {
     font-size: 0.8rem;

@@ -27,9 +27,11 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
         super.init()
         this.segParsers['markdown'] = this.mdParser.bind(this)
         this.segParsers['mface'] = this.mfaceParser.bind(this)
+        this.segParsers['file'] = this.fileParser.bind(this)
 
         this.segSerializer['markdown'] = this.mdSerializer.bind(this)
         this.segSerializer['mface'] = this.mfaceSerializer.bind(this)
+        this.segSerializer['file'] = this.fileSerializer.bind(this)
     }
 
     //#region == API ===============================================
@@ -194,16 +196,18 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
         if (type === 'user') {
             data = await this.connector.send('get_friend_msg_history', {
                 user_id: id,
-                count: count,
-                message_id: start,
+                count: count + 1,
+                message_id: start?.message_id,
             })
         } else {
             data = await this.connector.send('get_group_msg_history', {
                 group_id: id,
-                count: count,
-                message_id: start,
+                count: count + 1,
+                message_id: start?.message_id,
             })
         }
+
+        if (start) data.data.messages.pop() // 去掉第一条，避免重复
 
         const out: Promise<MsgData>[] = data.data.messages.map(msg => this.parseMsg(msg))
 
@@ -390,19 +394,11 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
     //#endregion
     //#region == 事件处理 ===========================================
     override async pokeEvent(event: LgrObPokeEvent): Promise<PokeEventData> {
-        return {
-            type: 'poke',
-            session: {
-                id: event.group_id,
-                type: 'group',
-            },
-            sender: createSender(event.user_id),
-            target: createSender(event.target_id),
-            action: event.action,
-            suffix: event.suffix,
-            ico: event.action_img_url,
-            time: event.time,
-        }
+        const re = await super.pokeEvent(event)
+        re.action = event.action
+        re.suffix = event.suffix
+        re.ico = event.action_img_url
+        return re
     }
     override async groupDecreaseEvent(event: ObGroupDecreaseEvent): Promise<LeaveEventData> {
         if (event.operator_id === 0) event.operator_id = event.user_id

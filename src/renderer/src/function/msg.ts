@@ -160,7 +160,9 @@ export async function newMsg(msg: Msg) {
     msg.session.addMessage(msg)
 
     // 抽个签 (什么鬼？业务逻辑而还没抽签多)
+    if (msg.session !== runtimeData.nowChat) return
     const num = randomNum(0, 10000)
+    qed_try_times++
     if (num >= 4500 && num <= 5500) {
         logger.add(
             LogType.INFO,
@@ -177,7 +179,6 @@ export async function newMsg(msg: Msg) {
         })
         Umami.trackEvent('show_qed', { times: qed_try_times })
     }
-    qed_try_times++
 }
 
 /**

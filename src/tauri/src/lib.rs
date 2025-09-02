@@ -56,12 +56,14 @@ pub fn run() {
 
             log4rs::init_config(config).unwrap();
 
+
             println!("");
-            println!(" _____ _____ _____ _____ __ __ ");
-            println!("|   __|_   _|  _  |  _  |  |  |");
-            println!("|__   | | | |     |   __|-   -|");
-            println!("|_____| |_| |__|__|__|  |__|__| CopyRight © Stapx Steve");
-            println!("=======================================================");
+            println!("  ___ _                           _ _ _      __  __");
+            println!(" / __| |_ __ _ _ ____ ____ _ __ _| (_) |_ ___\\ \\/ /");
+            println!(" \\__ \\  _/ _` | '_ \\ \\ / _` / _` | | |  _/ -_)>  < ");
+            println!(" |___/\\__\\__,_| .__/_\\_\\__, \\__, |_|_|\\__\\___/_/\\_\\");
+            println!("              |_|         |_|  |_|                 ");
+            println!("====CopyRight © Mr.Lee=============================");
             println!("日志等级:{}", log_level);
 
             if PROXY_PORT.get().is_some() {
@@ -73,9 +75,9 @@ pub fn run() {
             let manager =
                 get_notification_manager(app_id, Some("stapxs-qq-lite-x".to_owned()));
             let categories = vec![NotificationCategory {
-                identifier: "cn.stapxs.qqweb.reply".to_string(),
+                identifier: "cn.stapxs.qqwebx.reply".to_string(),
                 actions: vec![NotificationCategoryAction::TextInputAction {
-                    identifier: "cn.stapxs.qqweb.reply.action".to_string(),
+                    identifier: "cn.stapxs.qqwebx.reply.action".to_string(),
                     title: "回复".to_string(),
                     input_button_title: "发送".to_string(),
                     input_placeholder: "输入以快速回复".to_string(),
@@ -114,7 +116,7 @@ pub fn run() {
                                     // action_id 前面可能会有个斜杠，去除
                                     let action_id = action_id.trim_start_matches('/');
                                     if parts.len() >= 3 && !user_text.is_empty()
-                                            && action_id == "cn.stapxs.qqweb.reply.action" {
+                                            && action_id == "cn.stapxs.qqwebx.reply.action" {
                                         let user_id = parts[0];
                                         let message_id = parts[1];
                                         let chat_type = parts[2];
@@ -157,14 +159,23 @@ pub fn run() {
             // 其他窗口事件
             let window_clone_event = window.clone();
             window.on_window_event(move |event| {
-                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                    #[cfg(not(target_os = "macos"))] {
-                        window_clone_event.hide().unwrap();
+                match event {
+                    tauri::WindowEvent::CloseRequested { api, .. } => {
+                        #[cfg(not(target_os = "macos"))] {
+                            window_clone_event.hide().unwrap();
+                        }
+                        #[cfg(target_os = "macos")] {
+                            tauri::AppHandle::hide(window_clone_event.app_handle()).unwrap();
+                        }
+                        api.prevent_close();
                     }
-                    #[cfg(target_os = "macos")] {
-                        tauri::AppHandle::hide(window_clone_event.app_handle()).unwrap();
+                    tauri::WindowEvent::Resized { .. } => {
+						let _ = window_clone_event.emit(
+							"win:maximizedChanged",
+							window_clone_event.is_maximized().unwrap_or(false)
+						);
                     }
-                    api.prevent_close();
+                    _ => {}
                 }
             });
 
@@ -210,11 +221,14 @@ pub fn run() {
             commands::win::win_close,
             commands::win::win_minimize,
             commands::win::win_maximize,
+            commands::win::win_unmaximize,
             commands::win::win_always_top,
             commands::win::win_get_window_info,
             commands::win::win_move,
             commands::win::win_open_dev_tools,
             commands::win::win_set_title,
+            commands::win::win_is_tiling,
+            commands::win::win_is_maximized,
             commands::opt::opt_get_system_info,
             commands::opt::opt_store,
             commands::opt::opt_save_all,

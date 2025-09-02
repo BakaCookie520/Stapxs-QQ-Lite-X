@@ -100,11 +100,19 @@ class Request {
     }
 
     createJson(): string {
-        return JSON.stringify({
-            action: this.action,
-            params: this.params,
-            echo: this.echo,
-        } as ObRequest<any>)
+        try {
+            return JSON.stringify({
+                action: this.action,
+                params: this.params,
+                echo: this.echo,
+            } as ObRequest<any>)
+        } catch (error) {
+            console.log({
+                action: this.action,
+                params: this.params,
+                echo: this.echo,
+            }, '创建请求JSON失败')
+        }
     }
 }
 
