@@ -21,6 +21,7 @@ import { getPortableFileLang } from './function/utils/systemUtil'
 import { runtimeData } from './function/msg'
 import Option from './function/option'
 import { backend } from './runtime/backend'
+import win from './runtime/win'
 
 /* eslint-disable no-console */
 const zh = getPortableFileLang('zh-CN')
@@ -76,6 +77,7 @@ console.log('[ SSystem Bootloader Loading …… core/ssqq-core ]')
 setTimeout(async () => {
     // 加载设置项
     await backend.init() // Desktop：初始化客户端功能
+    await win.init() // 初始化窗口信息
     runtimeData.sysConfig = await Option.load()
     app.mount('#app')
 }, 0)

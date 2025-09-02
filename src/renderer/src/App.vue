@@ -247,8 +247,6 @@ async function init() {
         Option.get('merge_forward_width_type'),
     )
 
-    await win.init()
-
     // 基础初始化完成
     logger.system('欢迎回来，开发者。Stapxs QQ Lite X 正处于 ' + (dev ? 'development' : 'production') + ' 模式。正在为您加载更多功能。')
     // 加载移动平台特性
