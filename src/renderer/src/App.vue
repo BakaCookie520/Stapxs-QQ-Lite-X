@@ -1,21 +1,24 @@
 <template>
-    <div v-if="dev" :class="'dev-bar' + (backend.platform == 'win32' ? ' win' : '')">
+    <!-- <div v-if="dev" :class="'dev-bar' + (backend.platform == 'win32' ? ' win' : '')">
         Stapxs QQ Lite Development Mode
         {{ backend.platform ? ' / platform: ' + backend.platform : '' }}
         {{ ' / client: ' + backend.type }}
         {{ ' / fps: ' + fps.value }}
-    </div>
-    <div v-if="needBar()"
+    </div> -->
+    <div v-if="win.withBar"
         :class="'top-bar' + ((backend.platform == 'win32' && dev) ? ' win' : '')"
         name="appbar"
         data-tauri-drag-region="true">
         <div class="bar-button" @click="barMainClick()" />
         <div class="space" />
         <div class="controller">
-            <div class="min" @click="controlWin('minimize')">
+            <div class="min" @click="win.minimize()">
                 <font-awesome-icon :icon="['fas', 'minus']" />
             </div>
-            <div class="close" @click="controlWin('close')">
+            <div class="max" @click="win.switchMaximize()">
+                <font-awesome-icon :icon="['far', 'square']" />
+            </div>
+            <div class="close" @click="win.close()">
                 <font-awesome-icon :icon="['fas', 'xmark']" />
             </div>
         </div>
@@ -128,7 +131,7 @@ import { Logger, popList as appMsgs, PopInfo, LogType } from '@renderer/function
 import { runtimeData } from '@renderer/function/msg'
 import { Notify } from './function/notify'
 import { changeSession } from './function/utils/msgUtil'
-import { getDeviceType, needBar } from './function/utils/systemUtil'
+import { getDeviceType } from './function/utils/systemUtil'
 import { uptime } from '@renderer/main'
 import driver from './function/driver'
 import PopBox from './components/PopBox.vue'
@@ -144,6 +147,7 @@ import GlobalSessionSearchBar from './components/GlobalSessionSearchBar.vue'
 import Viewer from './components/Viewer.vue'
 import { backend } from './runtime/backend'
 import LoginPan from './components/LoginPan.vue'
+import win from './runtime/win'
 
 //#region == 定义变量 ===================================================
 type PageType = 'Home' | 'Options' | 'Friends' | 'Messages' | 'Boxes'
@@ -242,13 +246,9 @@ async function init() {
         'merge_forward_width_type',
         Option.get('merge_forward_width_type'),
     )
-    if (needBar()) {
-        const app = document.getElementById('base-app')
-        if (app) app.classList.add('withBar')
-    }
-    if (backend.isTiling) {
-        document.body.classList.add('tiling')
-    }
+
+    await win.init()
+
     // 基础初始化完成
     logger.system('欢迎回来，开发者。Stapxs QQ Lite X 正处于 ' + (dev ? 'development' : 'production') + ' 模式。正在为您加载更多功能。')
     // 加载移动平台特性
@@ -327,13 +327,6 @@ async function init() {
 
     if (new Date().getMonth() == 3 && new Date().getDate() == 1)
         document.getElementById('connect_btn')?.classList.add('afd')
-}
-
-/**
- * electron 窗口操作
- */
-function controlWin(name: string) {
-    backend.call(undefined, 'win:' + name, false)
 }
 
 //#region == 页面相关 ==============================

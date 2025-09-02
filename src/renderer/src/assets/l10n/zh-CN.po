@@ -1982,3 +1982,15 @@ msgstr ""
 
 msgid "适配器情况详情"
 msgstr ""
+
+msgid "强制窗口状态"
+msgstr ""
+
+msgid "喵喵喵，喵呜——"
+msgstr ""
+
+msgid "窗口"
+msgstr ""
+
+msgid "平铺"
+msgstr ""

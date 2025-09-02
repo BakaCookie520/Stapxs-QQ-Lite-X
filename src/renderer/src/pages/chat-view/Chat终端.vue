@@ -18,7 +18,6 @@
         :class="{
             'chat-pan': true,
             'open': runtimeData.tags.openSideBar,
-            'withBar': needBar()
         }">
         <div
             id="shell-pan"
@@ -155,7 +154,7 @@
         Reactive,
     } from 'vue'
     import { runtimeData } from '@renderer/function/msg'
-    import { copyToClipboard, getTrueLang, needBar } from '@renderer/function/utils/systemUtil'
+    import { copyToClipboard, getTrueLang } from '@renderer/function/utils/systemUtil'
     import {
         Logger,
         LogType,
@@ -184,7 +183,6 @@
         data() {
             return {
                 backend,
-                needBar,
                 tags: {
                     fullscreen: false,
                     fistget: true,

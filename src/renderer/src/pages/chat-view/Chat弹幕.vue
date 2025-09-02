@@ -13,7 +13,6 @@
         :class="{
             'chat-pan': true,
             'open': runtimeData.tags.openSideBar,
-            'withBar': needBar()
         }">
         <div class="danmu-pan">
             <vue-danmaku
@@ -321,7 +320,7 @@
     import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
     import { parseMsg } from '@renderer/function/sender'
     import { PopInfo, PopType } from '@renderer/function/base'
-    import { getTrueLang, needBar } from '@renderer/function/utils/systemUtil'
+    import { getTrueLang } from '@renderer/function/utils/systemUtil'
     import { Msg } from '@renderer/function/model/msg'
     import { ImgSeg, Seg } from '@renderer/function/model/seg'
     import { Session } from '@renderer/function/model/session'
@@ -342,7 +341,6 @@
         },
         data() {
             return {
-                needBar,
                 backend,
                 opt: {
                     speeds: 140,
