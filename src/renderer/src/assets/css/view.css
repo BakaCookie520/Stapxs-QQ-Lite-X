@@ -531,6 +531,9 @@ body.with-bar #base-app {
         color 0.2s,
         transform 0.2s;
 }
+.box-body {
+    justify-items: center;
+}
 .box-body.unmounted > div:nth-child(1) > svg,
 .box-body.unmounted > div:nth-child(1) > div,
 .friend-body.unmounted > img,
@@ -548,7 +551,7 @@ body.with-bar #base-app {
 .friend-body {
     display: flex;
     flex-direction: row;
-    transform: margin 0.2s;
+    transition: margin 0.2s;
 }
 .box-body.active,
 .friend-body.active {
@@ -1685,18 +1688,22 @@ body.with-bar #base-app {
     .friend-body {
         background: transparent !important;
         justify-content: center;
-        padding: 10px 0;
-        margin: 0;
+        padding: 2px;
+        margin: 2px;
     }
     .box-body {
         background: transparent !important;
         padding: 0;
-        margin: 10px;
+        margin: 4px 10px;
         transition: background 0.3s, padding 0.3s;
     }
     .box-body > div:nth-child(1) {
         justify-content: center;
-        padding: 10px 0;
+        padding: 2px;
+    }
+    .friend-body > :nth-child(3),
+    .box-body > div:nth-child(1) > :nth-child(3) {
+        display: none !important;
     }
     .box-body.onmenu {
         background: var(--color-card-2) !important;
@@ -1712,7 +1719,7 @@ body.with-bar #base-app {
         border-radius: 5px;
     }
     .box-body > div.session-body-container > div.box-content{
-        height: calc(var(--content-num) * (49px + 20px));
+        height: calc(var(--content-num) * (49px + 2px) + 6px);
     }
 
     .box-body > div:nth-child(2) {
@@ -1726,16 +1733,14 @@ body.with-bar #base-app {
     .friend-body img {
         height: 45px;
         width: 45px;
+        border: 0;
     }
-    .box-body > div:nth-child(1) > svg{
+    .box-body > div:nth-child(1) > svg {
         height: 20px;
         width: 20px;
     }
     .friend-body.active:hover {
         background: var(--color-card-2) !important;
-    }
-    .friend-body.active img {
-        border: 2px solid var(--color-main);
     }
     .box-body > div:nth-child(1) > div:nth-child(1),
     .friend-body > div:nth-child(1) {
