@@ -34,8 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import MsgBar from './MsgBar.vue'
-import TinySessionBody from './TinySessionBody.vue'
+import TinySessionBody from '@renderer/components/TinySessionBody.vue'
+import MsgBar from '@renderer/components/MsgBar.vue'
 
 import { runtimeData } from '@renderer/function/msg'
 import { markRaw } from 'vue'
