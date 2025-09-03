@@ -249,6 +249,28 @@ function isSelected(msg: Msg): boolean{
 //#endregion
 </script>
 <style scoped>
+/* 消息动画 */
+.msglist-move {
+    transition: all 0.3s;
+}
+
+.msglist-enter-active {
+    transition: all 0.4s;
+}
+
+.msglist-leave-active {
+    transition: all 0.2s;
+}
+
+.msglist-enter-from {
+    transform: translateX(-20px);
+    opacity: 0;
+}
+
+.msglist-leave-to {
+    opacity: 0;
+}
+
 .disable-interaction :deep(*) {
     pointer-events: none;
 }

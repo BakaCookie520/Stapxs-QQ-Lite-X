@@ -35,6 +35,8 @@ import { SessionData } from '../adapter/interface'
 import { Img } from './img'
 import { ProxyUrl } from './proxyUrl'
 
+export type VoidReturn = void | Promise<void>
+
 /**
  * 会话基类
  * 早期写的代码，对响应式对象理解不到位
@@ -490,35 +492,35 @@ export abstract class Session {
     //#region == 钩子相关 ==============================================================
     // 我为啥要写这东西?我自己也不知道...照着nb抄着抄着就有这东西了...
     // 激活
-    static beforeActiveHook: ((session: Session) => void|Promise<void>)[] = []
-    beforeActiveHook: ((session: Session) => void|Promise<void>)[] = []
-    static afterActiveHook: ((session: Session) => void|Promise<void>)[] = []
-    afterActiveHook: ((session: Session) => void|Promise<void>)[] = []
+    static beforeActiveHook: ((session: Session) => VoidReturn)[] = []
+    beforeActiveHook: ((session: Session) => VoidReturn)[] = []
+    static afterActiveHook: ((session: Session) => VoidReturn)[] = []
+    afterActiveHook: ((session: Session) => VoidReturn)[] = []
     // 取消激活
-    static beforeUnactiveHook: ((session: Session) => void|Promise<void>)[] = []
-    beforeUnactiveHook: ((session: Session) => void|Promise<void>)[] = []
-    static afterUnactiveHook: ((session: Session) => void|Promise<void>)[] = []
-    afterUnactiveHook: ((session: Session) => void|Promise<void>)[] = []
+    static beforeUnactiveHook: ((session: Session) => VoidReturn)[] = []
+    beforeUnactiveHook: ((session: Session) => VoidReturn)[] = []
+    static afterUnactiveHook: ((session: Session) => VoidReturn)[] = []
+    afterUnactiveHook: ((session: Session) => VoidReturn)[] = []
     // 新消息
-    static beforeNewMessageHook: ((session: Session, msg: Message) => void|Promise<void>)[] = []
-    beforeNewMessageHook: ((session: Session, msg: Message) => void|Promise<void>)[] = []
-    static afterNewMessageHook: ((session: Session, msg: Message) => void|Promise<void>)[] = []
-    afterNewMessageHook: ((session: Session, msg: Message) => void|Promise<void>)[] = []
+    static beforeNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
+    beforeNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
+    static afterNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
+    afterNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
     // 历史消息加载
-    static beforeLoadHistoryHook: ((session: Session) => Promise<boolean>)[] = []
-    beforeLoadHistoryHook: ((session: Session) => Promise<boolean>)[] = []
-    static afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => Promise<boolean>)[] = []
-    afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => Promise<boolean>)[] = []
+    static beforeLoadHistoryHook: ((session: Session) => VoidReturn)[] = []
+    beforeLoadHistoryHook: ((session: Session) => Promise<void>)[] = []
+    static afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => VoidReturn)[] = []
+    afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => VoidReturn)[] = []
     // 删除消息钩子
-    static beforeRmMessageHook: ((session: Session, msg: Msg) => void|Promise<void>)[] = []
-    beforeRmMessageHook: ((session: Session, msg: Msg) => void|Promise<void>)[] = []
-    static afterRmMessageHook: ((session: Session, msg: Msg) => void|Promise<void>)[] = []
-    afterRmMessageHook: ((session: Session, msg: Msg) => void|Promise<void>)[] = []
+    static beforeRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
+    beforeRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
+    static afterRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
+    afterRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
     // 设置已读消息钩子
-    static beforeSetReadHook: ((session: Session) => void|Promise<void>)[] = []
-    beforeSetReadHook: ((session: Session) => void|Promise<void>)[] = []
-    static afterSetReadHook: ((session: Session) => void|Promise<void>)[] = []
-    afterSetReadHook: ((session: Session) => void|Promise<void>)[] = []
+    static beforeSetReadHook: ((session: Session) => VoidReturn)[] = []
+    beforeSetReadHook: ((session: Session) => VoidReturn)[] = []
+    static afterSetReadHook: ((session: Session) => VoidReturn)[] = []
+    afterSetReadHook: ((session: Session) => VoidReturn)[] = []
     /**
      * 执行钩子
      * @param hookList 钩子列表

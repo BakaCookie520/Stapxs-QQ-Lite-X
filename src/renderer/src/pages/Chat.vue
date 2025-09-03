@@ -1924,20 +1924,22 @@ function exitWin() {
 async function loadHistory() {
     if (chat.loadHistoryState !== 'normal') return
 
+    if (!await chat.loadHistory()) return
+}
+
+Session.afterLoadHistoryHook.push((_arg1, _arg2, _arg3) => {
     const pan = msgPan.value
     if (!pan) return
     const oldScrollHeight = pan.scrollHeight
 
-    if (!await chat.loadHistory()) return
-
     nextTick(() => {
         new Logger().debug(`滚动前高度：${oldScrollHeight}，当前高度：${pan.scrollHeight}，滚动位置：${pan.scrollHeight - oldScrollHeight}`)
-        pan.style.scrollBehavior = 'unset'
-        // 纠正滚动位置
-        pan.scrollTop += pan.scrollHeight - oldScrollHeight
-        pan.style.scrollBehavior = 'smooth'
+        scrollTo(
+            pan.scrollTop + pan.scrollHeight - oldScrollHeight,
+            false
+        )
     })
-}
+})
 //#endregion
 
 //#region == 滑动工具 ==========================================
@@ -1950,7 +1952,7 @@ function scrollTo(where: number | undefined, showAnimation = true) {
     const pan = msgPan.value
     if (pan !== null && where) {
         if (showAnimation === false) {
-            pan.style.scrollBehavior = 'unset'
+            pan.style.scrollBehavior = 'auto'
         } else {
             pan.style.scrollBehavior = 'smooth'
         }
@@ -1978,28 +1980,6 @@ function imgLoadedScroll(height: number) {
 </script>
 
 <style scoped>
-    /* 消息动画 */
-    .msglist-move {
-        transition: all 0.3s;
-    }
-
-    .msglist-enter-active {
-        transition: all 0.4s;
-    }
-
-    .msglist-leave-active {
-        transition: all 0.2s;
-    }
-
-    .msglist-enter-from {
-        transform: translateX(-20px);
-        opacity: 0;
-    }
-
-    .msglist-leave-to {
-        opacity: 0;
-    }
-
     /* 更多功能面板动画 */
     .pan-enter-active,
     .pan-leave-active {
