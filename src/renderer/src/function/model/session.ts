@@ -100,7 +100,7 @@ export abstract class Session {
      */
     activate(): Promise<void> {
         if (this.activePromise) return this.activePromise
-        this.activePromise = this._activate()
+        this.activePromise = toRaw(this)._activate()
         return this.activePromise
     }
     private async _activate() {
