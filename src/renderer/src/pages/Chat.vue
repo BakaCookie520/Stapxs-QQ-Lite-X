@@ -1384,9 +1384,8 @@ function searchMessage(event: Event) {
                 item => {
                     if (!(item instanceof Msg)) return false
 
-                    if (item.plaintext.includes(value)) return true
+                    if (item.plaintext().includes(value)) return true
                     if (item.sender.match(value)) {
-                        // console.log(item.sender.name, item.sender.match(value))
                         return true
                     }
                     return false
@@ -1552,7 +1551,7 @@ function copyMsg() {
     if (!msg) return
 
     const popInfo = new PopInfo()
-    copyToClipboard(msg.plaintext)
+    copyToClipboard(msg.plaintext())
         .then(
             () => popInfo.add(PopType.INFO, $t('复制成功'))
         ).catch(
@@ -1690,7 +1689,7 @@ function copyMsgs() {
             ':' +
             time.getSeconds() +
             '\n' +
-            item.plaintext +
+            item.plaintext() +
             '\n\n'
         }
         else msg += item.preMsg + '\n\n'

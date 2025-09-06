@@ -430,7 +430,7 @@ export class SessionBox {
         if (!this.preMessage) return ''
         let txt: string
         if (this.preMessage instanceof Msg)
-            txt = this.preMessage.plaintext
+            txt = this.preMessage.plaintext()
         else
             txt = this.preMessage.preMsg
         return this.preMessage.session?.showName + ':' + txt

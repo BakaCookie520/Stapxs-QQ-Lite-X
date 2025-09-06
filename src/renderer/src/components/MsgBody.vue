@@ -17,7 +17,7 @@
             'me': needSpecialMe(),
             'selected': selected,
         }"
-        :data-raw="data.plaintext"
+        :data-raw="data.plaintext()"
         :data-sender="data.sender.user_id"
         :data-time="data.time"
         @mouseleave="hiddenUserInfo">
@@ -132,7 +132,7 @@
                                     :data-group="data.session?.id"
                                     @mouseenter="userInfoHoverHandle($event, getAtMember(item.user_id))"
                                     @mousemove="userInfoHoverHandle($event, getAtMember(item.user_id))"
-                                    @mouseleave="userInfoHoverEnd($event)">{{ getAtName(item) }}</a>
+                                    @mouseleave="userInfoHoverEnd($event)">{{ item.plaintext(data) }}</a>
                             </div>
                             <div v-else-if="item instanceof AtAllSeg"
                                 :class="{
@@ -220,7 +220,7 @@
                                             :key="'raw-forward-' + indexItem">
                                             {{ i.sender.name }}:
                                             <span :key="'raw-forward-item-' + i.uuid">
-                                                {{ i.plaintext }}
+                                                {{ i.plaintext() }}
                                             </span>
                                         </div>
                                         <div v-else>
@@ -386,7 +386,7 @@
                 </TransitionGroup>
             </div>
         </div>
-        <code style="display: none">{{ data.plaintext }}</code>
+        <code style="display: none">{{ data.plaintext() }}</code>
     </div>
 </template>
 
@@ -550,20 +550,6 @@ defineExpose({
             this.getLink()
         },
         methods: {
-            /**
-             * 在 At 消息返回内容没有名字的时候尝试在群成员列表内寻找
-             * @param item
-             */
-            getAtName(seg: AtSeg): string {
-                // at 需要去会话里拿人的昵称
-                if (seg.text) return seg.text
-                if (!(this.data.session instanceof GroupSession)) return seg.plaintext
-
-                const member = this.data.session.getUserById(Number(seg.user_id))
-                if (member) return '@' + member.name
-                return seg.plaintext
-            },
-
             /**
              * 滚动到指定消息
              * @param message_id 消息 id
