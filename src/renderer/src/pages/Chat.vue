@@ -971,11 +971,10 @@ function showUserMenu(data: MenuEventData, user: IUser) {
         // 自己、私聊或者没有权限的时候不显示移除
         menuDisplay.remove = false
     }
-    // tx都可以@自己,咱们不能比tx还封闭(x)
-    // if (data.sender.user_id === runtimeData.loginInfo.uin) {
-    //     // 自己不显示提及
-    //     menuDisplay.at = false
-    // }
+
+    // 原来私聊不能@
+    if (!(chat instanceof GroupSession)) menuDisplay.at = false
+
     // 群成员设置
     if(canAdmin) {
         menuDisplay.config = true
