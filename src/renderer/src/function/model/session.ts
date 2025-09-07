@@ -717,7 +717,9 @@ export class GroupSession extends Session {
         // 加载群成员 ==============================================
         // emm, 这种高危api,还是不要刷新缓存得了...
         await this.reloadUserList()
-        this.me = this.getUserById(runtimeData.loginInfo.uin) as Member
+        this.me = this.getUserById(runtimeData.loginInfo.uin) ?? null
+        if (!this.me)
+            new Logger().error(null, `群 ${this.id} 成员列表中没有自己(${runtimeData.loginInfo.uin})的信息`)
 
         // 加载历史记录 ============================================
         if(this.messageList.length < 20)await this.loadHistory()
@@ -807,7 +809,7 @@ export class GroupSession extends Session {
      * @returns 成员对象
      */
     getUserById(id: number): Member | undefined {
-        if (!this.activate) throw new Error('未激活的群组会话无法获取成员')
+        if (this.memberList.at(0) === null) throw new Error('请先加载群成员列表')
         return this.memberList.find(item => item.user_id === id)
     }
 
@@ -816,7 +818,7 @@ export class GroupSession extends Session {
      * @returns 自身成员对象
      */
     override getMe(): Member {
-        if (!this.activate) throw new Error('请先激活会话')
+        if (!this.me === null) throw new Error('请先激活会话')
         return this.me as Member
     }
 
