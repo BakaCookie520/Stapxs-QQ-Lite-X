@@ -44,7 +44,7 @@
                         <span
                             class="smsg"
                             @click="copy(msgItem.message_id as string)">{{
-                            msgItem.plaintext
+                            msgItem.plaintext()
                         }}</span>
                         <br>
                     </div>

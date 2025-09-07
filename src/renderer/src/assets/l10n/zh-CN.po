@@ -1994,3 +1994,9 @@ msgstr ""
 
 msgid "平铺"
 msgstr ""
+
+msgid "转发失败"
+msgstr ""
+
+msgid "转发成功"
+msgstr ""

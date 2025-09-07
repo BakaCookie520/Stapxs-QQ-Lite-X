@@ -485,7 +485,7 @@
                     for (const msg of this.chat.messageList) {
                         if (!(msg instanceof Msg)) continue
                         list.push({
-                            text: msg.plaintext,
+                            text: msg.plaintext(),
                             id: msg.sender.user_id,
                         })
                     }
@@ -500,7 +500,7 @@
                     if (!(newMsg instanceof Msg)) return
                     // 只添加最后一条
                     this.refs().danmakuRef?.push({
-                        text: newMsg.plaintext ?? '',
+                        text: newMsg.plaintext() ?? '',
                         id: newMsg.sender.user_id,
                     })
                 }

@@ -17,11 +17,10 @@ function registerSegType<T extends Seg>(segClass: SegCon<T>): void {
     segType[segClass.type] = segClass
 }
 
-
 export abstract class Seg {
     declare static readonly type: string
 
-    abstract get plaintext(): string;
+    abstract plaintext(msg?: Msg): string;
 
     abstract serializeData(): SegData;
 
@@ -39,7 +38,7 @@ export abstract class Seg {
     }
 
     toString(): string {
-        return this.plaintext
+        return this.plaintext()
     }
 
     copy(): typeof this {
@@ -66,7 +65,7 @@ export class TxtSeg extends Seg {
         this.links = links
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         return this.text
     }
 
@@ -87,7 +86,7 @@ export class MdSeg extends Seg {
         this.content = data.content
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         // TODO 消 # 一帮md符号
         return this.content
     }
@@ -129,7 +128,7 @@ export class ImgSeg extends Seg {
         this.imgData = new Img(this._url.proxyUrl)
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         const { $t } = app.config.globalProperties
         return this.summary ?? '[' + $t('图片') + ']'
     }
@@ -177,7 +176,7 @@ export class MfaceSeg extends Seg {
         this.imgData = new Img(this._url)
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         const { $t } = app.config.globalProperties
         return this.summary ?? '[' + $t('表情') + ']'
     }
@@ -225,7 +224,7 @@ export class FaceSeg extends Seg {
         this.face = Emoji.get(this.id)
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         const { $t } = app.config.globalProperties
         if (this.text) return '[' + this.text + ']'
         else return '[' + $t('表情') + ']'
@@ -244,7 +243,6 @@ export class FaceSeg extends Seg {
 export class AtSeg extends Seg {
     static readonly type = 'at'
     user_id: number
-    text?: string
     constructor(user_id: number)
     constructor(data: AtSegData)
     constructor(arg: AtSegData | number) {
@@ -255,7 +253,11 @@ export class AtSeg extends Seg {
             this.user_id = Number(arg.user_id)
     }
 
-    get plaintext(): string {
+    plaintext(msg?: Msg): string {
+        if (!msg || !msg.session) return `@${this.user_id}`
+
+        const user = msg.session.getUserById(Number(this.user_id))
+        if (user) return '@' + user.name
         return `@${this.user_id}`
     }
 
@@ -274,7 +276,7 @@ export class AtAllSeg extends Seg {
         super()
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         const { $t } = app.config.globalProperties
         return '@' + $t('所有人')
     }
@@ -334,7 +336,7 @@ export class FileSeg extends Seg {
         return getSizeFromBytes(this.size)
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         const { $t } = app.config.globalProperties
 
         return this.name ?? '[' + $t('文件') + ']'
@@ -399,7 +401,7 @@ export class VideoSeg extends Seg {
         this.file = data.file
         this._url = data.url
     }
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         const { $t } = app.config.globalProperties
         return '[' + $t('视频') + ']'
     }
@@ -449,7 +451,7 @@ export class ForwardSeg extends Seg {
         }
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         const { $t } = app.config.globalProperties
         return '[' + $t('合并转发') + ']'
     }
@@ -482,7 +484,7 @@ export class ReplySeg extends Seg {
         else this.id = data.id
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         return ''
     }
 
@@ -499,7 +501,7 @@ export class ReplySeg extends Seg {
 export class PokeSeg extends Seg {
     static readonly type = 'poke'
 	constructor(_: PokeSegData) {super()}
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         return '戳了戳你'
     }
 
@@ -521,7 +523,7 @@ export class XmlSeg extends Seg {
         this.id = data.id
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         let name = this.data.substring(
             this.data.indexOf('<source name="') + 14,
         )
@@ -549,7 +551,7 @@ export class JsonSeg extends Seg {
         this.id = data.id
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         try {
             return JSON.parse(this.data).prompt
         } catch (error) {
@@ -581,7 +583,7 @@ export class UnknownSeg extends Seg {
         return this._type
     }
 
-    get plaintext(): string {
+    plaintext(_?: Msg): string {
         return `[不支持的消息类型: ${this._type}]`
     }
 

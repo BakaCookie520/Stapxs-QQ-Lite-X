@@ -432,7 +432,7 @@
                 if (!msg) return
 
                 const popInfo = new PopInfo()
-                copyToClipboard(msg.plaintext)
+                copyToClipboard(msg.plaintext())
                     .then(
                         () => popInfo.add(PopType.INFO, this.$t('复制成功'))
                     ).catch(
@@ -523,7 +523,7 @@
                         ':' +
                         time.getSeconds() +
                         '\n' +
-                        item.plaintext +
+                        item.plaintext() +
                         '\n\n'
                     }
                     else msg += item.preMsg + '\n\n'

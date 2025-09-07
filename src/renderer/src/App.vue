@@ -251,25 +251,6 @@ async function init() {
     logger.system('欢迎回来，开发者。Stapxs QQ Lite X 正处于 ' + (dev ? 'development' : 'production') + ' 模式。正在为您加载更多功能。')
     // 加载移动平台特性
     App.loadMobile()
-    // 加载额外样式
-    App.loadAppendStyle()
-    // 安全区域规划
-    document.body.style.setProperty('--safe-area-bottom',
-        (Option.get('fs_adaptation') > 0 ? Option.get('fs_adaptation') : 0) + 'px')
-    document.body.style.setProperty('--safe-area-top', '0')
-    document.body.style.setProperty('--safe-area-left', '0')
-    document.body.style.setProperty('--safe-area-right', '0')
-    // Capacitor：移动端初始化安全区域
-    if (backend.isMobile()) {
-        const safeArea = await backend.call('SafeArea', 'getSafeArea', true)
-        if (safeArea) {
-            logger.add(LogType.DEBUG, '安全区域：', safeArea)
-            document.body.style.setProperty('--safe-area-top', safeArea.top + 'px')
-            document.body.style.setProperty('--safe-area-bottom', safeArea.bottom + 'px')
-            document.body.style.setProperty('--safe-area-left', safeArea.left + 'px')
-            document.body.style.setProperty('--safe-area-right', safeArea.right + 'px')
-        }
-    }
     // 服务发现
     backend.call('Onebot', 'sys:findService', false)
     backend.call('OneBot', 'sys:frontLoaded', false)

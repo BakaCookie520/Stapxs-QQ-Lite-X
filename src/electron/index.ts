@@ -42,7 +42,7 @@ async function createWindow() {
     console.log('日志等级:', logLevel)
 
     /* eslint-enable no-console */
-    logger.info('欢迎使用 Stapxs QQ Lite, 当前版本: ' + packageInfo.version)
+    logger.info('欢迎使用 Stapxs QQ Lite X, 当前版本: ' + packageInfo.version)
 
     logger.info('启动平台架构：' + process.platform)
     logger.info('正在创建窗体 ……')
@@ -62,7 +62,8 @@ async function createWindow() {
         icon: path.join(__dirname,'/public/img/icons/icon.png'),
         webPreferences: {
             preload: join(__dirname, '../preload/index.mjs'),
-            sandbox: false
+            sandbox: false,
+            webSecurity: false,
         },
         maximizable: false,
         fullscreen: false

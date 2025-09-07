@@ -128,17 +128,8 @@ export class Msg extends Message {
     /**
      * 纯文本
      */
-    get plaintext(): string {
-        return this.message.map(seg => {
-            if (!(seg instanceof AtSeg)) return seg.plaintext
-            // at 需要去会话里拿人的昵称
-            if (seg.text) return seg.text
-            if (!(this.session instanceof GroupSession)) return seg.plaintext
-
-            const member = this.session.getUserById(Number(seg.user_id))
-            if (member) return '@' + member.name
-            return seg.plaintext
-        }).join('')
+    plaintext(): string {
+        return this.message.map(seg => seg.plaintext(this)).join('')
     }
 
     /**
@@ -146,9 +137,9 @@ export class Msg extends Message {
      */
     override get preMsg(): string {
         if (this.session?.type === 'group') {
-            return this.sender.name + ': ' + this.plaintext
+            return this.sender.name + ': ' + this.plaintext()
         }else {
-            return this.plaintext
+            return this.plaintext()
         }
     }
 

@@ -41,6 +41,7 @@ import { Msg, SelfMsg } from './model/msg'
 import { Session } from './model/session'
 import { htmlPopBox } from './utils/popBox'
 import { ProxyUrl } from './model/proxyUrl'
+import { backend } from '@renderer/runtime/backend'
 
 // 其他 tag
 const logger = new Logger()
@@ -253,6 +254,10 @@ watchEffect(()=>{
     const thisId = testId
     runtimeData.tags.canCors = false
     const url = ProxyUrl.forceProxy(testUrl)
+    if (backend.type === 'electron') {
+        runtimeData.tags.canCors = true
+        return
+    }
     // 没有代理直接返回
     if (url === testUrl) return
     fetch(url, { method: 'HEAD' }).then(res=>{

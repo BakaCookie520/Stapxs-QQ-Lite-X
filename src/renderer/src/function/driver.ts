@@ -353,7 +353,7 @@ class Driver {
     private ws!: Ws
     private fetch!: Fetch
     private retry!: number
-    private path!: string
+    private path?: string
     private onMessageHook?: (msg: string) => void
     private onErrHook?: (err: OnCloseData) => void
     reset(
@@ -368,11 +368,11 @@ class Driver {
         this.ssl = ssl
         this.header = header
         this.token = token
+        this.path = path
         if (this.token) this.header['Authorization'] = `Bearer ${this.token}`
+        this.retry = retry
         this.wsUrl = this.getUrl('ws')
         this.httpUrl = this.getUrl('http')
-        this.retry = retry
-        this.path = path ?? ''
 
         if (backend.isWeb()) {
             this.ws = nativeWs
@@ -395,7 +395,7 @@ class Driver {
             // 自动重连
             if (this.state === DriverState.Close) return
             new PopInfo().add(PopType.INFO, '连接不稳定')
-            const re = await this.connectWs(this.path, true)
+            const re = await this.connectWs(true)
 
             if (re) return
 
@@ -417,7 +417,7 @@ class Driver {
         if (this.state !== DriverState.Disconnected)
             throw new Error('驱动器不处于断开状态，无法连接')
         this.state = DriverState.Connecting
-        const re = await this.connectWs(this.path, false)
+        const re = await this.connectWs(false)
         if (re) {
             this.state = DriverState.Connected
         }else {
@@ -514,18 +514,21 @@ class Driver {
         if (this.ssl) protocol += 's'
         if (protocol === 'http')
             return `${protocol}://${this.url}`
-        else if (this.token)
-            return `${protocol}://${this.url}?access_token=${this.token}`
-        else
-            return `${protocol}://${this.url}`
+        else {
+            let url = `${protocol}://${this.url}`
+            if (this.path) url = `${url}/${this.path}`
+            if (this.token) url = `${url}?access_token=${this.token}`
+
+            return url
+        }
     }
     /**
      * 连接到WebSocket
      * @returns 是否成功
      */
-    private async connectWs(path: string, useRetry: boolean): Promise<boolean> {
+    private async connectWs(useRetry: boolean): Promise<boolean> {
         for (let i = 0; i < this.retry; i++) {
-            const re = await this.ws.open(this.wsUrl + '/' + path)
+            const re = await this.ws.open(this.wsUrl)
             if (re) return true
             if (!useRetry) return false
         }
