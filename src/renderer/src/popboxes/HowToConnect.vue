@@ -8,9 +8,13 @@
     {{ $t('在连接地址处输入你的') }}<a>{{ $t('协议端') }}</a>{{ $t('采用的') }}<a class="important">{{ $t('协议类型地址://ip地址:端口号') }}</a>{{ $t('，在密码处填入token（如有），然后点击连接按钮。') }}<br />
     {{ $t('如，你要连接运行在') }}<a class="important">localhost:3000</a>{{ $t('的lgr.ob，你可以输入') }}<a class="important">ob://localhost:3000</a><br />
     <br />
+    <hr />
+    <h3>{{ $t('使用 SSL 证书') }}</h3>
+    {{ $t('在协议名称后面加s表示启用ssl证书。如：') }}<a class="important">obs://example.com</a>{{ $t('表示通过wss连接onebot v11协议端') }}<br />
+    <b>{{ $t('注意：公网环境不安全，在公网使用一定要配合ssl证书') }}</b>
+    <hr />
     <h4>{{ $t('附录: 当前支持的协议') }}</h4>
     {{ $t('详情可以看') }}<a class="link" href="https://github.com/Chzxxuanzheng/Stapxs-QQ-Lite-X/issues/1" target="_blank">{{ $t('适配器情况详情') }}</a>
-    <hr />
     <ul>
         <li>
             OneBot v11 (ob)<br />
@@ -22,6 +26,8 @@
         </li>
         <li>Milky (mk)</li>
     </ul>
+    <hr />
+
     <h4>{{ $t('附录: 一些常协议端连接方式') }}</h4>
     <ul>
         <li>
