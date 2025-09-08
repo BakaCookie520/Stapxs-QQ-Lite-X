@@ -27,6 +27,10 @@ jobs:
         with:
             submodules: recursive
 
+      - name: 设置环境变量
+        run: |
+            echo "HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+
       - name: 设置 Nodejs
         uses: actions/setup-node@v4
         with:
@@ -35,27 +39,11 @@ jobs:
       - name: 更新依赖
         run: yarn
 
-      - name: 添加 git commit hash 到版本号
-        if: matrix.os == 'windows-latest'
-        run: |
-            HASH=$(git rev-parse --short=7 HEAD)
-            pwsh -Command "(Get-Content package.json) -replace '\"version\": \"([^\"]*)\"', ('\"version\": \"' + (`$matches[1] + '-$env:HASH') + '\"') | Set-Content package.json"
-      - name: 添加 git commit hash 到版本号
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-            HASH=$(git rev-parse --short=7 HEAD)
-            sed -i "s/\"version\": \"\([^\"]*\)\"/\"version\": \"\1-$HASH\"/" package.json
-      - name: 添加 git commit hash 到版本号
-        if: matrix.os == 'macos-latest'
-        run: |
-            HASH=$(git rev-parse --short=7 HEAD)
-            sed -i '' "s/\"version\": \"\([^\"]*\)\"/\"version\": \"\1-$HASH\"/" package.json
-
       - name: 构建 stapxs-qq-lite-x
         run: yarn build:electron
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
-            name: ${{ inputs.version }}-${{ matrix.os }}
+            name: stapxs-qq-lite-x-${{ matrix.os }}
             path: dist_electron

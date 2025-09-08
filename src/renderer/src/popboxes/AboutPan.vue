@@ -22,7 +22,7 @@
                 </span>
                 {{ $t('发行版') }}
             </span>
-            <a>v{{ packageInfo.version }}</a>
+            <a>v{{ getVersion() }}</a>
             <div class="buttons">
                 <a class="ss-button"
                     @click="goGithub()">{{ $t('访问 GitHub 仓库') }}</a>
@@ -190,14 +190,13 @@
 </template>
 
 <script setup lang="ts">
-import packageInfo from '../../../../package.json'
-
 import { shallowReactive, onMounted } from 'vue'
 import { openLink, sendStatEvent } from '@renderer/function/utils/appUtil'
 import { popBox } from '@renderer/function/utils/popBox'
 import app from '@renderer/main'
 import DepPan from './DepPan.vue'
 import Icon from '@renderer/components/Icon.vue'
+import { getVersion } from '@renderer/function/utils/systemUtil'
 
 const {
     showUI

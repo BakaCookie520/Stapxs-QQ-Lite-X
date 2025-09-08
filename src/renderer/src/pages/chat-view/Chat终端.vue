@@ -74,8 +74,7 @@
                             <div style="flex: 1" />
                             <div>
                                 <span style="color: var(--color-main-1)">
-                                    {{ packageInfo.version
-                                    }}<font-awesome-icon
+                                    {{ getVersion() }}<font-awesome-icon
                                         :icon="['fas', 'code-branch']" />
                                 </span>
                                 <span>
@@ -121,8 +120,7 @@
                             }}<font-awesome-icon :icon="['fas', 'envelope']" />
                         </span>
                         <span style="color: var(--color-main-1)">
-                            {{ packageInfo.version
-                            }}<font-awesome-icon
+                            {{ getVersion() }}<font-awesome-icon
                                 :icon="['fas', 'code-branch']" />
                         </span>
                         <span>
@@ -144,7 +142,6 @@
 
 <script lang="ts">
     import SendUtil from '@renderer/function/sender'
-    import packageInfo from '../../../../../package.json'
     import Option from '@renderer/function/option'
 
     import {
@@ -154,7 +151,7 @@
         Reactive,
     } from 'vue'
     import { runtimeData } from '@renderer/function/msg'
-    import { copyToClipboard, getTrueLang } from '@renderer/function/utils/systemUtil'
+    import { copyToClipboard, getTrueLang, getVersion } from '@renderer/function/utils/systemUtil'
     import {
         Logger,
         LogType,
@@ -190,7 +187,7 @@
                     newMsg: 0,
                 },
                 popInfo: new PopInfo(),
-                packageInfo: packageInfo,
+                getVersion,
                 runMode: import.meta.env.DEV,
                 timeLoad: markRaw({
                     time: Intl.DateTimeFormat(getTrueLang(), {
@@ -379,7 +376,7 @@
                     fun: () => {
                         const infoList = {
                             Application: 'Stapxs QQ Lite X',
-                            Kernel: packageInfo.version + '-web',
+                            Kernel: this.getVersion() + '-web',
                             Shell: 'stsh Basic Shell 1.0',
                             Theme: 'ChatSHell',
                             Uptime:
@@ -395,7 +392,7 @@
                                 window.screen.height,
                         } as { [key: string]: string }
                         if (backend.isDesktop()) {
-                            infoList.Kernel = packageInfo.version + '-electron'
+                            infoList.Kernel = getVersion() + '-electron'
                         }
                         let info = ''
                         Object.keys(infoList).forEach((key) => {
@@ -548,7 +545,7 @@
                         'var(--color-font)',
                     )
                     this.addCommandOutF(
-                        `Welcome to Stapxs QQ Lite ${packageInfo.version} (Vue ${packageInfo.devDependencies.vue}-${this.runMode})\n\n`,
+                        `Welcome to Stapxs QQ Lite ${getVersion()}\n\n`,
                         'var(--color-font)',
                     )
                     this.cmdLines.push(...this.chat.messageList)

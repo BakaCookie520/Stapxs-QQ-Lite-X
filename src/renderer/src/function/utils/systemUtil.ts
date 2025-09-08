@@ -4,6 +4,7 @@ import l10nConfig from '@renderer/assets/l10n/_l10nconfig.json'
 import PO from 'pofile'
 import { Logger, PopInfo, PopType } from '../base'
 import { backend } from '@renderer/runtime/backend'
+import packageInfo from '../../../../../package.json'
 
 /**
  * 异步延迟
@@ -519,4 +520,14 @@ export async function copyToClipboard(content: ClipboardItem[] | string) {
         await window.navigator.clipboard.writeText(content)
     else
         await window.navigator.clipboard.write(content)
+}
+
+/**
+ * 获取当前版本
+ */
+export function getVersion(): string {
+    if (import.meta.env.HASH)
+        return `${packageInfo.version}-${import.meta.env.HASH}`
+    else
+        return packageInfo.version
 }

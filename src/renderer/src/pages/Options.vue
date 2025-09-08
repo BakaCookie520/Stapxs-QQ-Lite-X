@@ -31,7 +31,7 @@
                 <div>
                     <div>
                         <span>Stapxs QQ Lite X </span>
-                        <a>{{ packageInfo.version }}</a>
+                        <a>{{ getVersion() }}</a>
                     </div>
                     <span>Copyright © 2022 - 2025 Mr.Lee</span>
                     <span style="color: var(--color-main);cursor: pointer;"
@@ -82,8 +82,6 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
 
-    import packageInfo from '../../../../package.json'
-
     import BcTab from 'vue3-bcui/packages/bc-tab'
     import OptAccount from './options/OptAccount.vue'
     import OptView from './options/OptView.vue'
@@ -91,7 +89,8 @@
     import OptFunction from './options/OptFunction.vue'
 
     import { openLink } from '@renderer/function/utils/appUtil'
-import AboutPan from '@renderer/popboxes/AboutPan.vue'
+    import AboutPan from '@renderer/popboxes/AboutPan.vue'
+import { getVersion } from '@renderer/function/utils/systemUtil'
 
     export default defineComponent({
         name: 'ViewOption',
@@ -113,8 +112,8 @@ import AboutPan from '@renderer/popboxes/AboutPan.vue'
         },
         data() {
             return {
-                packageInfo: packageInfo,
-                openLink: openLink,
+                openLink,
+                getVersion,
                 showAbout: true,
             }
         },

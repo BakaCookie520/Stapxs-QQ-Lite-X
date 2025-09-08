@@ -242,7 +242,6 @@
 
 <script setup lang="ts">
 import app from '@renderer/main'
-import packageInfo from '../../../../../package.json'
 
 import {
     run,
@@ -262,7 +261,7 @@ import {
 } from 'vue'
 import driver from '@renderer/function/driver'
 import { ensurePopBox, htmlPopBox } from '@renderer/function/utils/popBox'
-import { copyToClipboard } from '@renderer/function/utils/systemUtil'
+import { copyToClipboard, getVersion } from '@renderer/function/utils/systemUtil'
 import win from '@renderer/runtime/win'
 
 const illegalProxyUrl = computed(() => {
@@ -393,7 +392,7 @@ const illegalProxyUrl = computed(() => {
 
                 const applicationInfo = [
                     ['Uptime', Math.floor(((new Date().getTime() - uptime) / 1000) * 100) / 100 + ' s'],
-                    ['Package Version', packageInfo.version],
+                    ['Package Version', getVersion()],
                     ['Service Work', runtimeData.tags.sw],
                 ] as [key: string, value: any][]
 

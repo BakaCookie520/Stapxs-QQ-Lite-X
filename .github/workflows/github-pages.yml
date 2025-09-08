@@ -42,11 +42,9 @@ jobs:
       - name: 更新依赖
         run: yarn
       - name: 设置环境变量
-        run: echo "BUILD_BRANCH=test" >> $GITHUB_ENV
-      - name: 添加 git commit hash 到版本号
         run: |
-            HASH=$(git rev-parse --short=7 HEAD)
-            sed -i "s/\"version\": \"\([^\"]*\)\"/\"version\": \"\1-$HASH\"/" package.json
+            echo "BUILD_BRANCH=test" >> $GITHUB_ENV
+            echo "HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
       - name: 构建
         run: yarn build
       - name: 存储结果
@@ -68,10 +66,6 @@ jobs:
         run: yarn
       - name: 设置环境变量
         run: echo "BUILD_BRANCH=main" >> $GITHUB_ENV
-      - name: 添加 git commit hash 到版本号
-        run: |
-            HASH=$(git rev-parse --short=7 HEAD)
-            sed -i "s/\"version\": \"\([^\"]*\)\"/\"version\": \"\1-$HASH\"/" package.json
       - name: 构建
         run: yarn build
       - name: 恢复test编译结果缓存
