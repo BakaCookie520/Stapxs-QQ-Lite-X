@@ -371,9 +371,8 @@ class Driver {
         this.path = path
         if (this.token) this.header['Authorization'] = `Bearer ${this.token}`
         this.retry = retry
-        this.wsUrl = this.getUrl('ws')
         this.httpUrl = this.getUrl('http')
-
+        this.wsUrl = this.getUrl('ws')
         if (backend.isWeb()) {
             this.ws = nativeWs
             this.fetch = nativeFetch
@@ -512,8 +511,9 @@ class Driver {
      */
     private getUrl(protocol: 'ws' | 'http') {
         if (this.ssl) protocol += 's'
-        if (protocol === 'http')
+        if (protocol.startsWith('http')){
             return `${protocol}://${this.url}`
+        }
         else {
             let url = `${protocol}://${this.url}`
             if (this.path) url = `${url}/${this.path}`
