@@ -39,6 +39,12 @@ jobs:
       - name: 更新依赖
         run: yarn
 
+      - name: 将 qqface 的软链接改成真实路径(win)
+        if: matrix.os == 'windows-latest'
+        run: |
+            Remove-Item src/renderer/public/img/qqface
+            Copy-Item src/renderer/src/assets/img/qq-face/public/assets/qq_emoji/resfile/emoji src/renderer/public/img/qqface -Recurse
+
       - name: 构建 stapxs-qq-lite-x
         run: yarn build:electron
 
