@@ -293,8 +293,9 @@ async function init() {
     } else if (dev) {
         logger.system('开发者，由于 Stapxs QQ Lite X 运行在调试模式下，分析组件并未初始化 …… 系统将无法捕获开发者阁下的访问状态，请悉知。')
     }
-    App.sendStatEvent('version',
-        import.meta.env.VITE_APP_CLIENT_TAG + ',' + getVersion())
+    App.sendStatEvent('cilent', {
+        tag: import.meta.env.VITE_APP_CLIENT_TAG + ',' + getVersion()
+    })
     //#endregion
 
     //#region == 公告弹窗 ======================================
