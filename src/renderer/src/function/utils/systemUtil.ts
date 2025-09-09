@@ -526,8 +526,8 @@ export async function copyToClipboard(content: ClipboardItem[] | string) {
  * 获取当前版本
  */
 export function getVersion(): string {
-    if (import.meta.env.HASH)
-        return `${packageInfo.version}-${import.meta.env.HASH}`
+    if (import.meta.env.VITE_HASH)
+        return `${packageInfo.version}-${import.meta.env.VITE_HASH}`
     else
         return packageInfo.version
 }
