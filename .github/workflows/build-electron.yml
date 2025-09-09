@@ -50,7 +50,7 @@ jobs:
             Copy-Item src/renderer/src/assets/img/qq-face/public/assets/qq_emoji/resfile/emoji src/renderer/public/img/qqface -Recurse
 
       - name: 构建 stapxs-qq-lite-x
-        run: yarn build:electron
+        run: yarn build:electron --publish=never
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
