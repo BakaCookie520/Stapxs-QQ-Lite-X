@@ -76,10 +76,9 @@
                         'main': true,
                         'not-exist': !data.exist && getConfig('dimNonExistentMsg')
                     }"
-                    @touchstart.stop="msgMoveStart($event)"
-                    @touchend.stop="msgMoveEnd($event)"
-                    @touchmove.stop="msgKeepMove($event)"
-                    @wheel.stop="msgMoveWheel($event)">
+                    v-move="moveOptions"
+                    @v-move-left.prevent="$emit('leftMove', data)"
+                    @v-move-right.prevent="$emit('rightMove', data)">
                     <!-- 消息体 -->
                     <template v-if="data.message.length === 0">
                         <span class="msg-text" style="opacity: 0.5">{{ $t('空消息') }}</span>
@@ -394,26 +393,19 @@
 import Option from '@renderer/function/option'
 import markdownit from 'markdown-it'
 
-import { MsgBodyFuns as ViewFuns } from '@renderer/function/model/msg-body'
-import { defineComponent } from 'vue'
-import { runtimeData } from '@renderer/function/msg'
+import { Vue3Lottie as Lottie } from 'vue3-lottie'
+import EmojiFace from './EmojiFace.vue'
+import CardMessage from './msg-component/CardMessage.vue'
+import { UserInfoPan } from './UserInfoPan.vue'
+
+import { Role } from '@renderer/function/adapter/enmu'
 import { Logger, LogType, PopInfo, PopType } from '@renderer/function/base'
-import { pokeAnime } from '@renderer/function/utils/msgUtil'
-import {
-    openLink,
-    scrollToMsg as scrollToMsgFunc,
-    sendStatEvent,
-} from '@renderer/function/utils/appUtil'
-import { useStayEvent } from '@renderer/function/utils/vuse'
-import {
-    vUserRole,
-    vMenu
-} from '@renderer/function/utils/vcmd'
-import {
-    getTrueLang,
-    getViewTime } from '@renderer/function/utils/systemUtil'
-import { linkView } from '@renderer/function/utils/linkViewUtil'
 import { MenuEventData } from '@renderer/function/elements/information'
+import Emoji from '@renderer/function/model/emoji'
+import { Img } from '@renderer/function/model/img'
+import { Msg, SelfMsg } from '@renderer/function/model/msg'
+import { MsgBodyFuns as ViewFuns } from '@renderer/function/model/msg-body'
+import { ProxyUrl } from '@renderer/function/model/proxyUrl'
 import {
     AtAllSeg,
     AtSeg,
@@ -429,19 +421,33 @@ import {
     VideoSeg,
     XmlSeg
 } from '@renderer/function/model/seg'
-import { Msg, SelfMsg} from '@renderer/function/model/msg'
-import { Member, IUser } from '@renderer/function/model/user'
-import { wheelMask } from '@renderer/function/utils/input'
 import { GroupSession } from '@renderer/function/model/session'
-import { Role } from '@renderer/function/adapter/enmu'
-import CardMessage from './msg-component/CardMessage.vue'
-import { Img } from '@renderer/function/model/img'
-import { UserInfoPan } from './UserInfoPan.vue'
+import { IUser, Member } from '@renderer/function/model/user'
+import { runtimeData } from '@renderer/function/msg'
+import {
+    openLink,
+    scrollToMsg as scrollToMsgFunc,
+    sendStatEvent,
+} from '@renderer/function/utils/appUtil'
+import { linkView } from '@renderer/function/utils/linkViewUtil'
+import { pokeAnime } from '@renderer/function/utils/msgUtil'
+import {
+    getTrueLang,
+    getViewTime
+} from '@renderer/function/utils/systemUtil'
+import {
+    vMenu,
+    vMove,
+
+    VMoveOptions,
+    vUserRole
+} from '@renderer/function/utils/vcmd'
+import { useStayEvent } from '@renderer/function/utils/vuse'
 import { backend } from '@renderer/runtime/backend'
-import { ProxyUrl } from '@renderer/function/model/proxyUrl'
-import Emoji from '@renderer/function/model/emoji'
-import EmojiFace from './EmojiFace.vue'
-import { Vue3Lottie as Lottie } from 'vue3-lottie'
+import {
+    defineComponent,
+    useTemplateRef
+} from 'vue'
 
 //#region == 声明变量 ================================================================
 const {
@@ -469,6 +475,36 @@ const emit = defineEmits<{
     showUserMenu: [event: MenuEventData, user: IUser]
     emojiClick: [id: string, msg: Msg]
 }>()
+
+const msgMain = useTemplateRef<HTMLDivElement>('msgMain')
+
+const moveOptions: VMoveOptions<HTMLDivElement> = {
+    moveHook: (_, move: number) => {
+        const target = msgMain.value!
+        target.style.transform = 'translateX(' + move + 'px)'
+    },
+    endHook: (_) => {
+        const target = msgMain.value!
+
+        target.style.transform = ''
+        target.style.transition = 'all 0.3'
+    },
+    leftLimit: {
+        value: runtimeData.inch * 0.75,
+        type: 'px'
+    },
+    rightLimit: {
+        value: runtimeData.inch * 0.75,
+        type: 'px'
+    },
+    moveCondition: {
+        minMove: {
+            value: runtimeData.inch * 0.5,
+            type: 'px'
+        }
+    }
+}
+
 //#endregion
 
 //#region == 长按/覆盖监视器 =========================================================
@@ -1079,137 +1115,6 @@ defineExpose({
             },
             needSpecialMe() {
                 return this.getConfig('specialMe') && this.isMe
-            },
-            //#endregion
-
-            //#region ==互动相关================================
-            // 滚轮滑动
-            msgMoveWheel(event: WheelEvent) {
-                const process = (event: WheelEvent) => {
-                    // 正在触屏,不处理
-                    if (this.msgMove.onScroll === 'touch') return false
-                    const x = event.deltaX
-                    const y = event.deltaY
-                    const absX = Math.abs(x)
-                    const absY = Math.abs(y)
-                    // 斜度过大
-                    if (absY !== 0 && absX / absY < 2) return false
-                    this.dispenseMove('wheel', -x / 3)
-                    return true
-                }
-                if (!process(event)) return
-                event.preventDefault()
-                // 创建遮罩
-                // 由于在窗口移动中,窗口判定箱也在移动,当指针不再窗口外,事件就断了
-                // 所以要创建一个不会动的全局遮罩来处理
-                wheelMask(process,()=>{
-                    this.dispenseMove('wheel', 0, true)
-                })
-            },
-
-            // 触屏开始
-            msgMoveStart(event: TouchEvent) {
-                if (this.msgMove.onScroll === 'wheel') return
-                // 触屏开始时，记录触摸点
-                this.msgMove.touchLast = event
-            },
-
-            // 触屏滑动
-            msgKeepMove(event: TouchEvent) {
-                if (this.msgMove.onScroll === 'wheel') return
-                if (!this.msgMove.touchLast) return
-                const touch = event.changedTouches[0]
-                const lastTouch = this.msgMove.touchLast.changedTouches[0]
-                const deltaX = touch.clientX - lastTouch.clientX
-                const deltaY = touch.clientY - lastTouch.clientY
-                const absX = Math.abs(deltaX)
-                const absY = Math.abs(deltaY)
-                // 斜度过大
-                if (absY !== 0 && absX / absY < 2) return
-                // 触屏移动
-                this.msgMove.touchLast = event
-                this.dispenseMove('touch', deltaX)
-            },
-
-            // 触屏滑动结束
-            msgMoveEnd(event: TouchEvent) {
-                if (this.msgMove.onScroll === 'wheel') return
-                const touch = event.changedTouches[0]
-                const lastTouch = this.msgMove.touchLast?.changedTouches[0]
-                if (lastTouch) {
-                    const deltaX = touch.clientX - lastTouch.clientX
-                    const deltaY = touch.clientY - lastTouch.clientY
-                    const absX = Math.abs(deltaX)
-                    const absY = Math.abs(deltaY)
-                    // 斜度过大
-                    if (absY === 0 || absX / absY > 2) {
-                        this.dispenseMove('touch', deltaX)
-                    }
-                }
-                this.dispenseMove('touch', 0, true)
-                this.msgMove.touchLast = null
-            },
-            /**
-             * 分发触屏/滚轮情况
-             */
-            dispenseMove(type: 'touch' | 'wheel', value: number, end: boolean = false) {
-                if (
-                    !end &&
-                    this.msgMove.onScroll === 'none'
-                ) this.startMove(type, value)
-                if (this.msgMove.onScroll === 'none') return
-                if (end) this.endMove()
-                else this.keepMove(value)
-            },
-            /**
-             * 开始窗口移动
-             */
-            startMove(type: 'touch' | 'wheel', value: number) {
-                new Logger().add(LogType.UI, '开始窗口移动: ' + type + '')
-                this.msgMove.onScroll = type
-                this.msgMove.move = value
-            },
-            /**
-             * 保持窗口移动
-             */
-            keepMove(value: number){
-                this.msgMove.move += value
-                const limit = runtimeData.inch * 0.75
-                if (this.msgMove.move < -limit) this.msgMove.move = -limit
-                else if (this.msgMove.move > runtimeData.inch * 0.75) this.msgMove.move = limit
-                const move = this.msgMove.move
-                const target = this.$refs.msgMain as HTMLDivElement
-                target.style.transform = 'translateX(' + move + 'px)'
-            },
-            /**
-             * 结束窗口移动
-             */
-            endMove() {
-                new Logger().add(LogType.UI, '结束窗口移动: ' + this.msgMove.onScroll)
-                // 保留自己要的数据
-                const move = this.msgMove.move
-                // 重置数据
-                this.msgMove.onScroll = 'none'
-                this.msgMove.move = 0
-
-                const target = this.$refs.msgMain as HTMLDivElement
-
-                target.style.transform = ''
-                target.style.transition = 'all 0.3'
-
-                // 移动距离大小判定
-                const inch = runtimeData.inch
-                // 如果移动距离大于0.5英尺,触发
-                if (move < -0.5 * inch){
-                    new Logger().add(LogType.UI, '左滑触发')
-                    // eslint-disable-next-line vue/require-explicit-emits
-                    this.$emit('leftMove', this.data)
-                }
-                else if (move > 0.5 * inch){
-                    new Logger().add(LogType.UI, '右滑触发')
-                    // eslint-disable-next-line vue/require-explicit-emits
-                    this.$emit('rightMove', this.data)
-                }
             },
             //#endregion
         },
