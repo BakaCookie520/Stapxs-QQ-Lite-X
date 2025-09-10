@@ -16,7 +16,7 @@
         <font-awesome-icon :class="show == 'end' ? 'select' : ''" :icon="['fas', 'circle-check']" @click="changeView('end')" />
     </div>
     <div v-if="show == 'home'" class="wel-home">
-        <img src="/img/icons/icon.svg">
+		<Icon animation />
         <span>WELCOME</span>
         <div>
             <span>{{ $t('Stapxs QQ Lite X') }}</span>
@@ -386,6 +386,7 @@
 
 <script setup lang="ts">
 import languages from '@renderer/assets/l10n/_l10nconfig.json'
+import Icon from './Icon.vue'
 
 import { defineComponent } from 'vue'
 import { runtimeData } from '@renderer/function/msg'
@@ -462,7 +463,7 @@ const emit = defineEmits<{
         display: flex;
     }
 
-    .wel-home > img {
+    .wel-home > svg {
         width: 90px;
         margin-top: -70px;
         margin-bottom: 20px;
