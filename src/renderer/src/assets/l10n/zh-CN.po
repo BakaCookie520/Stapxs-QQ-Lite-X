@@ -1158,7 +1158,7 @@ msgstr "[SQ:0] 你看看这个 {'@'}林"
 msgid "统计选项"
 msgstr ""
 
-msgid "Stapxs QQ Lite 会将部分使用数据上传到自建的 umami 服务器中用于了解用户使用情况以及制作一些有趣的统计信息。"
+msgid "Stapxs QQ Lite X 会将部分使用数据上传到上游的 umami 服务器中用于了解用户使用情况以及制作一些有趣的统计信息。"
 msgstr ""
 
 msgid "如果你并不希望上传这些数据，可以选择关闭它。"
@@ -1167,13 +1167,13 @@ msgstr ""
 msgid "开源提醒"
 msgstr ""
 
-msgid "Stapxs QQ Lite 是一个开源免费的软件，这意味着没有任何激活、使用限制等付费功能；"
+msgid "Stapxs QQ Lite X 是一个开源免费的软件，这意味着没有任何激活、使用限制等付费功能；"
 msgstr ""
 
-msgid "如果你通过任何付费方式获取了 Stapxs QQ Lite，请及时追回损失并酌情反馈。"
+msgid "如果你通过任何付费方式获取了 Stapxs QQ Lite X，请及时追回损失并酌情反馈。"
 msgstr ""
 
-msgid "Stapxs QQ Lite 仅在 GitHub 上发布。由于提供了自行部署的方式，非官方版本请谨慎使用。"
+msgid "Stapxs QQ Lite X 仅在 GitHub 上发布。由于提供了自行部署的方式，非官方版本请谨慎使用。"
 msgstr ""
 
 msgid "连接异常关闭"
@@ -1188,7 +1188,7 @@ msgstr ""
 msgid "机器人"
 msgstr ""
 
-msgid "Stapxs QQ Lite 依赖的部分服务允许自行部署，此处只提供服务的来源；不保证所使用的服务来自官方。"
+msgid "Stapxs QQ Lite X 依赖的部分服务允许自行部署，此处只提供服务的来源；不保证所使用的服务来自官方。"
 msgstr ""
 
 msgid "第三方服务声明"

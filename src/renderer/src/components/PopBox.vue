@@ -1,6 +1,5 @@
 <template>
     <div
-        ref="test"
         v-esc="closeSelf"
         class="pop-box">
         <div
@@ -12,8 +11,10 @@
             }"
             :style="{
                 marginBottom: runtimeData.sysConfig.fs_adaptation > 0 ?
-                    `${40 + Number(runtimeData.sysConfig.fs_adaptation)}px` : ''
-            }">
+                    `${40 + Number(runtimeData.sysConfig.fs_adaptation)}px` : '',
+                transform: 'translate(-50%, -50%)'
+            }"
+            ref="main">
             <header v-if="title">
                 <div v-if="svg">
                     <font-awesome-icon :icon="['fas', svg]" />
@@ -50,6 +51,8 @@ import { runtimeData } from '@renderer/function/msg'
 import { closePopBox } from '@renderer/function/utils/popBox'
 import { useEventListener } from '@renderer/function/utils/vuse'
 import { vEsc, vFocus } from '@renderer/function/utils/vcmd'
+import { useTemplateRef } from 'vue'
+import anime from 'animejs'
 
 const { props } = defineProps<{props: {id: string, data: PopBoxData}}>()
 
@@ -66,8 +69,26 @@ const {
     allowAutoClose = true,
 } = props.data
 
+const popBoxEl = useTemplateRef('main')
+
 function autoClose() {
-    if (!allowAutoClose) return
+    if (!allowAutoClose) {
+        if (!popBoxEl.value) return
+        const animeBody = popBoxEl.value
+        const timeLine = anime.timeline({ targets: animeBody })
+        // 使用 animejs 实现一个沿中心左右摇晃的动画，摇晃三次
+        timeLine.add({
+            rotate: [
+                { value: -10, duration: 75, easing: 'easeInOutSine' },
+                { value: 8, duration: 150, easing: 'easeInOutSine' },
+                { value: -5, duration: 150, easing: 'easeInOutSine' },
+                { value: 0, duration: 75, easing: 'easeInOutSine' },
+            ],
+            duration: 200,
+            easing: 'easeInOutSine',
+        })
+        return
+    }
     closeSelf()
 }
 
