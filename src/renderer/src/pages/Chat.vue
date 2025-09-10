@@ -18,10 +18,8 @@
             'open': runtimeData.tags.openSideBar,
         }"
         :style="`background-image: url(${runtimeData.sysConfig.chat_background});`"
-        @touchstart="chatMoveStartEvent"
-        @touchmove="chatMoveEvent"
-        @touchend="chatMoveEndEvent"
-        @wheel="chatWheelEvent">
+        v-move="chatMoveOptions"
+        @v-move-right.prevent="exitWin()">
         <!-- 聊天基本信息 -->
         <div class="info">
             <font-awesome-icon :icon="['fas', 'bars-staggered']" @click="openLeftBar" />
@@ -465,56 +463,54 @@
 </template>
 
 <script setup lang="ts">
-import app from '@renderer/main'
-import SendUtil from '@renderer/function/sender'
-import Option, { get } from '@renderer/function/option'
-import Info from '@renderer/pages/Info.vue'
-import MergePan from '@renderer/components/MergePan.vue'
-import MsgBar from '@renderer/components/MsgBar.vue'
-import imageCompression from 'browser-image-compression'
 import FacePan from '@renderer/components/FacePan.vue'
 import Menu from '@renderer/components/Menu.vue'
+import MergePan from '@renderer/components/MergePan.vue'
+import MsgBar from '@renderer/components/MsgBar.vue'
+import Option, { get } from '@renderer/function/option'
+import SendUtil from '@renderer/function/sender'
+import app from '@renderer/main'
+import Info from '@renderer/pages/Info.vue'
+import imageCompression from 'browser-image-compression'
 
-import { downloadFile, shouldAutoFocus } from '@renderer/function/utils/appUtil'
+import EmojiFace from '@renderer/components/EmojiFace.vue'
+import UserInfoPanComponent, { UserInfoPan } from '@renderer/components/UserInfoPan.vue'
+import { Logger, LogType, PopInfo, PopType } from '@renderer/function/base'
+import {
+    MenuEventData,
+} from '@renderer/function/elements/information'
+import { Time } from '@renderer/function/model/data'
+import Emoji from '@renderer/function/model/emoji'
+import { Message } from '@renderer/function/model/message'
+import { Msg, SelfMsg } from '@renderer/function/model/msg'
+import { AtSeg, FaceSeg, FileSeg, ImgSeg, Seg, TxtSeg } from '@renderer/function/model/seg'
+import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
+import { BaseUser, IUser, Member } from '@renderer/function/model/user'
+import { runtimeData } from '@renderer/function/msg'
+import { downloadFile, scrollToMsg, shouldAutoFocus } from '@renderer/function/utils/appUtil'
+import {
+    closeSession,
+    mergeForward,
+    sendMsgRaw,
+    singleForward,
+} from '@renderer/function/utils/msgUtil'
+import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import {
     copyToClipboard,
     delay,
     getViewTime,
 } from '@renderer/function/utils/systemUtil'
-import {
-    sendMsgRaw,
-    closeSession,
-    mergeForward,
-    singleForward,
-} from '@renderer/function/utils/msgUtil'
-import { scrollToMsg } from '@renderer/function/utils/appUtil'
-import { Logger, LogType, PopInfo, PopType } from '@renderer/function/base'
-import { runtimeData } from '@renderer/function/msg'
-import {
-    MenuEventData,
-} from '@renderer/function/elements/information'
-import { Msg, SelfMsg } from '@renderer/function/model/msg'
-import { Seg, FileSeg, TxtSeg, ImgSeg, FaceSeg, AtSeg } from '@renderer/function/model/seg'
-import { wheelMask } from '@renderer/function/utils/input'
-import { BaseUser, Member, IUser } from '@renderer/function/model/user'
-import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
-import { Message } from '@renderer/function/model/message'
-import { Time } from '@renderer/function/model/data'
-import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
-import UserInfoPanComponent, { UserInfoPan } from '@renderer/components/UserInfoPan.vue'
-import { vMenu } from '@renderer/function/utils/vcmd'
-import {
-    shallowRef,
-    shallowReactive,
-    useTemplateRef,
-    nextTick,
-    watch,
-    onMounted,
-    computed,
-} from 'vue'
+import { vMenu, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
 import { backend } from '@renderer/runtime/backend'
-import Emoji from '@renderer/function/model/emoji'
-import EmojiFace from '@renderer/components/EmojiFace.vue'
+import {
+    computed,
+    nextTick,
+    onMounted,
+    shallowReactive,
+    shallowRef,
+    useTemplateRef,
+    watch,
+} from 'vue'
 
 //#region == 常量声明 ====================================================================
 const { chat } = defineProps<{chat: Session}>()
@@ -1711,167 +1707,54 @@ function closeMultiselect() {
 //#endregion
 
 //#region == 窗口移动相关 ==================================================
-const chatMove = {
-    move: 0,
-    onScroll: 'none' as 'none' | 'touch' | 'wheel',
-    lastTime: null as null | number,
-    speedList: [] as number[],
-    touchLast: null as null | TouchEvent,
-}
-// 滚轮滑动
-function chatWheelEvent(event: WheelEvent) {
-    const process = (event: WheelEvent) => {
-        // 正在触屏,不处理
-        if (chatMove.onScroll === 'touch') return false
-        const x = event.deltaX
-        const y = event.deltaY
-        const absX = Math.abs(x)
-        const absY = Math.abs(y)
-        // 斜度过大
-        if (absY !== 0 && absX / absY < 2) return false
-        dispenseMove('wheel', -x / 3)
-        return true
-    }
-    if (!process(event)) return
-    event.preventDefault()
-    // 创建遮罩
-    // 由于在窗口移动中,窗口判定箱也在移动,当指针不再窗口外,事件就断了
-    // 所以要创建一个不会动的全局遮罩来处理
-    wheelMask(process,()=>{
-        dispenseMove('wheel', 0, true)
-    })
-}
-
-// 触屏开始
-function chatMoveStartEvent(event: TouchEvent) {
-    if (chatMove.onScroll === 'wheel') return
-    // 触屏开始时，记录触摸点
-    chatMove.touchLast = event
-}
-
-// 触屏滑动
-function chatMoveEvent(event: TouchEvent) {
-    if (chatMove.onScroll === 'wheel') return
-    if (!chatMove.touchLast) return
-    const touch = event.changedTouches[0]
-    const lastTouch = chatMove.touchLast.changedTouches[0]
-    const deltaX = touch.clientX - lastTouch.clientX
-    const deltaY = touch.clientY - lastTouch.clientY
-    const absX = Math.abs(deltaX)
-    const absY = Math.abs(deltaY)
-    // 斜度过大
-    if (absY !== 0 && absX / absY < 2) return
-    // 触屏移动
-    chatMove.touchLast = event
-    dispenseMove('touch', deltaX)
-}
-
-// 触屏滑动结束
-function chatMoveEndEvent(event: TouchEvent) {
-    if (chatMove.onScroll === 'wheel') return
-    const touch = event.changedTouches[0]
-    const lastTouch = chatMove.touchLast?.changedTouches[0]
-    if (lastTouch) {
-        const deltaX = touch.clientX - lastTouch.clientX
-        const deltaY = touch.clientY - lastTouch.clientY
-        const absX = Math.abs(deltaX)
-        const absY = Math.abs(deltaY)
-        // 斜度过大
-        if (absY === 0 || absX / absY > 2) {
-            dispenseMove('touch', deltaX)
+const chatMoveOptions: VMoveOptions<HTMLDivElement> = {
+    beforeHook: (_) => {
+        // 移除不需要的css
+        const target = getTargetWin()
+        if (!target) return
+        target.style.transition = 'all 0s'
+        // 禁用滚动
+        const pan = chatPan.value
+        if (!pan) return
+        const chat = pan.getElementsByClassName('chat')[0] as HTMLDivElement
+        if(chat)
+            chat.style.overflowY = 'hidden'
+    },
+    moveHook: (_, move: number) => {
+        // 移动距离 css
+        const target = getTargetWin()
+        if (!target) return
+        target.style.transform = 'translateX(' + move + 'px)'
+    },
+    endHook: (_) => {
+        // 复原css
+        const pan = chatPan.value
+        const chat = pan?.getElementsByClassName('chat')[0] as HTMLDivElement
+        if(chat) {
+            chat.style.overflowY = 'scroll'
         }
-    }
-    dispenseMove('touch', 0, true)
-    chatMove.touchLast = null
-}
-/**
- * 分发触屏/滚轮情况
- */
-function dispenseMove(type: 'touch' | 'wheel', value: number, end: boolean = false) {
-    if (!end && chatMove.onScroll === 'none') startMove(type, value)
-    if (chatMove.onScroll === 'none') return
-    if (end) endMove()
-    else keepMove(value)
-}
-/**
- * 开始窗口移动
- */
-function startMove(type: 'touch' | 'wheel', value: number) {
-    // 移除不需要的css
-    const target = getTargetWin()
-    if (!target) return
-    target.style.transition = 'all 0s'
-    // 禁用滚动
-    const pan = chatPan.value
-    if (!pan) return
-    const chat = pan.getElementsByClassName('chat')[0] as HTMLDivElement
-    if(chat) {
-        chat.style.overflowY = 'hidden'
-    }
-    chatMove.onScroll = type
-    chatMove.move = value
-    chatMove.lastTime = Date.now()
-}
-/**
- * 保持窗口移动
- */
-function keepMove(value: number){
-    chatMove.move += value
-    const nowDate = Date.now()
-    if (!chatMove.lastTime) return
-    const deltaTime = nowDate - chatMove.lastTime
-    chatMove.lastTime = nowDate
-    chatMove.speedList.push(
-        value / deltaTime
-    )
-    if (chatMove.move < 0) chatMove.move = 0
-    const move = chatMove.move
-    const target = getTargetWin()
-    if (!target) return
-    target.style.transform = 'translateX(' + move + 'px)'
-}
-/**
- * 结束窗口移动
- */
-function endMove() {
-    // 保留自己要的数据
-    const move = chatMove.move
-    const speedList = chatMove.speedList
-    // 重置数据
-    chatMove.onScroll = 'none'
-    chatMove.lastTime = 0
-    chatMove.speedList = []
-    chatMove.move = 0
-    // 复原css
-    const pan = chatPan.value
-    const chat = pan?.getElementsByClassName('chat')[0] as HTMLDivElement
-    if(chat) {
-        chat.style.overflowY = 'scroll'
-    }
-    const target = getTargetWin()
-    if (!target) return
-    target.style.transition = 'transform 0.3s'
-    target.style.transform = ''
-    // 移动距离大小判定
-    const width = target.offsetWidth
-    // 如果移动距离大于屏幕宽度的三分之一，视为关闭
-    if (move > width / 3) {
-        return exitWin()
-    }
-    // 末端速度法
-    // 防止误触
-    if (move < runtimeData.inch * 0.5) return
-    const endSpeedList = speedList.reverse().slice(0, 10)
-    let endSpeed = 0
-    for (const speed of endSpeedList) {
-        endSpeed += speed
-    }
-    endSpeed /= endSpeedList.length
-    endSpeed /= runtimeData.inch
-    // 如果末端速度大于 5，则视为关闭
-    if (endSpeed > 5) {
-        return exitWin()
-    }
+        const target = getTargetWin()
+        if (!target) return
+        target.style.transition = 'transform 0.3s'
+        target.style.transform = ''
+    },
+    rightLimit: {
+        value: 100,
+        type: '%',
+    },
+    speedCondition: {
+        minMove: {
+            value: 0.5 * runtimeData.inch,
+            type: 'px',
+        },
+        minSpeed: 5 * runtimeData.inch,
+    },
+    moveCondition: {
+        minMove: {
+            value: 33,
+            type: '%',
+        }
+    },
 }
 //#endregion
 /**

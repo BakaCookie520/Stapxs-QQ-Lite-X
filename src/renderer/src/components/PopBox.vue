@@ -1,8 +1,12 @@
 <template>
     <div
         v-esc="closeSelf"
-        class="pop-box">
+        :class="{
+            'pop-box': true,
+            'move-close': moveClose,
+        }">
         <div
+            v-move="moveOptions"
             :class="{
                 'pop-box-body': true,
                 'ss-card': true,
@@ -12,8 +16,9 @@
             :style="{
                 marginBottom: runtimeData.sysConfig.fs_adaptation > 0 ?
                     `${40 + Number(runtimeData.sysConfig.fs_adaptation)}px` : '',
-                transform: 'translate(-50%, -50%)'
+                transform: vw * 100 > 500 ? 'translate(-50%, -50%)' : '',
             }"
+            @v-move-right="closeByMove"
             ref="main">
             <header v-if="title">
                 <div v-if="svg">
@@ -49,15 +54,14 @@
 import { PopBoxData } from '@renderer/function/elements/information'
 import { runtimeData } from '@renderer/function/msg'
 import { closePopBox } from '@renderer/function/utils/popBox'
-import { useEventListener } from '@renderer/function/utils/vuse'
-import { vEsc, vFocus } from '@renderer/function/utils/vcmd'
-import { useTemplateRef } from 'vue'
+import { vEsc, vFocus, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
+import { useViewportUnits } from '@renderer/function/utils/vuse'
 import anime from 'animejs'
+import { nextTick, shallowRef, useTemplateRef } from 'vue'
 
 const { props } = defineProps<{props: {id: string, data: PopBoxData}}>()
 
 const id = props.id
-
 const {
     svg,
     title,
@@ -70,7 +74,54 @@ const {
 } = props.data
 
 const popBoxEl = useTemplateRef('main')
+const { vw } = useViewportUnits()
+const moveClose = shallowRef(false)
 
+const moveOptions: VMoveOptions<HTMLDivElement> = {
+    moveHook: (el, move: number) => {
+        if (!allowAutoClose) return
+        if (vw.value * 100 <= 500)
+            el.style.transform = `translateX(${move}px)`
+        else
+            el.style.transform = `translate(calc(-50% + ${move}px), -50%)`
+    },
+    endHook: (el) => {
+        if (!allowAutoClose) return
+        el.style.transform = vw.value * 100 > 500 ?
+            'translate(-50%, -50%)' : ''
+    },
+    rightLimit: {
+        value: 50 * vw.value,
+        type: 'px'
+    },
+    speedCondition: {
+        minMove: {
+            value: 0.5 * runtimeData.inch,
+            type: 'px',
+        },
+        minSpeed: 5 * runtimeData.inch,
+    },
+    moveCondition: {
+        minMove: {
+            value: 33,
+            type: '%',
+        }
+    },
+}
+
+/**
+ * 通过拖动关闭 PopBox
+ */
+function closeByMove() {
+    if (allowAutoClose)
+        moveClose.value = true
+    nextTick(autoClose)
+}
+
+/**
+ * 自动关闭 PopBox
+ * 如果不允许自动关闭，则执行一个摇晃动画
+ */
 function autoClose() {
     if (!allowAutoClose) {
         if (!popBoxEl.value) return
@@ -92,10 +143,18 @@ function autoClose() {
     closeSelf()
 }
 
+/**
+ * 关闭当前 PopBox
+ */
 function closeSelf() {
     closePopBox(id)
 }
 
+/**
+ * 按钮点击事件
+ * @param event 事件
+ * @param button 被点击的按钮
+ */
 function clickButton(
     event: Event,
     button: NonNullable<PopBoxData['button']>[number],
@@ -109,14 +168,4 @@ function clickButton(
     if (button.noClose) return
     closeSelf()
 }
-
-useEventListener(document, 'keydown', (event: KeyboardEvent) => {
-    if (event.key !== 'Enter') return
-    for (const button of buttons) {
-        if (button.master) {
-            clickButton(event, button)
-            return
-        }
-    }
-})
 </script>

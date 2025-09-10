@@ -2,8 +2,11 @@
     <Teleport to="body">
         <Transition name="global-session-search-bar">
             <div v-if="currentImg" v-esc="escClose"
+                v-move="moveOptions"
                 class="mask-background"
                 @click="closeClick"
+                @v-move-left="nextImg"
+                @v-move-right="prevImg"
                 @mousemove="mouseMoveCheck">
                 <!-- 工具扩展设置 -->
                 <TransitionGroup class="viewer-bar viewer-tool-config-bar"
@@ -138,7 +141,7 @@
                                     '--width': currentImgInfo?.width + 'px',
                                     '--height': currentImgInfo?.height + 'px',
                                 }"
-                                @wheel.stop.prevent="onWheel"
+                                @wheel="onWheel"
                                 @click.stop.prevent="onClick"
                                 @mousedown="onMouseDown"
                                 @mousemove="onMouseMove"
@@ -157,7 +160,7 @@
                                     '--width': currentImgInfo?.width + 'px',
                                     '--height': currentImgInfo?.height + 'px',
                                 }"
-                                @wheel.stop.prevent="onWheel"
+                                @wheel="onWheel"
                                 @click.stop="onClick"
                                 @mousedown.stop.prevent="onMouseDown"
                                 @mousemove.stop.prevent="onMouseMove"
@@ -176,21 +179,21 @@
 </template>
 
 <script setup lang="ts">
+import { PopInfo, PopType } from '@renderer/function/base'
 import { Img } from '@renderer/function/model/img'
+import { runtimeData } from '@renderer/function/msg'
+import { downloadFile } from '@renderer/function/utils/appUtil'
+import { copyToClipboard } from '@renderer/function/utils/systemUtil'
+import { vEsc, vHide, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
 import { useKeyboard, useViewportUnits } from '@renderer/function/utils/vuse'
 import { i18n } from '@renderer/main'
-import { vEsc, vHide } from '@renderer/function/utils/vcmd'
 import {
-    shallowRef,
     computed,
     shallowReactive,
+    shallowRef,
     toRaw,
     useTemplateRef,
 } from 'vue'
-import { downloadFile } from '@renderer/function/utils/appUtil'
-import { PopInfo, PopType } from '@renderer/function/base'
-import { runtimeData } from '@renderer/function/msg'
-import { copyToClipboard } from '@renderer/function/utils/systemUtil'
 
 type EditToolType = 'hand' | 'pen' | 'rect'
 
@@ -903,6 +906,33 @@ function getTouchDistance(point1: Touch, point2: Touch): number {
     const dy = point1.clientY - point2.clientY
     return Math.sqrt(dx * dx + dy * dy)
 }
+//#endregion
+
+//#region == 滑动监听 ===============================================
+const moveOptions: VMoveOptions<HTMLDivElement> = {
+    leftLimit: {
+        value: 999,
+        type: 'px'
+    },
+    rightLimit: {
+        value: 999,
+        type: 'px'
+    },
+    speedCondition: {
+        minMove: {
+            value: 0.5 * runtimeData.inch,
+            type: 'px',
+        },
+        minSpeed: 5 * runtimeData.inch,
+    },
+    moveCondition: {
+        minMove: {
+            value: 33,
+            type: '%',
+        }
+    },
+}
+
 //#endregion
 
 //#region == 按键监听 ===============================================
