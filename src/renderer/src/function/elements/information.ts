@@ -42,6 +42,14 @@ export interface MenuEventData {
     target: HTMLElement
 }
 
+export interface PopBoxButton {
+	master?: boolean // 是否高亮（主按钮）
+	fun?: (() => void | Promise<void>)
+		| ((event: Event) => void | Promise<void>) // 按钮回调
+	text: string // 按钮文本
+	noClose?: boolean // 是否不退出弹窗
+}
+
 export interface PopBoxData {
     // 通用弹窗
     svg?: string // 弹窗图标
@@ -50,14 +58,7 @@ export interface PopBoxData {
     templateValue?: any // 模板 props
     templateModel?: any // 模板 v-model
     full?: boolean // 是否填充整个页面
-    button?: {
-        // 按钮
-        master?: boolean // 是否高亮（主按钮）
-        fun?: (() => void | Promise<void>)
-            | ((event: Event) => void | Promise<void>) // 按钮回调
-        text: string // 按钮文本
-        noClose?: boolean // 是否不退出弹窗
-    }[]
+    button?: PopBoxButton[]
     allowAutoClose?: boolean // 是否允许自带的关闭操作
     onClose?: () => void // 关闭回调
 }

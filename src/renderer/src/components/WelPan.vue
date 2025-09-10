@@ -16,7 +16,7 @@
         <font-awesome-icon :class="show == 'end' ? 'select' : ''" :icon="['fas', 'circle-check']" @click="changeView('end')" />
     </div>
     <div v-if="show == 'home'" class="wel-home">
-        <img src="/img/icons/icon.svg">
+		<Icon animation />
         <span>WELCOME</span>
         <div>
             <span>{{ $t('Stapxs QQ Lite X') }}</span>
@@ -270,7 +270,7 @@
             <span>{{ $t('统计选项') }}</span>
             <div />
             <div>
-                <span>{{ $t('Stapxs QQ Lite 会将部分使用数据上传到自建的 umami 服务器中用于了解用户使用情况以及制作一些有趣的统计信息。') }}</span>
+                <span>{{ $t('Stapxs QQ Lite 会将部分使用数据上传到上游的 umami 服务器中用于了解用户使用情况以及制作一些有趣的统计信息。') }}</span>
                 <span style="margin-bottom: 20px;">{{ $t('如果你并不希望上传这些数据，可以选择关闭它。') }}</span>
                 <div class="opt-item wel-opt-item"
                     :style="runtimeData.sysConfig.close_ga !== true ?
@@ -299,10 +299,10 @@
             <span>{{ $t('开源提醒') }}</span>
             <div />
             <div style="align-items: flex-end;">
-                <span>{{ $t('Stapxs QQ Lite 是一个开源免费的软件，这意味着没有任何激活、使用限制等付费功能；') }}</span>
-                <span style="margin-bottom: 20px;">{{ $t('如果你通过任何付费方式获取了 Stapxs QQ Lite，请及时追回损失并酌情反馈。') }}</span>
+                <span>{{ $t('Stapxs QQ Lite X 是一个开源免费的软件，这意味着没有任何激活、使用限制等付费功能；') }}</span>
+                <span style="margin-bottom: 20px;">{{ $t('如果你通过任何付费方式获取了 Stapxs QQ Lite X，请及时追回损失并酌情反馈。') }}</span>
 
-                <span>{{ $t('Stapxs QQ Lite 仅在 GitHub 上发布。由于提供了自行部署的方式，非官方版本请谨慎使用。') }}</span>
+                <span>{{ $t('Stapxs QQ Lite X 仅在 GitHub 上发布。由于提供了自行部署的方式，非官方版本请谨慎使用。') }}</span>
                 <font-awesome-icon style="width:15vh;height:15vh;margin-top:-15vh;opacity:0.1;color:var(--color-font);"
                     :icon="['fas', 'triangle-exclamation']" />
             </div>
@@ -386,6 +386,7 @@
 
 <script setup lang="ts">
 import languages from '@renderer/assets/l10n/_l10nconfig.json'
+import Icon from './Icon.vue'
 
 import { defineComponent } from 'vue'
 import { runtimeData } from '@renderer/function/msg'
@@ -462,7 +463,7 @@ const emit = defineEmits<{
         display: flex;
     }
 
-    .wel-home > img {
+    .wel-home > svg {
         width: 90px;
         margin-top: -70px;
         margin-bottom: 20px;

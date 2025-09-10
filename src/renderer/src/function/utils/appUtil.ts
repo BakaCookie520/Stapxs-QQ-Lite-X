@@ -20,8 +20,8 @@ import { parseMsg } from '../sender'
 import { Notify } from '../notify'
 import { GroupSession, UserSession } from '../model/session'
 import {
-    toRaw,
     markRaw,
+    toRaw,
 } from 'vue'
 
 const popInfo = new PopInfo()
@@ -539,6 +539,7 @@ export async function loadMobile() {
         }
         // 键盘
         backend.call('Keyboard', 'setAccessoryBarVisible', false, { isVisible: false })
+        backend.call('Keyboard', 'setResizeMode', false, { mode: 'none' })
         backend.addListener('Keyboard', 'keyboardWillShow', async (info: KeyboardInfo) => {
             const keyboardHeight = info.keyboardHeight
 
@@ -550,49 +551,42 @@ export async function loadMobile() {
 
             const safeArea = await backend.call('SafeArea', 'getSafeArea', true)
             const tabBar = document.getElementsByTagName('ul')[0]
-            // 如果键盘高度低于高度的 1/3 且是 iOS 设备
-            // PS：这种情况下是物理键盘输入模式，它不是个完整键盘
-            //     这种情况下比较头疼，不能让 vebview 调整高度会出现黑色区域
-            if(backend.platform == 'ios' && keyboardHeight < window.innerHeight / 3) {
-                // 修改 ResizeMode
-                backend.call('Keyboard', 'setResizeMode', false, { mode: 'none' })
-                // 这种情况下需要进行正常的底部避让，调整 --safe-area-bottom
+            // iOS 26 后键盘背景是半透明的，不能让 webview 调整高度，会漏出背景的黑色
+            // 干脆把所有的 iOS 版本处理方法都改为内部避让
+            if(backend.platform == 'ios') {
                 const baseApp = document.getElementById('base-app')
                 if (safeArea && baseApp) {
-                    baseApp.style.setProperty('--safe-area-bottom', (keyboardHeight - safeArea.bottom + 10) + 'px')
+                    baseApp.style.setProperty('--safe-area-bottom', (keyboardHeight - safeArea.bottom + 100) + 'px')
                 }
                 // 调整菜单高度
                 if(safeArea && tabBar) {
-                    tabBar.style.setProperty('padding-bottom', safeArea.bottom + 'px', 'important')
+                    tabBar.style.setProperty('padding-bottom', (keyboardHeight - safeArea.bottom + 100) + 'px', 'important')
                 }
-            } else if (tabBar) {
-                // 调整菜单高度
-                tabBar.style.setProperty('padding-bottom', '10px', 'important')
             }
 
             // 调整整个 HTML 的高度
             // PS：仅用于解决 Android 在全屏沉浸式下键盘遮挡问题
             const html = document.getElementsByTagName('html')[0]
             if(html && backend.platform == 'android') {
-                const safeArea = await backend.call('SafeArea', 'getSafeArea', true)
                 html.style.height = `calc(100% - ${keyboardHeight + safeArea.top}px)`
             }
         })
         backend.addListener('Keyboard', 'keyboardWillHide', async () => {
-            backend.call('Keyboard', 'setResizeMode', false, { mode: 'native' })
-            const baseApp = document.getElementById('base-app')
-            const safeArea = await backend.call('SafeArea', 'getSafeArea', true)
-            if (safeArea && baseApp) {
-                baseApp.style.setProperty('--safe-area-bottom', safeArea.bottom + 'px')
-            }
-
-            const tabBar = document.getElementsByTagName('ul')[0]
-            if(tabBar) {
-                tabBar.style.paddingBottom = ''
-            }
             const sendMore = document.getElementById('send-more')
             if(sendMore) {
                 sendMore.style.paddingBottom = 'var(--safe-area-bottom)'
+            }
+            if(backend.platform == 'ios') {
+                const baseApp = document.getElementById('base-app')
+                const safeArea = await backend.call('SafeArea', 'getSafeArea', true)
+                if (safeArea && baseApp) {
+                    baseApp.style.setProperty('--safe-area-bottom', safeArea.bottom + 'px')
+                }
+
+                const tabBar = document.getElementsByTagName('ul')[0]
+                if(tabBar) {
+                    tabBar.style.paddingBottom = ''
+                }
             }
             // 调整整个 HTML 的高度
             // PS：仅用于解决 Android 在全屏沉浸式下键盘遮挡问题
@@ -618,7 +612,8 @@ import { ProxyUrl } from '../model/proxyUrl'
 import { backend } from '@renderer/runtime/backend'
 import { Message } from '../model/message'
 import AboutPan from '@renderer/popboxes/AboutPan.vue'
-
+import { NoticeBodyV3 } from '../elements/system'
+import { PopBoxButton } from '../elements/information'
 /**
 * 初始化快速连接信息
 * @param address 地址
@@ -633,7 +628,7 @@ function setQuickLogin(address: string, port: number) {
 * 检查更新
 */
 export function checkUpdate() {
-    // 获取最新的 release 信息
+    // 获取最新的 release 信息d
     const packageUrl =
         'https://api.github.com/repos/chzxxuanzheng/Stapxs-QQ-Lite-X/releases/latest'
     fetch(packageUrl).then((response) => {
@@ -801,8 +796,11 @@ export function checkOpenTimes() {
 * 显示全局公告弹窗
 */
 export function checkNotice() {
-    const url =
-        'https://lib.stapxs.cn/download/stapxs-qq-lite/notice-config.json'
+    let url = 'https://lib.stapxs.cn/download/stapxs-qq-lite/notice-config.json'
+    if(import.meta.env.DEV) {
+        url = 'notice_local.json'
+    }
+    const version = 3
     const fetchData = {
         time: new Date().getTime().toString(),
     } as Record<string, string>
@@ -817,57 +815,79 @@ export function checkNotice() {
             }
             // 解析公告列表
             data.forEach((notice: any) => {
-                let isShowInDate = false
-                if (!notice.show_date) {
-                    isShowInDate = true
-                } else if (
-                    typeof notice.show_date == 'string' &&
-                    new Date().toDateString() ===
-                        new Date(notice.show_date).toDateString()
-                ) {
-                    isShowInDate = true
-                } else if (typeof notice.show_date == 'object') {
-                    notice.show_date.forEach((date: number) => {
-                        if (
-                            new Date().toDateString() ===
-                            new Date(date).toDateString()
-                        ) {
-                            isShowInDate = true
+                if(notice.version == version && (notice.client == import.meta.env.VITE_APP_CLIENT_TAG || notice.client == 'all')) {
+                    const noticeBody = notice as NoticeBodyV3
+                    // 当前时间戳（毫秒）
+                    const now = new Date().getTime()
+                    noticeBody.show_date.forEach((dateInterval: number[]) => {
+                        if(dateInterval.length == 2) {
+                            // 判断是否在时间区间内
+                            if(now >= dateInterval[0] && now <= dateInterval[1]) {
+                                noticeBody.is_show = true
+                            }
                         }
                     })
-                }
-                if (
-                    notice.version == 2 &&
-                    noticeShow.indexOf(notice.id.toString()) < 0 &&
-                    isShowInDate
-                ) {
-                    // 加载公告弹窗列表
-                    for (let i = 0; i < notice.pops.length; i++) {
-                        // 添加弹窗
-                        const info = notice.pops[i]
-                        htmlPopBox(info.html ? info.html : '', {
-                            title: info.title,
-                            button: [{
-                                text: (
-                                    notice.pops.length > 1 && i != notice.pops.length - 1
-                                ) ? app.config.globalProperties.$t(
-                                    '继续',
-                                ): app.config.globalProperties.$t(
-                                    '确定',
-                                ),
-                                master: true,
-                                fun: () => {
-                                    // 添加已读记录
-                                    if (noticeShow.indexOf(notice.id) < 0) {
-                                        noticeShow.push(notice.id)
-                                    }
-                                    localStorage.setItem(
-                                        'notice_show',
-                                        noticeShow.toString(),
-                                    )
+                    if (noticeBody.is_important == true || (noticeBody.is_show && noticeBody.id && noticeShow.indexOf(noticeBody.id) < 0)) {
+                        // 加载公告弹窗列表
+                        for (let i = 0; i < noticeBody.pops.length; i++) {
+                            // 添加弹窗
+                            const info = noticeBody.pops[i]
+                            let popInfo = null as any
+                            const button: PopBoxButton[] = [
+                                {
+                                    text:
+                                        /* eslint-disable */
+                                        noticeBody.pops.length > 1 && i != noticeBody.pops.length - 1 ?
+                                            app.config.globalProperties.$t('继续') :
+                                            (info.button_text ? info.button_text : app.config.globalProperties.$t('确定')),
+                                        /* eslint-enable */
+                                    master: true,
+                                    fun: () => {
+                                        // 添加已读记录
+                                        if (noticeShow.indexOf(noticeBody.id) < 0 && !noticeBody.is_important) {
+                                            noticeShow.push(noticeBody.id)
+                                        }
+                                        localStorage.setItem(
+                                            'notice_show',
+                                            noticeShow.toString(),
+                                        )
+                                    },
                                 },
-                            },],
-                        })
+                            ]
+                            if(info.link_url) {
+                                button.unshift({
+                                    text: app.config.globalProperties.$t('打开…'),
+                                    master: false,
+									noClose: true,
+                                    fun: () => {
+                                        if(info.link_url) {
+                                            openLink(info.link_url)
+                                        }
+                                    }
+                                })
+                            }
+                            if (info.html) {
+                                popInfo = {
+                                    title: info.title,
+                                    html: info.html,
+                                    button: button
+                                }
+                            } else if(info.template) {
+                                popInfo = {
+                                    title: info.title,
+                                    template: defineAsyncComponent(
+                                        () => import(`@renderer/components/notice-component/${info.template}.vue`),
+                                    ),
+                                    templateValue: markRaw(info.template_data ? info.template_data : {}),
+                                    button: button
+                                }
+                            } else {
+                                logger.error(null, '未知的公告类型')
+                            }
+
+							if (popInfo)
+								popBox(popInfo)
+                        }
                     }
                 }
             })
@@ -896,7 +916,7 @@ export function BackendRequest(type: 'GET' | 'POST', url: string,
 * @param event 事件名
 * @param data 数据
 */
-export function sendStatEvent(event: string, data: any) {
+export function sendStatEvent(event: string, data: { [key: string]: any }) {
     if (!option.get('close_ga') && !import.meta.env.DEV) {
         Umami.trackEvent(event, data)
     }

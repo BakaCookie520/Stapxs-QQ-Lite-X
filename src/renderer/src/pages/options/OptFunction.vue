@@ -282,20 +282,8 @@
                 v-if="runtimeData.sysConfig.close_ga !== true"
                 class="tip">
                 {{
-                    $t('我们使用 Umami 对应用的使用情况进行分析，它将不会上传精确到用户的信息；你也可以在这儿控制分析功能的开关和额外分析项。同时我们的统计信息公开展示在此处以便查阅：')
+                    $t('我们使用 Umami 对应用的使用情况进行分析，它将不会上传精确到用户的信息；你也可以在这儿控制分析功能的开关和额外分析项。')
                 }}
-                <div class="ga-share">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                        viewBox="0 0 428 389.11">
-                        <circle cx="214.15" cy="181" r="171"
-                            fill="none" stroke="currentColor" stroke-miterlimit="10"
-                            stroke-width="20" />
-                        <path d="M413 134.11H15.29a15 15 0 0 0-15 15v15.3C.12 168 0 171.52 0 175.11c0 118.19 95.81 214 214 214 116.4 0 211.1-92.94 213.93-208.67 0-.44.07-.88.07-1.33v-30a15 15 0 0 0-15-15Z" />
-                    </svg>
-                    <a target="_blank" @click="showStatus">
-                        {{ $t('Stapxs QQ Lite X') }} {{ $t('访问统计信息') }}
-                    </a>
-                </div>
             </div>
             <div v-if="runtimeData.sysConfig.close_ga !== true"
                 class="opt-item">
@@ -321,8 +309,7 @@
     import { defineComponent } from 'vue'
     import { runASWEvent as save, checkDefault } from '@renderer/function/option'
     import { runtimeData } from '@renderer/function/msg'
-    import { openLink } from '@renderer/function/utils/appUtil'
-import { noticePopBox } from '@renderer/function/utils/popBox'
+    import { noticePopBox } from '@renderer/function/utils/popBox'
 
     export default defineComponent({
         name: 'ViewOptFunction',
@@ -347,12 +334,7 @@ import { noticePopBox } from '@renderer/function/utils/popBox'
                 if (sender.checked) {
                     noticePopBox(this.$t('开启 shift enter 换行可能会在一些拥有特殊选词模式的输入法上出现问题，如 微软注音2003、新注音2003 和 绝大部分很早期的拼音输入法；如果在使用的时候遇到问题可以尝试关闭此功能。（或者换个更现代的输入法）'))
                 }
-            },
-            showStatus() {
-                if (import.meta.env.VITE_APP_MU_SHARE) {
-                    openLink(import.meta.env.VITE_APP_MU_SHARE, true)
-                }
-            },
+            }
         },
     })
 </script>
