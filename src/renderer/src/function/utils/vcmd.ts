@@ -102,7 +102,7 @@ function createVMenu(): Directive<HTMLElement, (event: MenuEventData) => void> {
                 if (prevent) event.preventDefault()
                 if (stop) event.stopPropagation()
                 menuTouchEnd(event)
-            
+
                 // 快速点击则触发点击事件
                 if (Date.now() - toushStartTime < 200)
                     event.target?.['click']?.()
@@ -419,8 +419,6 @@ function createVMove<T extends HTMLElement>(): Directive<T, VMoveOptions<T>>{
         // 触屏开始
         const chatMoveStartEvent = (event: TouchEvent) => {
             if (moveFlag.onScroll === 'wheel') return
-            event.stopPropagation()
-            event.preventDefault()
             // 触屏开始时，记录触摸点
             moveFlag.touchLast = event
         }
@@ -429,8 +427,6 @@ function createVMove<T extends HTMLElement>(): Directive<T, VMoveOptions<T>>{
         const chatMoveEvent = (event: TouchEvent) => {
             if (moveFlag.onScroll === 'wheel') return
             if (!moveFlag.touchLast) return
-            event.stopPropagation()
-            event.preventDefault()
             const touch = event.changedTouches[0]
             const lastTouch = moveFlag.touchLast.changedTouches[0]
             const deltaX = touch.clientX - lastTouch.clientX
@@ -439,6 +435,8 @@ function createVMove<T extends HTMLElement>(): Directive<T, VMoveOptions<T>>{
             const absY = Math.abs(deltaY)
             // 斜度过大
             if (absY !== 0 && absX / absY < 2) return
+            event.stopPropagation()
+            event.preventDefault()
             // 触屏移动
             moveFlag.touchLast = event
             dispenseMove('touch', deltaX)
@@ -447,8 +445,6 @@ function createVMove<T extends HTMLElement>(): Directive<T, VMoveOptions<T>>{
         // 触屏滑动结束
         const chatMoveEndEvent = (event: TouchEvent) => {
             if (moveFlag.onScroll === 'wheel') return
-            event.stopPropagation()
-            event.preventDefault()
             const touch = event.changedTouches[0]
             const lastTouch = moveFlag.touchLast?.changedTouches[0]
             if (lastTouch) {
