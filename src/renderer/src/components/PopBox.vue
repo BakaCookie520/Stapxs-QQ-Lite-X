@@ -12,7 +12,7 @@
             :style="{
                 marginBottom: runtimeData.sysConfig.fs_adaptation > 0 ?
                     `${40 + Number(runtimeData.sysConfig.fs_adaptation)}px` : '',
-                transform: 'translate(-50%, -50%)'
+                transform: vw * 100 > 500 ? 'translate(-50%, -50%)' : '',
             }"
             ref="main">
             <header v-if="title">
@@ -49,10 +49,10 @@
 import { PopBoxData } from '@renderer/function/elements/information'
 import { runtimeData } from '@renderer/function/msg'
 import { closePopBox } from '@renderer/function/utils/popBox'
-import { useEventListener } from '@renderer/function/utils/vuse'
 import { vEsc, vFocus } from '@renderer/function/utils/vcmd'
-import { useTemplateRef } from 'vue'
+import { useEventListener, useViewportUnits } from '@renderer/function/utils/vuse'
 import anime from 'animejs'
+import { useTemplateRef } from 'vue'
 
 const { props } = defineProps<{props: {id: string, data: PopBoxData}}>()
 
@@ -70,6 +70,8 @@ const {
 } = props.data
 
 const popBoxEl = useTemplateRef('main')
+
+const { vw } = useViewportUnits()
 
 function autoClose() {
     if (!allowAutoClose) {
