@@ -19,7 +19,7 @@ import {
     markRaw,
     toRaw,
 } from 'vue'
-import { GroupSession, UserSession } from '../model/session'
+import { GroupSession, Session, UserSession } from '../model/session'
 import { Notify } from '../notify'
 import { parseMsg } from '../sender'
 import { changeSession, sendMsgRaw } from './msgUtil'
@@ -262,18 +262,14 @@ export function downloadFile(
         }
     }
     if (backend.isWeb()) {
-        try {
-            new FileDownloader({
-                url: url,
-                autoStart: true,
-                process: onprocess,
-                nameCallback: function () {
-                    return name
-                },
-            })
-        } catch (e) {
-            logger.error(e as Error, '下载文件失败')
-        }
+        new FileDownloader({
+            url: url,
+            autoStart: true,
+            process: onprocess,
+            nameCallback: function () {
+                return name
+            },
+        }).catch(e=>logger.error(e as Error, '下载文件失败'))
     } else {
         backend.addListener(undefined, 'sys:downloadBack', (event, data) => {
             onprocess(data || event.payload)
@@ -612,7 +608,6 @@ import { NoticeBodyV3 } from '../elements/system'
 import { SessionBox } from '../model/box'
 import { Message } from '../model/message'
 import { ProxyUrl } from '../model/proxyUrl'
-import { Session } from '../model/session'
 import { htmlPopBox, popBox } from './popBox'
 /**
 * 初始化快速连接信息

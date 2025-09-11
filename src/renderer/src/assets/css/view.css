@@ -1696,7 +1696,6 @@ body.with-bar #base-app {
     border-radius: 10px;
     transition: background 0.2s;
     flex-shrink: 1;
-    transition: 0.2s;
 }
 
 .viewer-button-bar > svg:hover {

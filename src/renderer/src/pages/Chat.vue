@@ -23,7 +23,7 @@
         <!-- 聊天基本信息 -->
         <div class="info">
             <font-awesome-icon :icon="['fas', 'bars-staggered']" @click="openLeftBar" />
-            <img :src="chat.face">
+            <img :src="chat.face" :alt="chat.showName">
             <div class="info">
                 <p>
                     {{ chat.showName }}
@@ -124,7 +124,7 @@
                                 <div v-for="(item, index) in chat.essenceList"
                                     :key="'jin-' + index">
                                     <div>
-                                        <img :src="item.sender.face">
+                                        <img :src="item.sender.face" :alt="item.sender.name">
                                         <div>
                                             <a>{{ item.sender.name }}</a>
                                             <span>{{ item.time?.format() }}
@@ -144,7 +144,9 @@
                                             <span v-if="seg instanceof TxtSeg">{{ seg.text }}</span>
                                             <EmojiFace v-if="seg instanceof FaceSeg"
                                                 :emoji="seg.face" class="msg-face" />
-                                            <img v-if="seg instanceof ImgSeg" :src="seg.src">
+                                            <img v-if="seg instanceof ImgSeg"
+                                                :src="seg.src"
+                                                :alt="'[' + $t('图片') + ']'"/>
                                         </template>
                                     </div>
                                 </div>
@@ -234,7 +236,7 @@
                     <div v-for="item in atFindList != null ? atFindList : []"
                         :key="'atFind-' + item.user_id"
                         @click="choiceAt(item.user_id)">
-                        <img :src="item.face">
+                        <img :src="item.face" :alt="item.name">
                         <span>{{ item.name }}</span>
                         <a>{{ item.user_id }}</a>
                     </div>
@@ -441,7 +443,7 @@
                             <div @click="deleteImg(index)">
                                 <font-awesome-icon :icon="['fas', 'xmark']" />
                             </div>
-                            <img :src="img64">
+                            <img :src="img64" :alt="'[' + $t('图片') + ']'">
                         </div>
                     </div>
                     <div class="sender">
@@ -1225,6 +1227,7 @@ async function setImg(blob: File | null) {
                 )
                 setImg(compressedFile)
             } catch (error) {
+                new Logger().error(error as Error, '图片压缩失败')
                 popInfo.add(PopType.INFO, $t('压缩图片失败'))
             }
         }
