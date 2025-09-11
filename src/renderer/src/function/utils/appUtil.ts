@@ -1,9 +1,9 @@
-import app from '@renderer/main'
-import FileDownloader from 'js-file-downloader'
 import option from '@renderer/function/option'
+import app from '@renderer/main'
+import Umami from '@stapxs/umami-logger-typescript'
+import FileDownloader from 'js-file-downloader'
 import semver from 'semver'
 import appInfo from '../../../../../package.json'
-import Umami from '@stapxs/umami-logger-typescript'
 
 import UpdatePan from '@renderer/components/UpdatePan.vue'
 import WelPan from '@renderer/components/WelPan.vue'
@@ -15,14 +15,14 @@ import {
     hslToRgb,
     rgbToHsl,
 } from '@renderer/function/utils/systemUtil'
-import { changeSession, sendMsgRaw } from './msgUtil'
-import { parseMsg } from '../sender'
-import { Notify } from '../notify'
-import { GroupSession, UserSession } from '../model/session'
 import {
     markRaw,
     toRaw,
 } from 'vue'
+import { GroupSession, Session, UserSession } from '../model/session'
+import { Notify } from '../notify'
+import { parseMsg } from '../sender'
+import { changeSession, sendMsgRaw } from './msgUtil'
 
 const popInfo = new PopInfo()
 const logger = new Logger()
@@ -262,18 +262,14 @@ export function downloadFile(
         }
     }
     if (backend.isWeb()) {
-        try {
-            new FileDownloader({
-                url: url,
-                autoStart: true,
-                process: onprocess,
-                nameCallback: function () {
-                    return name
-                },
-            })
-        } catch (e) {
-            logger.error(e as Error, '下载文件失败')
-        }
+        new FileDownloader({
+            url: url,
+            autoStart: true,
+            process: onprocess,
+            nameCallback: function () {
+                return name
+            },
+        }).catch(e=>logger.error(e as Error, '下载文件失败'))
     } else {
         backend.addListener(undefined, 'sys:downloadBack', (event, data) => {
             onprocess(data || event.payload)
@@ -603,17 +599,16 @@ export async function loadMobile() {
 }
 
 import { ActionType, LocalNotificationSchema } from '@capacitor/local-notifications'
-import { Session } from '../model/session'
-import { SessionBox } from '../model/box'
-import driver, { backendWs } from '../driver'
-import { FriendData, GroupData } from '../adapter/interface'
-import { htmlPopBox, popBox } from './popBox'
-import { ProxyUrl } from '../model/proxyUrl'
-import { backend } from '@renderer/runtime/backend'
-import { Message } from '../model/message'
 import AboutPan from '@renderer/popboxes/AboutPan.vue'
-import { NoticeBodyV3 } from '../elements/system'
+import { backend } from '@renderer/runtime/backend'
+import { FriendData, GroupData } from '../adapter/interface'
+import driver, { backendWs } from '../driver'
 import { PopBoxButton } from '../elements/information'
+import { NoticeBodyV3 } from '../elements/system'
+import { SessionBox } from '../model/box'
+import { Message } from '../model/message'
+import { ProxyUrl } from '../model/proxyUrl'
+import { htmlPopBox, popBox } from './popBox'
 /**
 * 初始化快速连接信息
 * @param address 地址

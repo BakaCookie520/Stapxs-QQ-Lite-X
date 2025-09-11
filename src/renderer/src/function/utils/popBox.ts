@@ -6,11 +6,11 @@
  * @Description: 弹窗工具,用于快速创建弹窗,管理弹窗
  */
 
+import app from '@renderer/main'
+import { v4 as uuidv4 } from 'uuid'
+import { h, markRaw } from 'vue'
 import { PopBoxData } from '../elements/information'
 import { runtimeData } from '../msg'
-import { h, markRaw } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
-import app from '@renderer/main'
 
 /**
  * 关闭一个弹窗
@@ -127,6 +127,7 @@ export async function noticePopBox(text: string, buttonName?: string): Promise<v
     let resolve: () => void
     const promise = new Promise<void>(res => {resolve = res})
     textPopBox(text, {
+        svg: 'triangle-exclamation',
         title: $t('提醒'),
         button: [
             {

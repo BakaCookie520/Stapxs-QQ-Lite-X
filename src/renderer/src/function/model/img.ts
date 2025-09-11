@@ -11,8 +11,8 @@ import { ProxyUrl } from './proxyUrl'
 
 export class Img {
     _src: ProxyUrl
-    private _prev = shallowRef<Img | undefined>()
-    private _next = shallowRef<Img | undefined>()
+    readonly _prev = shallowRef<Img | undefined>()
+    readonly _next = shallowRef<Img | undefined>()
     constructor(src: string | ProxyUrl) {
         if (typeof src === 'string')
             this._src = new ProxyUrl(src)

@@ -1,0 +1,21 @@
+.doc h3,
+.doc h4 {
+    color: var(--color-main);
+    font-weight: bold;
+}
+
+.doc a {
+    background-color: var(--color-card-1);
+    border-radius: 3px;
+    padding: 2px;
+    margin: 2px;
+}
+
+.doc a.important {
+    background-color: var(--color-main);
+    color: var(--color-font-r)
+}
+
+.doc a.link {
+    color: var(--color-main);
+}

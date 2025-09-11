@@ -149,7 +149,8 @@
                                 @touchstart="onImgTouchStart"
                                 @touchmove="onImgTouchMove"
                                 @touchend="onImgTouchEnd"
-                                @mouseleave="mouseMoveInfo=undefined;">
+                                @mouseleave="mouseMoveInfo=undefined"
+								alt="">
                             <canvas v-show="edit" ref="canvas"
                                 :class="getImgCursorClassByTool()"
                                 :style="{
@@ -666,19 +667,7 @@ function onClick(event: Event) {
     forceShowButton.value = !forceShowButton.value
 }
 function onMouseout(event: MouseEvent) {
-    handleEvent(event)
-
-    switch (currentTool.value) {
-        case 'hand':
-            handMouseUp(event.clientX, event.clientY)
-            break
-        case 'pen':
-            penMouseUp(event.clientX, event.clientY)
-            break
-        case 'rect':
-            rectMouseUp(event.clientX, event.clientY)
-            break
-    }
+    onMouseUp(event)
 }
 
 let onImgTouchFlag = false
@@ -1131,7 +1120,12 @@ function getPos(x: number, y: number): {x: number, y: number} {
 function saveEditHistory() {
     const ctx = canvas.value?.getContext('2d')
     if (!ctx) return
-    editHistory.push(ctx.getImageData(0, 0, canvas.value!.width, canvas.value!.height))
+	let data: ImageData | undefined
+	try {
+		data = ctx.getImageData(0, 0, canvas.value!.width, canvas.value!.height)
+	}catch {/**/}
+	if (!data) return
+    editHistory.push(data)
     if (editHistory.length > 20) editHistory.shift() // 限制历史长度
 }
 

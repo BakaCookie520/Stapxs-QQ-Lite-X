@@ -23,9 +23,8 @@
         @mouseleave="hiddenUserInfo">
         <img v-show="!needSpecialMe()"
             v-menu.prevent="event => $emit('showUserMenu', event, data.sender)"
-            name="avatar"
             :src="data.sender.face"
-
+            :alt="data.sender.name"
             @mouseenter="userInfoHoverHandle($event, data.sender)"
             @mousemove="userInfoHoverHandle($event, data.sender)"
             @mouseleave="userInfoHoverEnd($event)"
@@ -108,6 +107,7 @@
                             <img v-else-if="item instanceof MfaceSeg"
                                 :class=" imgStyle(data.message.length, index, true) + ' msg-mface'"
                                 :src="item.src"
+                                :alt="item.summary"
                                 @load="imageLoaded"
                                 @error="imgLoadFail">
                             <img v-else-if="item instanceof ImgSeg"
@@ -174,6 +174,7 @@
                                 <div v-if="item.fileView"
                                     class="file-view">
                                     <img v-if="['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(item.fileView.ext)"
+                                        :alt="item.name"
                                         :src="item.fileView.url">
                                     <video v-else-if="['mp4', 'avi', 'mkv', 'flv'].includes(item.fileView.ext)"
                                         playsinline controls muted
@@ -296,7 +297,8 @@
                             <!-- 特殊 URL 的预览 -->
                             <div v-if="pageViewInfo.type == 'bilibili'" class="link-view-bilibili">
                                 <div class="user">
-                                    <img :src="ProxyUrl.proxy(pageViewInfo.data.owner.face)">
+                                    <img :src="ProxyUrl.proxy(pageViewInfo.data.owner.face)"
+                                        :alt="'[' + $t('图片') + ']'">
                                     <span>{{ pageViewInfo.data.owner.name }}</span>
                                     <a>{{ Intl.DateTimeFormat(trueLang, {
                                         year: 'numeric',
@@ -306,7 +308,8 @@
                                         minute: 'numeric'
                                     }).format(getViewTime(pageViewInfo.data.public)) }}</a>
                                 </div>
-                                <img :src="ProxyUrl.proxy(pageViewInfo.data.pic)">
+                                <img :src="ProxyUrl.proxy(pageViewInfo.data.pic)"
+                                    :alt="'[' + $t('图片') + ']'">
                                 <span>{{ pageViewInfo.data.title }}</span>
                                 <a>{{ pageViewInfo.data.desc }}</a>
                                 <div class="data">
@@ -322,7 +325,8 @@
                             </div>
                             <div v-else-if="pageViewInfo.type == 'music163'" class="link-view-music163">
                                 <div>
-                                    <img :src="pageViewInfo.data.cover">
+                                    <img :src="pageViewInfo.data.cover"
+                                        :alt="'[' + $t('图片') + ']'">
                                     <div :id="'music163-audio-' + data.uuid" :class="{me: needSpecialMe()}">
                                         <a>{{ pageViewInfo.data.info.name }}
                                             <a v-if="pageViewInfo.data.info.free != null">{{ $t('（试听）') }}</a>
@@ -608,18 +612,16 @@ defineExpose({
             imgStyle(length: number, at: number, isFace: boolean) {
                 let style = 'msg-img'
                 // 处理样式
-                if (isFace) {
+                if (isFace)
                     style += ' face'
-                }
-                if (length === 1) {
-                    return (style += ' alone')
-                }
-                if (at === 0) {
-                    return (style += ' top')
-                }
-                if (at === length - 1) {
-                    return (style += ' button')
-                }
+
+                if (length === 1)
+                    style += ' alone'
+                else if (at === 0)
+                    style += ' top'
+                else if (at === length - 1)
+                    style += ' button'
+
                 return style
             },
 
@@ -708,7 +710,7 @@ defineExpose({
                         }
                     }
                 }
-                return
+                return undefined
             },
 
             async getLink(){
