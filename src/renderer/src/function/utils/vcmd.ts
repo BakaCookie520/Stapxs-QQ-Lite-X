@@ -323,10 +323,11 @@ export const vEsc: Directive<HTMLElement, () => void> = {
     },
     unmounted(el: HTMLElement) {
         const controller = (el as any)._vEscController
-        if (controller) {
-            document.removeEventListener('keydown', controller.signal)
-            delete (el as any)._vEscController
-        }
+
+        if (!controller) return
+
+        controller.abort()
+        delete (el as any)._vEscController
     }
 }
 

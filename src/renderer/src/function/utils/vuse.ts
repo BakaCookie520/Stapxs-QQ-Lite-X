@@ -6,7 +6,7 @@
  * @Description: 封装的一些vue组合函数
  */
 
-import { ShallowRef, shallowRef, watch, onUnmounted, ComputedRef, ref, computed, onMounted } from 'vue'
+import { computed, ComputedRef, onMounted, onUnmounted, ref, ShallowRef, shallowRef, watch } from 'vue'
 import { MenuEventData } from '../elements/information'
 import { pastTimeFormat } from './systemUtil'
 
@@ -249,12 +249,11 @@ export function useKeyboard(...args: [string, ...string[], () => boolean | undef
                     allMatch = false
                     break
                 }
-            } else {
-                // 普通键
-                if (event.key.toLowerCase() !== key) {
-                    allMatch = false
-                    break
-                }
+            }
+            // 普通键
+            else if (event.key.toLowerCase() !== key) {
+                allMatch = false
+                break
             }
         }
 
