@@ -1,23 +1,24 @@
 import App from './App.vue'
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { createI18n } from 'vue-i18n'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { createPinia } from 'pinia'
+import { createApp } from 'vue'
+import { createI18n } from 'vue-i18n'
 
 import { faSquare } from '@fortawesome/free-regular-svg-icons'
 
-import './assets/css/view.css'
 import './assets/css/chat.css'
+import './assets/css/doc.css'
 import './assets/css/msg.css'
 import './assets/css/options.css'
 import './assets/css/sys_notice.css'
+import './assets/css/view.css'
 
-import { getPortableFileLang, getVersion } from './function/utils/systemUtil'
 import { runtimeData } from './function/msg'
 import Option from './function/option'
+import { getPortableFileLang, getVersion } from './function/utils/systemUtil'
 import { backend } from './runtime/backend'
 import win from './runtime/win'
 

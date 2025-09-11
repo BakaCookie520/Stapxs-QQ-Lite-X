@@ -1,5 +1,5 @@
 <template>
-<div style="overflow-y: scroll;">
+<div style="overflow-y: scroll;" class="doc">
     <h3>{{ $t('前排警告') }}</h3>
     {{ $t('使用') }}<a>{{ $t('协议端') }}</a>{{ $t('可能会有一定的风险，此风险并不由 Stapxs QQ Lite X 所造成，而是使用') }}<a>{{ $t('协议端') }}</a>{{ $t('本身的风险。请自行检查你使用的') }}<a>{{ $t('协议端') }}</a>{{ $t('的相关文档以了解关于风险的信息。') }}
     <hr />
@@ -33,7 +33,7 @@
         <li>
             <header>nc</header>
             <div style="padding-left: 20px;">
-                <img src="/img/nc.png"/><br /><br />
+                <img src="/img/nc.png" alt="nc"/><br /><br />
                 {{ $t('输入') }}<a class="important">ob://localhost:3001</a>
             </div>
         </li>
@@ -56,24 +56,3 @@
     </ul>
 </div>
 </template>
-
-<style scoped>
-h3, h4 {
-    color: var(--color-main);
-    font-weight: bold;
-}
-
-a {
-    background-color: var(--color-card-1);
-    border-radius: 3px;
-    padding: 2px;
-    margin: 2px;
-}
-a.important {
-    background-color: var(--color-main);
-    color: var(--color-font-r)
-}
-a.link {
-    color: var(--color-main);
-}
-</style>

@@ -1,10 +1,11 @@
 import app, { i18n } from '@renderer/main'
 
 import l10nConfig from '@renderer/assets/l10n/_l10nconfig.json'
-import PO from 'pofile'
-import { Logger, PopInfo, PopType } from '../base'
 import { backend } from '@renderer/runtime/backend'
+import PO from 'pofile'
 import packageInfo from '../../../../../package.json'
+import { Logger, PopInfo, PopType } from '../base'
+import { DnsElem } from '../elements/information'
 
 /**
  * 异步延迟
@@ -530,4 +531,31 @@ export function getVersion(): string {
         return `${packageInfo.version}-${import.meta.env.VITE_HASH}`
     else
         return packageInfo.version
+}
+
+/**
+ * DNS解析
+ * @param host 主机名
+ * @returns DNS解析结果
+ */
+export async function dns(host: string): Promise<DnsElem[]> {
+    const data = await fetch(`https://dns.alidns.com/resolve?name=${host}.`).then(res => res.json())
+    if (!data['Answer']) return []
+    return data['Answer'].map((item: any) => {
+        return {
+            value: item.data,
+            type: getDnsType(item.type),
+        }
+    })
+}
+
+function getDnsType(type: number): 'A' | 'AAAA' | 'CNAME' | 'SRV' | 'TXT' | 'OTHER' {
+    switch(type) {
+        case 1: return 'A'
+        case 5: return 'CNAME'
+        case 16: return 'TXT'
+        case 28: return 'AAAA'
+        case 33: return 'SRV'
+        default: return 'OTHER'
+    }
 }
