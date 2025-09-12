@@ -23,11 +23,15 @@
         @mouseleave="hiddenUserInfo">
         <img v-show="!needSpecialMe()"
             v-menu.prevent="event => $emit('showUserMenu', event, data.sender)"
+            v-long-hover
             :src="data.sender.face"
             :alt="data.sender.name"
-            @mouseenter="userInfoHoverHandle($event, data.sender)"
-            @mousemove="userInfoHoverHandle($event, data.sender)"
-            @mouseleave="userInfoHoverEnd($event)"
+            @v-long-hover="userInfoPan?.open(
+                data.sender,
+                ($event.detail as MenuEventData).x,
+                ($event.detail as MenuEventData).y,
+            )"
+            @v-long-hover-end="userInfoPan?.close()"
             @dblclick="$emit('senderDoubleClick', data.sender)">
         <div v-if="needSpecialMe()"
             class="message-space" />
@@ -129,9 +133,15 @@
                                 }">
                                 <a :data-id="item.user_id"
                                     :data-group="data.session?.id"
-                                    @mouseenter="userInfoHoverHandle($event, getAtMember(item.user_id))"
-                                    @mousemove="userInfoHoverHandle($event, getAtMember(item.user_id))"
-                                    @mouseleave="userInfoHoverEnd($event)">{{ item.plaintext(data) }}</a>
+                                    v-long-hover
+                                    @v-long-hover="userInfoPan?.open(
+                                        getAtMember(item.user_id),
+                                        ($event.detail as MenuEventData).x,
+                                        ($event.detail as MenuEventData).y,
+                                    )"
+                                    @v-long-hover-end="userInfoPan?.close()">
+                                    {{ item.plaintext(data) }}
+                                </a>
                             </div>
                             <div v-else-if="item instanceof AtAllSeg"
                                 :class="{
@@ -440,13 +450,12 @@ import {
     getViewTime
 } from '@renderer/function/utils/systemUtil'
 import {
+    vLongHover,
     vMenu,
     vMove,
-
     VMoveOptions,
-    vUserRole
+    vUserRole,
 } from '@renderer/function/utils/vcmd'
-import { useStayEvent } from '@renderer/function/utils/vuse'
 import { backend } from '@renderer/runtime/backend'
 import {
     defineComponent,
@@ -509,26 +518,6 @@ const moveOptions: VMoveOptions<HTMLDivElement> = {
     }
 }
 
-//#endregion
-
-//#region == 长按/覆盖监视器 =========================================================
-const {
-    handle: userInfoHoverHandle,
-    handleEnd: userInfoHoverEnd,
-} = useStayEvent(
-    (event: MouseEvent) => {
-        return {
-            x: event.clientX,
-            y: event.clientY,
-        }
-    },
-    {onFit: (eventData, ctx: number | IUser) => {
-        userInfoPan?.open(ctx, eventData.x, eventData.y)
-    },
-    onLeave: () => {
-        userInfoPan?.close()
-    }}, 495
-)
 //#endregion
 //#region == 工具函数 ================================================================
 function getAtMember(id: number): IUser | number {

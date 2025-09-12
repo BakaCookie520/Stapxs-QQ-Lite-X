@@ -585,3 +585,55 @@ function createVMove<T extends HTMLElement>(): Directive<T, VMoveOptions<T>>{
  * />
  */
 export const vMove = createVMove<any>()
+
+function createVLongHover(): Directive<HTMLElement, undefined> {
+    const {
+        handle: userHoverHandle,
+        handleEnd: userHoverEnd,
+    } = useStayEvent((event: MouseEvent) => {
+            return {x: event.clientX, y: event.clientY,}
+        },{
+            onFit: (eventData, ctx: HTMLElement)=>{
+                ctx.dispatchEvent(new CustomEvent('v-long-hover', { detail: eventData }))
+            },
+            onLeave: (ctx: HTMLElement)=>{
+                ctx.dispatchEvent(new CustomEvent('v-long-hover-end'))
+            }
+        }, 495
+    )
+    return {
+        mounted(el: HTMLElement) {
+            const controller = new AbortController()
+            const options = { signal: controller.signal }
+
+            el.addEventListener('mouseenter', (event) => {
+                userHoverHandle(event, el)
+            }, options)
+            el.addEventListener('mousemove', (event) => {
+                userHoverHandle(event, el)
+            }, options)
+            el.addEventListener('mouseleave', (event) => {
+                userHoverEnd(event)
+            }, options)
+            ;(el as any)._vLongHoverController = controller
+        },
+        unmounted(el: HTMLElement) {
+            const controller = (el as any)._vLongHoverController
+            if (!controller) return
+
+            controller.abort()
+            delete (el as any)._vLongHoverController
+        }
+    }
+}
+
+/**
+ * 监听元素长时间悬停事件
+ * 当元素被鼠标悬停超过一定时间后，触发 'v-long-hover' 事件
+ * 当鼠标移出元素时，触发 'v-long-hover-end' 事件
+ * @example <dom v-long-hover
+ * onV-long-hover="(eventData) => 长悬停事件(eventData)"
+ * onV-long-hover-end="() => 长悬停结束事件()"
+ * />
+ */
+export const vLongHover = createVLongHover()
