@@ -7,11 +7,6 @@
  */
 
 import app from '@renderer/main'
-import { runtimeData } from '../msg'
-import { Message } from './message'
-import { GroupSession, Session } from './session'
-import { autoReactive, formatTime } from './utils'
-import { getSender, IUser } from './user'
 import type {
     BanEventData,
     BanLiftEventData,
@@ -20,10 +15,18 @@ import type {
     MessageEventType,
     PokeEventData,
     RecallEventData,
+    ResponseEventData,
     SenderData,
     SessionData
 } from '../adapter/interface'
+import { runtimeData } from '../msg'
+import Emoji from './emoji'
+import { Message } from './message'
+import { Msg } from './msg'
 import { ProxyUrl } from './proxyUrl'
+import { GroupSession, Session } from './session'
+import { getSender, IUser } from './user'
+import { autoReactive, formatTime } from './utils'
 
 export abstract class Notice extends Message {
     abstract readonly type: string
@@ -147,7 +150,7 @@ export class BanLiftNotice extends ReceivedNotice {
     override get preMsg(): string {
         const { $t } = app.config.globalProperties
         if (this.tome) return this.operator.name + $t('解除了你的禁言')
-        return this.operator + $t('解除了') + this.user.name + $t('的禁言')
+        return this.operator.name + $t('解除了') + this.user.name + $t('的禁言')
     }
 }
 
@@ -190,9 +193,9 @@ export class JoinNotice extends ReceivedNotice {
     user!: IUser
     operator?: IUser
     invitor?: IUser
-    private user_info: SenderData
-    private operator_info?: SenderData
-    private invitor_info?: SenderData
+    private readonly user_info: SenderData
+    private readonly operator_info?: SenderData
+    private readonly invitor_info?: SenderData
     constructor(data: JoinEventData) {
         super(data)
         this.user_info = data.user
@@ -255,7 +258,51 @@ export class LeaveNotice extends ReceivedNotice {
     override get preMsg(): string {
         const { $t } = app.config.globalProperties
         if (this.kick) return this.operator.name + $t('将') + this.user.name + $t('移出群聊')
-        return this.user + $t('离开了群聊')
+        return this.user.name + $t('离开了群聊')
+    }
+}
+
+export class ResponseNotice extends ReceivedNotice {
+    override readonly type = 'response'
+    user: IUser
+    operator: IUser
+    emojiId: number
+    msg: Msg
+    constructor(data: ResponseEventData) {
+        super(data)
+        const msg = this.session.getMsgById(data.message_id)
+        if (!msg) throw new Error('找不到对应的消息')
+        this.user = msg.sender
+        this.msg = msg
+        this.operator = this.getUser(data.operator)
+        this.emojiId = Number(data.emojiId)
+    }
+
+    override get tome(): boolean {
+        return this.user.user_id === runtimeData.loginInfo.uin
+    }
+
+    override get preMsg(): string {
+        const { $t } = app.config.globalProperties
+        let out = ''
+        if (this.operator.user_id === runtimeData.loginInfo.uin)
+            out += $t('你')
+        else
+            out += this.operator.name
+
+        out += $t('回应了')
+
+        if (this.user.user_id === runtimeData.loginInfo.uin)
+            out += $t('你')
+        else
+            out += this.user.name
+        out += $t('的消息:')
+        const emoji = Emoji.get(this.emojiId)
+        if (emoji?.type === 'emoji')
+            out += `${emoji.value}`
+        else
+            out += '[' + $t('表情') + ']'
+        return out
     }
 }
 
@@ -284,9 +331,6 @@ export class LeaveNotice extends ReceivedNotice {
  */
 export abstract class SystemNotice extends Notice {
     override session: undefined
-    constructor(data: object) {
-        super(data)
-    }
 
     static time(time: number): TimeNotice {
         return new TimeNotice({ time })
@@ -308,9 +352,6 @@ export abstract class SystemNotice extends Notice {
 export class TimeNotice extends SystemNotice {
     override readonly type: string = 'time'
 
-    constructor(data: { time: number }) {
-        super(data)
-    }
 }
 
 export class DeleteNotice extends SystemNotice {
@@ -326,7 +367,7 @@ export class InfoNotice extends SystemNotice {
     message: string
 
     constructor(data: { message: string }) {
-        super(data)
+        super({})
         this.message = data.message
     }
 }

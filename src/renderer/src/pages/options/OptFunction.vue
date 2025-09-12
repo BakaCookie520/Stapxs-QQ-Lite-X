@@ -128,6 +128,28 @@
                     </div>
                 </label>
             </div>
+            <div v-if="runtimeData.sysConfig.close_respond !== true" class="opt-item">
+                <div :class="checkDefault('show_response_message')" />
+                <font-awesome-icon :icon="['fas', 'comment']" />
+                <div>
+                    <span>{{ $t('表情回应通知') }}</span>
+                    <span>
+                        {{ $t('如果你觉得这东西刷屏或者不礼貌的话，可以关掉') }}
+                    </span>
+                </div>
+                <select v-model="runtimeData.sysConfig.show_response_message"
+                    name="show_response_message" title="show_response_message" @change="save">
+                    <option value="none">
+                        {{ $t('不通知') }}
+                    </option>
+                    <option value="self">
+                        {{ $t('仅自己相关（默认）') }}
+                    </option>
+                    <option value="all">
+                        {{ $t('全部消息') }}
+                    </option>
+                </select>
+            </div>
             <div class="opt-item">
                 <div :class="checkDefault('msg_taill')" />
                 <font-awesome-icon :icon="['fas', 'fish-fins']" />
@@ -306,10 +328,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
-    import { runASWEvent as save, checkDefault } from '@renderer/function/option'
     import { runtimeData } from '@renderer/function/msg'
-    import { noticePopBox } from '@renderer/function/utils/popBox'
+import { checkDefault, runASWEvent as save } from '@renderer/function/option'
+import { noticePopBox } from '@renderer/function/utils/popBox'
+import { defineComponent } from 'vue'
 
     export default defineComponent({
         name: 'ViewOptFunction',

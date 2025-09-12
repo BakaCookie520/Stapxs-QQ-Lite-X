@@ -1,14 +1,14 @@
-import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
-import { EssenceData, EssenceSeg, FilesData, FileSegData, ForwardNodeData, ForwardSegData, FriendData, GroupAnnouncementData, ImgSegData, ImplInfo, JsonSegData, MdSegData, MsgData, PokeEventData, UserData } from '../interface'
-import { api, OneBotAdapter } from './adapter'
-import { NcObGetStrangerInfo, NcObGetFriendsWithCategory, ObGetVersionInfo, NcObGetGroupNotices, NcObGetEssenceMsgList, NcObFetchCustomFace, NcObGetHistoryMsg, NcObGetFileUrl, NcObGetGroupFile, NcObMdSeg, NcObImgSeg, NcObFileSeg, NcObGetForwardMsg, NcObForwardSeg, ObForwardSeg, NcForwardData, ObSendMsg, ObForwardNodeSeg, ObJsonSeg, ObMsg, NcObPokeEvent, NcObMfaceSeg } from './type'
-import { createSender, getGender, ObConnector } from './utils'
-import { Msg } from '@renderer/function/model/msg'
-import { FileSeg, ForwardSeg, ImgSeg, MdSeg, MfaceSeg } from '@renderer/function/model/seg'
-import { Member } from '@renderer/function/model/user'
 import { GroupFile } from '@renderer/function/model/file'
+import { Msg } from '@renderer/function/model/msg'
 import { Resource } from '@renderer/function/model/ressource'
+import { FileSeg, ForwardSeg, ImgSeg, MdSeg, MfaceSeg } from '@renderer/function/model/seg'
+import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
+import { Member } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
+import { EssenceData, EssenceSeg, FilesData, FileSegData, ForwardNodeData, ForwardSegData, FriendData, GroupAnnouncementData, ImgSegData, ImplInfo, JsonSegData, MdSegData, MsgData, PokeEventData, ResponseEventData, UserData } from '../interface'
+import { api, OneBotAdapter } from './adapter'
+import { NcForwardData, NcObFetchCustomFace, NcObFileSeg, NcObForwardSeg, NcObGetEssenceMsgList, NcObGetFileUrl, NcObGetForwardMsg, NcObGetFriendsWithCategory, NcObGetGroupFile, NcObGetGroupNotices, NcObGetHistoryMsg, NcObGetStrangerInfo, NcObGroupMsgEmojiLikeEvent, NcObImgSeg, NcObMdSeg, NcObMfaceSeg, NcObPokeEvent, ObForwardNodeSeg, ObForwardSeg, ObGetVersionInfo, ObJsonSeg, ObMsg, ObSendMsg } from './type'
+import { createSender, getGender, ObConnector } from './utils'
 
 export default class NapCapOneBot extends OneBotAdapter {
     override name = 'NapCap OneBot'
@@ -32,6 +32,8 @@ export default class NapCapOneBot extends OneBotAdapter {
         this.segSerializer['markdown'] = this.mdSerializer.bind(this)
         this.segSerializer['mface'] = this.mfaceSerializer.bind(this)
         this.segSerializer['file'] = this.fileSerializer.bind(this)
+
+        this.noticeEventProcessers['group_msg_emoji_like'] = this.groupMsgEmojiLikeEvent.bind(this)
     }
 
     //#region == API ===============================================
@@ -258,7 +260,6 @@ export default class NapCapOneBot extends OneBotAdapter {
         return data.data.url
     }
     //#endregion
-    //#endregion
     //#region == 个人信息 ======================
     @api
     async setNickname(nickname: string): Promise<true | undefined> {
@@ -280,6 +281,7 @@ export default class NapCapOneBot extends OneBotAdapter {
         })
         return true
     }
+    //#endregion
     //#endregion
 
     //#region == 消息相关 ===========================================
@@ -403,7 +405,7 @@ export default class NapCapOneBot extends OneBotAdapter {
             if (!this.isForward(msg)) return await this.serializeMsg(msg)
             else return this.forwardSegSerializer(msg.message[0] as ForwardSeg)
         }
-        const msgs = seg.content as Msg[]
+        const msgs = seg.content
         const messagesList = await Promise.all(msgs.map(msg => serializer(msg)))
         const out: ObForwardNodeSeg[] = []
         for (let i = 0;i < messagesList.length;i++) {
@@ -430,6 +432,20 @@ export default class NapCapOneBot extends OneBotAdapter {
         re.ico = event.raw_info[1].src
         re.time = event.time
         return re
+    }
+    async groupMsgEmojiLikeEvent(event: NcObGroupMsgEmojiLikeEvent): Promise<ResponseEventData> {
+        return {
+            type: 'response',
+            session: {
+                id: event.group_id,
+                type: 'group',
+            },
+            operator: createSender(event.user_id),
+            message_id: event.message_id.toString(),
+            emojiId: event.likes[0].emoji_id,
+            add: true,
+            time: event.time,
+        }
     }
     //#endregion
 

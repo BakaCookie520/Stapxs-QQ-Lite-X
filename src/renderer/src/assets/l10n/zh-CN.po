@@ -1997,3 +1997,18 @@ msgstr ""
 
 msgid "转发成功"
 msgstr ""
+
+msgid "加载消息失败"
+msgstr ""
+
+msgid "表情回应通知"
+msgstr ""
+
+msgid "不通知"
+msgstr ""
+
+msgid "仅自己相关（默认）"
+msgstr ""
+
+msgid "全部消息"
+msgstr ""

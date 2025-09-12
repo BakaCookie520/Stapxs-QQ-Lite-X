@@ -6,12 +6,12 @@
  * @Description: 定义适配器的基本接口，所有适配器应当实现这个的接口。
  */
 import { type Component } from 'vue'
-import { Session, GroupSession, UserSession } from '../model/session'
-import { Gender, Role } from './enmu'
-import { Msg } from '../model/msg'
 import { GroupFile } from '../model/file'
-import { Member } from '../model/user'
+import { Msg } from '../model/msg'
 import { Resource } from '../model/ressource'
+import { GroupSession, Session, UserSession } from '../model/session'
+import { Member } from '../model/user'
+import { Gender, Role } from './enmu'
 
 export interface AdapterInterface {
     // 基础信息
@@ -369,8 +369,15 @@ export interface SessionData {
 //#endregion
 
 //#region == 事件 ==================================================
-export type MessageEventType = 'msg' | 'recall' | 'ban' | 'banLift' | 'poke' | 'join' | 'leave'
-export type SessionEventType = 'response' | MessageEventType
+export type MessageEventType = | 'msg'
+                               | 'recall'
+                               | 'ban'
+                               | 'banLift'
+                               | 'poke'
+                               | 'join'
+                               | 'leave'
+                               | 'response'
+export type SessionEventType = MessageEventType
 export type EventType = SessionEventType | 'unknown'
 export interface EventData {
     type: EventType             // 事件类型
@@ -385,21 +392,20 @@ export interface SessionEventData extends EventData {
 }
 
 /**
- * 表情回应事件数据
- */
-export interface ResponseEventData extends SessionEventData {
-    type: 'response'            // 事件类型
-    operator: SenderData       // 操作者
-    message_id: string          // 被响应的消息ID
-    emojiId: string             // 表情ID
-    add: boolean                // 是否添加表情,如果为false则表示删除表情
-}
-
-/**
  * 携带有 Message 的事件数据
  */
 export interface MessageEventData extends SessionEventData {
     type: MessageEventType      // 事件类型
+}
+/**
+ * 表情回应事件数据
+ */
+export interface ResponseEventData extends MessageEventData {
+    type: 'response'            // 事件类型
+    operator: SenderData        // 操作者
+    message_id: string          // 被响应的消息ID
+    emojiId: string             // 表情ID
+    add: boolean                // 是否添加表情,如果为false则表示删除表情
 }
 /**
  * 新消息事件

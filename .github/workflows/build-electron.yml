@@ -27,6 +27,7 @@ jobs:
       - name: 设置环境变量
         run: |
             echo "VITE_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+            echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: 设置 Nodejs
         uses: actions/setup-node@v4
@@ -53,63 +54,63 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}.pacman
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}.pacman
             path: dist_electron/*.pacman
 
       - name: 上传 AppImage 包
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}.appimage
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}.appimage
             path: dist_electron/*.AppImage
 
       - name: 上传 deb 包(amd64)
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}-amd64.deb
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}-amd64.deb
             path: dist_electron/*_amd64.deb
 
       - name: 上传 deb 包(arm64)
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}-arm64.deb
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}-arm64.deb
             path: dist_electron/*_arm64.deb
 
       - name: 上传 unpack 包(linux amd64)
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}-amd64
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}-amd64
             path: dist_electron/linux-unpacked
 
       - name: 上传 unpack 包(linux arm64)
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}-arm64
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}-arm64
             path: dist_electron/linux-arm64-unpacked
 
       - name: 上传 exe 包
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}.exe
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}.exe
             path: dist_electron/*.exe
 
       - name: 上传 unpack 包(win)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}
             path: dist_electron/win-unpacked
 
       - name: 上传 dmg 包(amd64)
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}.dmg
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}.dmg
             path: |
                 dist_electron/*.dmg
                 !dist_electron/*-arm64.dmg
@@ -118,5 +119,5 @@ jobs:
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ env.VITE_HASH }}-${{ matrix.identifier }}-arm64.dmg
+            name: stapxs-qq-lite-x-${{ env.VERSION }}-${{ env.VITE_HASH }}-${{ matrix.identifier }}-arm64.dmg
             path: dist_electron/*-arm64.dmg

@@ -23,11 +23,15 @@
         @mouseleave="hiddenUserInfo">
         <img v-show="!needSpecialMe()"
             v-menu.prevent="event => $emit('showUserMenu', event, data.sender)"
+            v-long-hover
             :src="data.sender.face"
             :alt="data.sender.name"
-            @mouseenter="userInfoHoverHandle($event, data.sender)"
-            @mousemove="userInfoHoverHandle($event, data.sender)"
-            @mouseleave="userInfoHoverEnd($event)"
+            @v-long-hover="userInfoPan?.open(
+                data.sender,
+                ($event.detail as MenuEventData).x,
+                ($event.detail as MenuEventData).y,
+            )"
+            @v-long-hover-end="userInfoPan?.close()"
             @dblclick="$emit('senderDoubleClick', data.sender)">
         <div v-if="needSpecialMe()"
             class="message-space" />
@@ -129,9 +133,15 @@
                                 }">
                                 <a :data-id="item.user_id"
                                     :data-group="data.session?.id"
-                                    @mouseenter="userInfoHoverHandle($event, getAtMember(item.user_id))"
-                                    @mousemove="userInfoHoverHandle($event, getAtMember(item.user_id))"
-                                    @mouseleave="userInfoHoverEnd($event)">{{ item.plaintext(data) }}</a>
+                                    v-long-hover
+                                    @v-long-hover="userInfoPan?.open(
+                                        getAtMember(item.user_id),
+                                        ($event.detail as MenuEventData).x,
+                                        ($event.detail as MenuEventData).y,
+                                    )"
+                                    @v-long-hover-end="userInfoPan?.close()">
+                                    {{ item.plaintext(data) }}
+                                </a>
                             </div>
                             <div v-else-if="item instanceof AtAllSeg"
                                 :class="{
@@ -200,6 +210,15 @@
                             </div>
                             <template v-else-if="item instanceof ForwardSeg">
                                 <div class="msg-raw-forward"
+                                    v-long-hover
+                                    @v-long-hover="msgPrevPan?.open(
+                                        item.content !== undefined ?
+                                        item.content
+                                        : $t('加载消息中...'),
+                                        ($event.detail as MenuEventData).x,
+                                        ($event.detail as MenuEventData).y,
+                                    )"
+                                    @v-long-hover-end="msgPrevPan?.close()"
                                     @click="openMerge(item)">
                                     <span>{{ $t('合并转发消息') }}</span>
                                     <div class="forward-msg">
@@ -238,11 +257,20 @@
                                 </div>
                             </template>
                             <div v-else-if="item instanceof ReplySeg"
+                                v-long-hover
                                 :class="{
                                     'msg-reply': true,
                                     'me': needSpecialMe(),
                                 }"
-                                @click="scrollToMsg(item.id)">
+                                @click="scrollToMsg(item.id)"
+                                @v-long-hover="msgPrevPan?.open(
+                                    data.session?.getMsgById(item.id) ?
+                                    [data.session!.getMsgById(item.id)!]
+                                    : $t('加载消息失败'),
+                                    ($event.detail as MenuEventData).x,
+                                    ($event.detail as MenuEventData).y,
+                                )"
+                                @v-long-hover-end="msgPrevPan?.close()">
                                 <font-awesome-icon :icon="['fas', 'reply']" />
                                 <a :class="getRepMsg(item.id) ? '' : 'msg-unknown'"
                                     style="cursor: pointer">
@@ -440,18 +468,18 @@ import {
     getViewTime
 } from '@renderer/function/utils/systemUtil'
 import {
+    vLongHover,
     vMenu,
     vMove,
-
     VMoveOptions,
-    vUserRole
+    vUserRole,
 } from '@renderer/function/utils/vcmd'
-import { useStayEvent } from '@renderer/function/utils/vuse'
 import { backend } from '@renderer/runtime/backend'
 import {
     defineComponent,
     useTemplateRef
 } from 'vue'
+import { MsgPrevPan } from './MsgPrevPan.vue'
 
 //#region == 声明变量 ================================================================
 const {
@@ -462,12 +490,14 @@ const {
         showIcon: true,
         dimNonExistentMsg: true,
     },
-    userInfoPan
+    userInfoPan,
+    msgPrevPan,
 } = defineProps<{
     data: Msg | SelfMsg
     selected?: boolean
     config: MsgBodyConfig
     userInfoPan?: UserInfoPan
+    msgPrevPan?: MsgPrevPan
 }>()
 
 const emit = defineEmits<{
@@ -509,26 +539,6 @@ const moveOptions: VMoveOptions<HTMLDivElement> = {
     }
 }
 
-//#endregion
-
-//#region == 长按/覆盖监视器 =========================================================
-const {
-    handle: userInfoHoverHandle,
-    handleEnd: userInfoHoverEnd,
-} = useStayEvent(
-    (event: MouseEvent) => {
-        return {
-            x: event.clientX,
-            y: event.clientY,
-        }
-    },
-    {onFit: (eventData, ctx: number | IUser) => {
-        userInfoPan?.open(ctx, eventData.x, eventData.y)
-    },
-    onLeave: () => {
-        userInfoPan?.close()
-    }}, 495
-)
 //#endregion
 //#region == 工具函数 ================================================================
 function getAtMember(id: number): IUser | number {

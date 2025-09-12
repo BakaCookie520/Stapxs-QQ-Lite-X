@@ -1,6 +1,6 @@
+import { backend } from '@renderer/runtime/backend'
 import { computed, toRaw } from 'vue'
 import { runtimeData } from '../msg'
-import { backend } from '@renderer/runtime/backend'
 
 /**
  * 走代理的url
@@ -8,7 +8,7 @@ import { backend } from '@renderer/runtime/backend'
 export class ProxyUrl{
     constructor(public raw: string){}
 
-    private _url = computed(() => ProxyUrl.proxy(this.raw))
+    private readonly _url = computed(() => ProxyUrl.proxy(this.raw))
 
     /**
      * 代理后的url

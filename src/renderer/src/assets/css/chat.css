@@ -1,6 +1,7 @@
 textarea {
     caret-color: var(--color-main);
 }
+
 input {
     outline: none;
 }
@@ -24,19 +25,23 @@ input {
     right: 0;
     top: 0;
 }
+
 body.with-bar .chat-pan {
     height: calc(100% - 40px);
     top: 40px;
 }
+
 .chat-pan.full {
     height: 100%;
     z-index: 20;
     bottom: 0;
     left: 0;
 }
+
 .chat-pan > div {
     z-index: 2;
 }
+
 .chat-pan > div.bg {
     background: rgba(var(--color-card-rgb), 0.6);
     position: absolute;
@@ -44,6 +49,7 @@ body.with-bar .chat-pan {
     width: 100%;
     z-index: 0;
 }
+
 .chat-pan > div.info {
     background: rgba(var(--color-card-1-rgb), 0.8);
     box-shadow: 0 0 1px var(--color-shader);
@@ -56,6 +62,7 @@ body.with-bar .chat-pan {
     padding: 15px;
     margin: 15px;
 }
+
 .chat-pan > div.info > svg {
     background: var(--color-main);
     color: var(--color-font-r);
@@ -67,6 +74,7 @@ body.with-bar .chat-pan {
     height: 20px;
     width: 20px;
 }
+
 .chat-pan > div.info > img {
     border: 2px solid var(--color-card-2);
     border-radius: 7px;
@@ -75,20 +83,24 @@ body.with-bar .chat-pan {
     height: 50px;
     width: 50px;
 }
+
 .chat-pan > div.info > div.info p {
     font-weight: bold;
     font-size: 1rem;
     margin: 0;
 }
+
 .chat-pan > div.info > div.info span {
     font-size: 0.8rem;
     font-weight: 100;
     margin-top: 3px;
     display: block;
 }
+
 .chat-pan > div.info > div.space {
     flex: 1;
 }
+
 .chat-pan > div.info > div.more {
     background: var(--color-card-2);
     border-radius: 50%;
@@ -96,16 +108,19 @@ body.with-bar .chat-pan {
     height: 45px;
     width: 45px;
 }
+
 .chat-pan > div.info > div.more > svg {
     color: var(--color-main);
     margin: 10px;
     height: 25px;
     width: 25px;
 }
+
 .chat-pan > div.info > div.more > svg.loading {
     opacity: 0.9;
     animation: rotate 1.5s linear infinite;
 }
+
 .chat-pan > div.chat {
     max-width: calc(100% - 40px);
     width: calc(100% - 20px);
@@ -118,9 +133,11 @@ body.with-bar .chat-pan {
     z-index: 1;
     flex: 1;
 }
+
 .chat-pan > div.chat {
     height: calc(100% - var(--safe-area-bottom));
 }
+
 .chat-pan > div.chat::-webkit-scrollbar {
     background: transparent;
 }
@@ -135,6 +152,7 @@ body.with-bar .chat-pan {
     height: 50px;
     z-index: 2;
 }
+
 .chat-pan > div.new-msg > div {
     background: rgba(var(--color-card-1-rgb), 0.7);
     backdrop-filter: blur(50px);
@@ -147,57 +165,69 @@ body.with-bar .chat-pan {
     height: 100%;
     padding: 0;
 }
+
 .chat-pan > div.new-msg > div > svg {
     color: var(--color-font);
     padding: 16px;
     height: 17px;
     width: 17px;
 }
+
 .chat-pan > div.new-msg > div > span {
     margin-right: 20px;
     margin-left: -5px;
 }
+
 .chat-pan > div.more {
     background: rgba(var(--color-card-rgb), 0.1);
     transition: background 0.3s;
     pointer-events: all;
 }
+
 .chat-pan > div.more.btn {
     background: transparent;
 }
+
 .chat-pan > div.more > div:nth-child(2) {
     display: flex;
     padding: 20px;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div {
     background: var(--color-card-1);
     border-radius: 7px;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div:first-child {
     margin-right: 20px;
     cursor: pointer;
     height: 50px;
     width: 50px;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div:first-child > svg {
     color: var(--color-font-1);
     margin: 15px;
     height: 20px;
     width: 20px;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div:nth-child(2) {
     display: flex;
     height: 50px;
     flex: 1;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div > form {
     width: 100%;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div > form > input {
     padding-top: 0 !important;
     margin-top: 0 !important;
     height: 100% !important;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div > form > input,
 .chat-pan > div.more > div:nth-child(2) > div > form > textarea {
     padding: 14px 20px 0 20px;
@@ -213,6 +243,7 @@ body.with-bar .chat-pan {
     width: 100%;
     border: 0;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div > form > input:disabled,
 .chat-pan > div.more > div:nth-child(2) > div > form > textarea:disabled {
     background: var(--color-card);
@@ -222,6 +253,7 @@ body.with-bar .chat-pan {
     text-align: center;
     font-size: 0.8rem;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div > div {
     border-radius: 7px;
     min-height: 40px;
@@ -230,19 +262,23 @@ body.with-bar .chat-pan {
     margin: 5px;
     transition: background 0.2s;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div > div:hover {
     background: var(--color-card-2);
 }
-.chat-pan>div.more>div:nth-child(2)>div>div.disable {
+
+.chat-pan > div.more > div:nth-child(2) > div > div.disable {
     background: var(--color-card);
     opacity: 0.7;
 }
+
 .chat-pan > div.more > div:nth-child(2) > div svg {
     color: var(--color-font-1);
     width: 20px;
     height: 20px;
     margin: 11px;
 }
+
 .chat-pan > div.loading {
     background: var(--color-card-1);
     margin: -10px 15px 15px 15px;
@@ -255,26 +291,32 @@ body.with-bar .chat-pan {
     padding: 0;
     height: 0;
 }
+
 .chat-pan > div.loading.show {
     height: unset;
     padding: 10px;
 }
+
 @-webkit-keyframes rotate {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
 }
+
 @keyframes rotate {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
 }
+
 .chat-pan > div.loading svg {
     animation: rotate 1.5s linear infinite;
     color: var(--color-font);
@@ -288,9 +330,11 @@ body.with-bar .chat-pan {
     padding: 20px;
     display: flex;
 }
+
 .sys-not-pan > div {
     pointer-events: all;
 }
+
 .sys-not-pan > div:first-child {
     background: var(--color-card-1);
     align-items: center;
@@ -298,12 +342,14 @@ body.with-bar .chat-pan {
     display: flex;
     padding: 10px 20px;
 }
+
 .sys-not-pan > div:first-child > svg {
     color: var(--color-font);
     margin-right: 20px;
     cursor: pointer;
     height: 1.1rem;
 }
+
 .sys-not-pan > div:first-child > span {
     font-size: 1rem;
 }
@@ -311,6 +357,7 @@ body.with-bar .chat-pan {
 .sys-not-list {
     margin-top: 10px;
 }
+
 .sys-not-list > div {
     background: var(--color-card-1);
     margin-bottom: 10px;
@@ -320,12 +367,14 @@ body.with-bar .chat-pan {
     align-items: center;
     padding: 10px;
 }
+
 .sys-not-list > div > div:first-child {
     display: flex;
     flex-direction: row;
     align-items: center;
     flex: 1;
 }
+
 .sys-not-list > div > div:first-child img {
     width: 50px;
     height: 50px;
@@ -333,6 +382,7 @@ body.with-bar .chat-pan {
     border: 2px solid var(--color-card-2);
     margin-right: 10px;
 }
+
 .sys-not-list > div > div:first-child div {
     display: flex;
     flex-direction: column;
@@ -340,23 +390,28 @@ body.with-bar .chat-pan {
     align-items: flex-start;
     text-align: left;
 }
+
 .sys-not-list > div > div:first-child span {
     color: var(--color-main);
     font-weight: bold;
 }
+
 .sys-not-list > div > div:first-child a {
     color: var(--color-font);
     font-size: 0.9rem;
 }
+
 .sys-not-list > div > div:first-child a:last-child {
     color: var(--color-font-2);
 }
+
 .sys-not-list > div > div:last-child button {
     margin-right: 10px;
     width: 90px;
     height: 35px;
     font-size: 0.9rem;
 }
+
 .sys-not-list > div > div:last-child button:first-child {
     background: var(--color-card-2);
     color: var(--color-font-1);
@@ -370,12 +425,14 @@ body.with-bar .chat-pan {
     width: 100%;
     height: 0;
 }
+
 .more-detail.show {
     padding-top: 20px;
     display: flex;
     height: 50px;
     width: 100%;
 }
+
 .more-detail > div {
     background: var(--color-card-1);
     border-radius: 7px;
@@ -384,16 +441,20 @@ body.with-bar .chat-pan {
     height: 50px;
     width: 50px;
 }
+
 .more-detail > div.space {
     background: transparent !important;
     flex: 1;
 }
+
 .more-detail > div:first-child {
     margin-left: 20px;
 }
+
 .more-detail > div:last-child {
     margin-right: 20px;
 }
+
 .more-detail > div > svg {
     color: var(--color-font-1);
     margin: 15px;
@@ -402,7 +463,7 @@ body.with-bar .chat-pan {
 }
 
 .msg-menu {
-	pointer-events: none;
+    pointer-events: none;
     position: absolute;
     overflow: hidden;
     height: calc(100% - var(--safe-area-bottom)) !important;
@@ -410,10 +471,12 @@ body.with-bar .chat-pan {
     width: 100%;
     z-index: 10;
 }
+
 body.with-bar .msg-menu {
     height: calc(100% + 40px);
     margin-top: -40px;
 }
+
 .msg-menu-bg {
     pointer-events: all;
     position: absolute;
@@ -432,18 +495,22 @@ body.with-bar .msg-menu {
     width: 100%;
     z-index: 9;
 }
+
 .merge-pan.show {
     pointer-events: all;
 }
+
 .merge-pan > div:first-child {
     background: var(--color-card-2);
     transition: background 0.5s;
     opacity: 0.7;
     flex: 1;
 }
+
 .merge-pan.show > div:first-child {
     opacity: 0.7;
 }
+
 .merge-pan > div:last-child {
     transition: width 0.4s;
     min-width: unset;
@@ -452,28 +519,33 @@ body.with-bar .msg-menu {
     flex-direction: column;
     display: flex;
 }
+
 .merge-pan > div:last-child > div:first-child {
     align-items: center;
     display: flex;
     padding: 20px;
 }
+
 .merge-pan > div:last-child > div:first-child span {
     white-space: nowrap;
     margin-left: 15px;
     font-size: 1rem;
     flex: 1;
 }
+
 .merge-pan > div:last-child > div:first-child svg {
     color: var(--color-font);
     cursor: pointer;
     height: 1.5rem;
 }
+
 .merge-pan > div:last-child > div:nth-child(2) {
     margin: 0 10px 10px 10px;
     flex: 1;
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
 .merge-pan .loading {
     transform: translateY(50%);
     flex-direction: column;
@@ -482,16 +554,19 @@ body.with-bar .msg-menu {
     height: 100%;
     width: 100%;
 }
+
 .merge-pan .loading > svg {
     animation: rotate 1.5s linear infinite;
     color: var(--color-main);
     width: 2rem;
     height: 2rem;
 }
+
 .merge-pan .loading > span {
     color: var(--color-main);
     margin-top: 10px;
 }
+
 .merge-pan .loading.show {
     display: flex;
 }
@@ -500,37 +575,46 @@ body.with-bar .msg-menu {
 .merge-pan-leave-active {
     animation: none 0.3s;
 }
+
 .merge-pan-enter-active > div:first-child {
     animation: merge-pan-bg-enter 0.3s ease-in-out;
 }
+
 .merge-pan-leave-active > div:first-child {
     animation: merge-pan-bg-enter 0.3s ease-in-out reverse;
 }
+
 .merge-pan-enter-active > div:last-child {
     animation: merge-pan-bar-enter 0.3s ease-in-out;
 }
+
 .merge-pan-leave-active > div:last-child {
     animation: merge-pan-bar-leave 0.4s ease-in-out;
 }
+
 @keyframes merge-pan-bg-enter {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 0.7;
     }
 }
+
 @keyframes merge-pan-bar-enter {
     from {
         width: 0;
     }
+
     to {
         width: 450px;
     }
 }
+
 @keyframes merge-pan-bar-leave {
-    from {
-    }
+    from {}
+
     to {
         width: 0;
     }
@@ -539,6 +623,7 @@ body.with-bar .msg-menu {
 .merge-node-add-enter-active {
     animation: merge-node-right-move 0.15s reverse;
 }
+
 .merge-node-add-leave-active {
     animation: merge-node-left-move 0.15s;
 }
@@ -546,6 +631,7 @@ body.with-bar .msg-menu {
 .merge-node-remove-enter-active {
     animation: merge-node-left-move 0.15s reverse;
 }
+
 .merge-node-remove-leave-active {
     animation: merge-node-right-move 0.15s;
 }
@@ -554,6 +640,7 @@ body.with-bar .msg-menu {
     from {
         transform: translateX(0px);
     }
+
     to {
         transform: translateX(-400px);
     }
@@ -563,6 +650,7 @@ body.with-bar .msg-menu {
     from {
         transform: translateX(0px);
     }
+
     to {
         transform: translateX(400px);
     }
@@ -571,18 +659,22 @@ body.with-bar .msg-menu {
 .merge-node-enter-active {
     animation: merge-node-enter 0.3s ease-in-out;
 }
+
 .merge-node-leave-active {
     animation: merge-node-enter 0.3s ease-in-out reverse;
 }
+
 @keyframes merge-node-enter {
     from {
         width: 0;
     }
+
     to {
         width: 400px;
     }
 }
 
+.msg-preview,
 .member-info {
     position: absolute;
     top: 0px;
@@ -592,13 +684,18 @@ body.with-bar .msg-menu {
     z-index: 10;
     pointer-events: none;
 }
+
 .member-info span,
 .member-info a {
     color: var(--color-font);
 }
+
+.msg-preview > div,
 .member-info > div {
     pointer-events: none;
 }
+
+.msg-preview > div,
 .member-info > div:first-child {
     transform: translate(-20px, calc(-100% - 0.8rem));
     box-shadow: 0 0 5px var(--color-shader);
@@ -606,40 +703,54 @@ body.with-bar .msg-menu {
     border: 1px solid var(--color-card-2);
     backdrop-filter: blur(15px);
     padding: 10px 20px 10px 10px;
-    width: fit-content;
     overflow: hidden;
     max-width: 55%;
-
+    width: fit-content;
 }
+
+.msg-preview > div > div {
+    min-width: max(200px, 30vw);
+}
+
+.msg-preview .message {
+    width: fit-content;
+}
+
 .member-info > div:first-child > div:nth-child(1) {
     display: flex;
 }
+
 .member-info > div:first-child > div:nth-child(1) > img {
     outline: 2px solid var(--color-main);
     border-radius: 7px;
     height: 60px;
     width: 60px;
 }
+
 .member-info > div:first-child > div:nth-child(1) > div {
     margin-left: 20px;
     overflow: hidden;
     flex: 1;
 }
+
 .member-info > div:first-child > div:nth-child(1) > div > span {
     color: var(--color-font-1);
     font-size: 0.9rem;
     white-space: nowrap;
 }
+
 .member-info > div:first-child > div:nth-child(1) > div > span[name='id'] {
     font-size: 0.8rem;
     display: block;
     opacity: 0.7
 }
+
 .member-info > div:first-child > div:nth-child(1) > div > div {
     margin-bottom: 5px;
     flex-wrap: wrap;
     display: flex;
 }
+
 .member-info > div:first-child > div:nth-child(1) > div > div > a {
     text-overflow: ellipsis;
     width: 100%;
@@ -650,20 +761,24 @@ body.with-bar .msg-menu {
     font-size: 1rem;
     display: block;
 }
+
 .member-info > div:first-child > div:nth-child(1) > div > div > div {
     margin-top: 4px;
 }
+
 /* 群成员下边区域 */
 .member-info > div:first-child > div:nth-child(2).member {
     display: flex;
     margin-top: 10px;
     align-items: center;
 }
+
 .member-info > div:first-child > div:nth-child(2).member > :nth-child(1) {
     width: 60px;
     display: block;
     font-size: 13px;
 }
+
 .member-info > div:first-child > div:nth-child(2).member > :nth-child(2) {
     margin-left: 20px;
 }
@@ -674,11 +789,13 @@ body.with-bar .msg-menu {
     height: 100%;
     width: 100%;
 }
+
 .card-info-pan-bg {
     height: 100%;
     opacity: 0.7;
     width: 100%;
 }
+
 .chat-info {
     overflow: hidden;
     margin: 50vh 0 0 50%;
@@ -692,33 +809,40 @@ body.with-bar .msg-menu {
     width: 50%;
     z-index: 1;
 }
+
 .chat-info header {
     letter-spacing: 0;
 }
+
 .chat-info > header {
     margin-bottom: 5px;
     display: flex;
 }
+
 .chat-info > header > span {
     white-space: nowrap;
     font-size: 1rem;
     flex: 1;
 }
+
 .chat-info > header > svg {
     color: var(--color-font);
     cursor: pointer;
     height: 1.5rem;
 }
+
 .chat-info-base {
     background: var(--color-card-1);
     border-radius: 7px;
     margin: 0 10px;
     padding: 20px;
 }
+
 .chat-info-base.user {
     background: transparent;
     margin: 0;
 }
+
 .chat-info-base > div:first-child {
     background: var(--color-card-2);
     border-radius: 7px 7px 0 0;
@@ -729,10 +853,12 @@ body.with-bar .msg-menu {
     display: flex;
     padding: 10px;
 }
+
 .chat-info-base.user > div:first-child {
     background: var(--color-card-1);
     border-radius: 7px;
 }
+
 .chat-info-base > div:first-child > img {
     border: 2px solid var(--color-card-1);
     outline: 2px solid var(--color-main);
@@ -740,20 +866,24 @@ body.with-bar .msg-menu {
     height: 40px;
     width: 40px;
 }
+
 .chat-info-base > div:first-child > div:nth-child(2) {
     flex-direction: column;
     margin-left: 20px;
     display: flex;
     flex: 1;
 }
+
 .chat-info-base > div:first-child > div:nth-child(2) > a {
     color: var(--color-font);
     font-weight: bold;
     font-size: 1rem;
 }
+
 .chat-info-base > div:first-child > div:nth-child(2) > span {
     color: var(--color-font-1);
 }
+
 .chat-info-base > div:first-child > div:nth-child(3) {
     background: var(--color-card-2);
     border-radius: 100%;
@@ -761,24 +891,29 @@ body.with-bar .msg-menu {
     height: 20px;
     width: 20px;
 }
+
 .chat-info-base > div:first-child > div:nth-child(3) > svg {
     color: var(--color-font);
 }
+
 .chat-info-base > div:last-child {
     padding: 0 10px;
 }
+
 .chat-info-base > div:last-child > header {
     color: var(--color-main);
     padding-bottom: 5px;
     font-size: 0.9rem;
     margin-top: 10px;
 }
+
 .chat-info-base > div:last-child > div.tags {
     align-items: center;
     margin-top: 10px;
     flex-wrap: wrap;
     display: flex;
 }
+
 .chat-info-base > div:last-child > div.tags > div {
     background: var(--color-main);
     color: var(--color-font-r);
@@ -787,26 +922,32 @@ body.with-bar .msg-menu {
     padding: 2px 10px;
     font-size: 0.8rem;
 }
+
 .chat-info-base > div:last-child > div.admin {
     align-items: center;
     flex-wrap: wrap;
     display: flex;
 }
+
 .chat-info-base > div:last-child > div.admin > img {
     border: 2px solid var(--color-card-2);
     border-radius: 100%;
     margin: 0 3px 3px 0;
     height: 35px;
 }
+
 .chat-info-base > div:last-child > div.outher > span {
     display: block;
 }
+
 .chat-info-base > div:last-child > div.outher > span > span {
     color: var(--color-font-1);
 }
+
 .chat-info-tab-member {
     padding: 0 20px;
 }
+
 .chat-info-tab-member > div {
     transition: background 0.3s;
     align-items: center;
@@ -815,21 +956,25 @@ body.with-bar .msg-menu {
     display: flex;
     padding: 10px;
 }
+
 .chat-info-tab-member > div:hover {
     background: var(--color-card-1);
 }
+
 .chat-info-tab-member > div > img {
     border-radius: 100%;
     margin-right: 10px;
     height: 30px;
     width: 30px;
 }
+
 .chat-info-tab-member > div > div {
     overflow: hidden;
     align-items: center;
     display: flex;
     flex: 1;
 }
+
 .chat-info-tab-member > div > div > a {
     color: var(--color-font);
     white-space: nowrap;
@@ -837,20 +982,24 @@ body.with-bar .msg-menu {
     max-width: 80%;
     overflow: hidden;
 }
+
 .chat-info-tab-member > div > div > svg {
     color: var(--color-main);
     margin-left: 5px;
     height: 0.8rem;
 }
+
 .chat-info-tab-member > div > span {
     color: var(--color-font-2);
     transition: all .2s;
     opacity: 1;
 }
+
 .chat-info-tab-member > div.edit:hover > span {
     transform: translateX(-10px);
     opacity: 0;
 }
+
 .chat-info-tab-member > div > svg {
     color: var(--color-font-2);
     transition: all .2s;
@@ -859,9 +1008,11 @@ body.with-bar .msg-menu {
     width: 15px;
     opacity: 0;
 }
+
 .chat-info-tab-member > div > svg:hover {
     color: var(--color-main);
 }
+
 .chat-info-tab-member > div.edit:hover > svg {
     margin-right: 5px;
     display: block;
@@ -875,16 +1026,20 @@ body.with-bar .msg-menu {
     display: flex;
     flex-direction: column;
 }
+
 .chat-info-tab > div:first-child {
     min-height: 30px;
 }
+
 .chat-info-tab > div:first-child:hover {
     box-shadow: unset;
 }
+
 .chat-info-tab .tab-bar {
     --bc-tab-margin: 10px;
     padding-left: 0;
 }
+
 .chat-info-tab .tab-body {
     overflow-y: scroll;
 }
@@ -904,9 +1059,11 @@ body.with-bar .msg-menu {
     bottom: 0;
     margin-top: 50px;
 }
+
 .user-config.show {
     transform: translateY(0);
 }
+
 .user-config:hover {
     box-shadow: 0 -3px 3px var(--color-shader) !important;
 }
@@ -919,44 +1076,53 @@ body.with-bar .msg-menu {
     margin: -15px;
     display: flex;
 }
+
 .user-config > div:first-child > img {
     border-radius: 7px;
     width: 35px;
     border: 1px solid var(--color-card-2);
     outline: 2px solid var(--color-main);
 }
+
 .user-config > div:first-child > svg {
     cursor: pointer;
     width: 17px;
     height: 17px;
 }
+
 .user-config > div:first-child > div {
     flex-direction: column;
     margin-left: 10px;
     display: flex;
     flex: 1;
 }
+
 .user-config > div:first-child > div > a {
     font-size: 0.9rem;
 }
+
 .user-config > div:first-child > div > span {
     color: var(--color-font-2);
     font-size: 0.8rem;
 }
+
 .user-config > div:last-child {
     flex: 1;
     overflow-y: scroll;
     padding: 0 15px 0 20px;
     margin-top: 25px;
 }
+
 .user-config > div:last-child > div:hover {
     background: var(--color-card-1);
 }
+
 .user-config > div:last-child > header {
     font-weight: normal;
     font-size: 0.9rem;
     padding: 10px 0 0 0;
 }
+
 .user-config > div:last-child > div:hover input {
     background: var(--color-card-2);
     transition: all 0.3s;
@@ -970,17 +1136,21 @@ body.with-bar .msg-menu {
 .bulletins {
     padding: 0 20px;
 }
+
 .bulletins > div {
     transition: background 0.3s;
     border-radius: 7px;
     padding: 10px 20px;
 }
+
 .bulletins > div:hover {
     background: var(--color-card-1);
 }
+
 .bulletins > div.base {
     cursor: pointer;
 }
+
 .bulletins > div.base > span {
     background: var(--color-card-1);
     margin-top: 10px;
@@ -990,36 +1160,43 @@ body.with-bar .msg-menu {
     display: block;
     padding: 5px;
 }
+
 .bulletins > div.base > header {
     align-items: center;
     display: flex;
 }
+
 .bulletins > div.base > header > svg {
     color: var(--color-main);
     margin-right: 10px;
     margin-top: 2px;
     height: 1.1rem;
 }
+
 .bulletins > div.base > header > span {
     color: var(--color-main);
     font-weight: bold;
     font-size: 1rem;
 }
+
 .bulletins > div.base > header > span:last-child {
     color: var(--color-font-2);
     font-size: 0.8rem;
     font-weight: normal;
 }
+
 .bulletins > div.base > div.body {
     text-overflow: ellipsis;
     overflow: hidden;
     max-height: 6rem;
     display: flex;
 }
+
 .bulletins > div.base > div.body.all {
     max-height: unset;
     flex-flow: column;
 }
+
 .bulletins > div.base > div.body > .img {
     height: 6rem;
     width: 6rem;
@@ -1027,6 +1204,7 @@ body.with-bar .msg-menu {
     object-position: center;
     border-radius: 7px;
 }
+
 .bulletins > div.base > div.body > .img.all {
     margin-top: 1rem;
     width: unset;
@@ -1036,6 +1214,7 @@ body.with-bar .msg-menu {
 .bulletins > div.base > div.body > span {
     white-space: pre-line;
 }
+
 .bulletins > div.base > div.body > span > a {
     color: var(--color-main) !important;
     font-weight: bold;
@@ -1043,12 +1222,14 @@ body.with-bar .msg-menu {
     padding: 0 5px;
     opacity: 0.8;
 }
+
 .bulletins > div.base > div.body > span > a:before {
     text-align: center;
     content: '🔗';
     color: transparent;
     text-shadow: 0 0 0 var(--color-font-1);
 }
+
 .bulletins > div.base > div.info {
     background: var(--color-card-1);
     transition: background 0.3s;
@@ -1058,23 +1239,28 @@ body.with-bar .msg-menu {
     margin-top: 10px;
     display: flex;
 }
+
 .bulletins > div.base:hover > div.info {
     background: var(--color-card-2);
 }
+
 .bulletins > div.base > div.info > img {
     outline: 2px solid var(--color-main);
     border: 2px solid var(--color-card);
     border-radius: 100%;
     width: 20px;
 }
+
 .bulletins > div.base > div.info > a {
     color: var(--color-main);
     margin-left: 10px;
     font-size: 0.9rem;
 }
+
 .bulletins > div.base > div.info > div {
     flex: 1;
 }
+
 .bulletins > div.base > div.info > span {
     color: var(--color-font-2);
     font-size: 0.8rem;
@@ -1083,6 +1269,7 @@ body.with-bar .msg-menu {
 .group-files {
     padding: 0 10px;
 }
+
 .group-files > div > div {
     transition: background 0.3s;
     align-items: center;
@@ -1092,27 +1279,34 @@ body.with-bar .msg-menu {
     display: flex;
     margin: 5px;
 }
+
 .group-files > div > div.folder {
     cursor: pointer;
 }
+
 .group-files > div > div.folder.open {
     background: var(--color-card-1);
 }
+
 .group-files > div > div:hover {
     background: var(--color-card-1);
 }
+
 .group-files > div > div > svg {
     color: var(--color-font);
     margin: 0 15px 0 10px;
     height: 1.2rem;
 }
+
 .group-files > div > div > div.main {
     margin-right: 20px;
     flex: 1;
 }
+
 .group-files > div > div > div.main span {
     overflow-wrap: anywhere;
 }
+
 .group-files > div > div > div.download {
     background: var(--color-card-2);
     border-radius: 100%;
@@ -1120,23 +1314,28 @@ body.with-bar .msg-menu {
     height: 1.9rem;
     width: 1.9rem;
 }
+
 .group-files > div > div > div.download > svg {
     color: var(--color-font);
     height: 0.8rem;
     margin: 10px;
 }
+
 .group-files > div > div > div > div > span {
     color: var(--color-font-1);
     font-size: 0.8rem;
 }
+
 .group-files > div > div > div > div > span:first-child {
     color: var(--color-main);
 }
+
 .group-files > div > div > div > div > span::after {
     color: var(--color-font-1);
     content: '\2022';
     margin-left: 5px;
 }
+
 .group-files > div > div > div > div > span:last-child::after {
     content: '';
 }
@@ -1144,9 +1343,11 @@ body.with-bar .msg-menu {
 .info-pan-set {
     padding: 0 20px;
 }
+
 .info-pan-set > div:hover {
     background: var(--color-card-1) !important;
 }
+
 .info-pan-set > div > label.ss-switch {
     --switch-dot-border: 5px;
     --switch-dot-margin: 8px;
@@ -1154,12 +1355,15 @@ body.with-bar .msg-menu {
     min-width: 45px;
     margin: 5px 0;
 }
+
 .info-pan-set > div > label.ss-switch > div {
     background: var(--color-card-2);
 }
+
 .info-pan-set > div > label.ss-switch > div > div {
     margin-top: 3px;
 }
+
 .info-pan-set > div > label.ss-switch input:checked ~ div {
     background: var(--color-main);
 }
@@ -1168,6 +1372,7 @@ body.with-bar .msg-menu {
     margin-top: 10px;
     width: 100%;
 }
+
 /* .sub_file > div > div:hover {
     background: var(--color-card-2);
 } */
@@ -1180,9 +1385,11 @@ body.with-bar .msg-menu {
     padding: calc(5px / 2);
     margin: 0 !important;
 }
+
 .download-bar > circle:first-child {
     stroke: var(--color-card-2);
 }
+
 .download-bar > circle:last-child {
     stroke: var(--color-main);
 }
@@ -1195,12 +1402,14 @@ body.with-bar .msg-menu {
     left: 0;
     top: 0;
 }
+
 .img-sender > div.bg {
     background: var(--color-card-2);
     height: 100%;
     opacity: 0.7;
     width: 100%;
 }
+
 .img-sender > div.card {
     margin: calc(50vh - 75px) 0 0 50%;
     transform: translate(-50%, -50%);
@@ -1211,18 +1420,22 @@ body.with-bar .msg-menu {
     width: 50%;
     z-index: 1;
 }
+
 .img-sender > div.card > div.hander {
     align-items: center;
     display: flex;
 }
+
 .img-sender > div.card > div.hander > span {
     font-weight: bold;
     font-size: 1rem;
     flex: 1;
 }
+
 .img-sender > div.card > div.hander > button {
     width: 100px;
 }
+
 .img-sender > div.card > div.imgs {
     margin-bottom: 20px;
     overflow-y: scroll;
@@ -1231,9 +1444,11 @@ body.with-bar .msg-menu {
     margin-top: 10px;
     height: 100%;
 }
+
 .img-sender > div.card > div.imgs::-webkit-scrollbar {
     display: none;
 }
+
 .img-sender > div.card > div.imgs > div {
     border: 2px solid var(--color-card-2);
     border-radius: 7px;
@@ -1241,6 +1456,7 @@ body.with-bar .msg-menu {
     margin-top: 10px;
     padding: 10px;
 }
+
 .img-sender > div.card > div.imgs > div > img {
     transform: translateX(-50%);
     margin-bottom: 9px;
@@ -1250,6 +1466,7 @@ body.with-bar .msg-menu {
     max-width: 100%;
     margin-top: 5px;
 }
+
 .img-sender > div.card > div.imgs > div > div {
     margin-bottom: calc(-20px - 1rem);
     background: var(--color-card-2);
@@ -1267,13 +1484,16 @@ body.with-bar .msg-menu {
     float: right;
     z-index: 1;
 }
+
 .img-sender > div.card > div.imgs > div > div > svg {
     color: var(--color-font);
     height: 1rem;
 }
+
 .img-sender > div.card > div.sender {
     display: flex;
 }
+
 .img-sender > div.card > div.sender > input {
     background: var(--color-card-1);
     width: calc(100% - 20px);
@@ -1283,6 +1503,7 @@ body.with-bar .msg-menu {
     border: 0;
     flex: 1;
 }
+
 .img-sender > div.card > div.sender > svg {
     background: var(--color-card-1);
     color: var(--color-font-1);
@@ -1303,6 +1524,7 @@ body.with-bar .msg-menu {
     width: 300px;
     padding: 0;
 }
+
 .fase-pan-tab > li > svg {
     color: var(--color-font);
     margin-top: 10px;
@@ -1315,22 +1537,27 @@ body.with-bar .msg-menu {
     --bc-tab-margin: 5px;
     width: 100%;
 }
+
 .face-pan div.tab-main {
     margin-top: 30px !important;
 }
+
 .face-pan div.tab-main > div {
     background: transparent;
     min-height: 40px;
 }
+
 .face-pan div.tab-main > div:hover {
     box-shadow: unset;
 }
+
 .face-pan div.title {
     padding: 0 10px;
     display: flex;
     align-items: center;
     margin: 20px 0 5px 0;
 }
+
 .face-pan div.title > div {
     margin-right: 10px;
     background: var(--color-main);
@@ -1338,11 +1565,13 @@ body.with-bar .msg-menu {
     height: 1rem;
     border-radius: 5px;
 }
+
 .face-pan div.title > span {
     flex: 1;
     font-size: 0.85rem;
     color: var(--color-font-2);
 }
+
 .face-pan div.title > svg {
     cursor: pointer;
 }
@@ -1360,6 +1589,7 @@ body.with-bar .msg-menu {
     display: flex;
     align-content: flex-start;
 }
+
 .base-face > div {
     background: var(--color-card-2);
     border-radius: 100%;
@@ -1368,12 +1598,14 @@ body.with-bar .msg-menu {
     width: 40px;
     margin: 5px;
 }
+
 .base-face > div > .emoji-face {
     display: block;
     margin: 10px;
     height: 20px;
     width: 20px;
 }
+
 .face-stickers {
     height: calc(300px - 145px);
     justify-content: center;
@@ -1383,6 +1615,7 @@ body.with-bar .msg-menu {
     flex-wrap: wrap;
     display: flex;
 }
+
 .face-stickers > img {
     border: 2px var(--color-card-2) solid;
     background: var(--color-card-2);
@@ -1392,6 +1625,7 @@ body.with-bar .msg-menu {
     width: 50px;
     margin: 5px;
 }
+
 .face-stickers > div {
     background: var(--color-card-2);
     padding: 20px !important;
@@ -1402,10 +1636,12 @@ body.with-bar .msg-menu {
     height: 60px;
     width: 80px;
 }
+
 .face-stickers > div > span {
     color: var(--color-font);
     margin-top: 10px;
 }
+
 .face-stickers > div > svg {
     color: var(--color-main);
     width: 25px;
@@ -1424,36 +1660,43 @@ body.with-bar .msg-menu {
     display: flex;
     padding: 0;
 }
+
 .jin-pan > div:first-child {
     align-items: center;
     display: flex;
     padding: 20px;
 }
+
 .jin-pan > div:first-child > svg {
     color: var(--color-font);
     cursor: pointer;
     height: 1.5rem;
 }
+
 .jin-pan > div:first-child > span {
     white-space: nowrap;
     margin-left: 15px;
     font-size: 1rem;
     flex: 1;
 }
+
 .jin-pan-body {
     padding: 0 13px 0 20px;
     margin-bottom: 20px;
     overflow-y: scroll;
 }
+
 .jin-pan-body > div {
     background: var(--color-card-2);
     border-radius: 7px;
     padding: 15px 20px;
     margin: 10px 0;
 }
+
 .jin-pan-body > div:first-child {
     margin-top: 0 !important;
 }
+
 .jin-pan-body > div > span {
     color: var(--color-font-2);
     text-align: right;
@@ -1461,10 +1704,12 @@ body.with-bar .msg-menu {
     display: block;
     width: 100%;
 }
+
 .jin-pan-body > div > div:first-child {
     align-items: center;
     display: flex;
 }
+
 .jin-pan-body > div > div:first-child > img {
     border: 1px solid var(--color-card-2);
     outline: 2px solid var(--color-main);
@@ -1472,24 +1717,29 @@ body.with-bar .msg-menu {
     margin-right: 10px;
     width: 25px;
 }
+
 .jin-pan-body > div > div:first-child > div {
     flex-direction: column;
     display: flex;
 }
+
 .jin-pan-body > div > div:first-child a {
     color: var(--color-font);
     font-size: 0.9rem;
 }
+
 .jin-pan-body > div > div:first-child span {
     color: var(--color-font-2);
     border-radius: 2rem;
     font-size: 0.8rem;
 }
+
 .jin-pan-body > div > div:first-child > span {
     font-size: 0.8rem;
     flex: 1;
     text-align: right;
 }
+
 .jin-pan-body > div > div.context {
     padding: 15px 15px 5px 15px;
     align-items: flex-end;
@@ -1497,19 +1747,23 @@ body.with-bar .msg-menu {
     flex-wrap: wrap;
     display: flex;
 }
+
 .jin-pan-body > div > div.context > img {
     border-radius: 7px;
     max-width: 60%;
 }
+
 .jin-pan-body > div > div.context > img.face {
     margin: -5px 5px 0 5px;
     height: 1.4rem;
 }
+
 .jin-pan-load {
     background: transparent !important;
     justify-content: center;
     display: flex;
 }
+
 .jin-pan-load > svg {
     color: var(--color-font);
     width: 1rem;
@@ -1527,17 +1781,20 @@ body.with-bar .msg-menu {
     display: flex;
     height: 0;
 }
+
 .search-tag.show {
     margin: 10px 20px 10px 20px;
     margin-top: 20px;
     padding: 10px;
     height: auto;
 }
+
 .search-tag svg {
     color: var(--color-font-2);
     margin-right: 10px;
     height: 1rem;
 }
+
 .search-tag > span {
     max-width: calc(100% - 2rem);
     text-overflow: ellipsis;
@@ -1552,6 +1809,7 @@ body.with-bar .msg-menu {
     margin: 0 20px 10px 20px;
     padding: 0;
 }
+
 .search-tag-enter-to,
 .search-tag-leave-from {
     margin: 0 20px 10px 20px;
@@ -1559,6 +1817,7 @@ body.with-bar .msg-menu {
     padding: 15px 10px;
     height: auto;
 }
+
 .select-tag {
     background: var(--color-card-1);
     justify-content: space-evenly;
@@ -1573,30 +1832,36 @@ body.with-bar .msg-menu {
     padding: 15px 10px;
     height: auto;
 }
+
 .select-tag-enter-active {
-  animation: select-tag-appear 0.3s;
+    animation: select-tag-appear 0.3s;
 }
+
 .select-tag-leave-active {
-  animation: select-tag-appear 0.3s reverse;
+    animation: select-tag-appear 0.3s reverse;
 }
+
 @keyframes select-tag-appear {
-  from {
-    height: 0;
-    margin: 0 20px 10px 20px;
-    padding: 0;
-  }
-  to {
-    margin: 0 20px 10px 20px;
-    margin-top: 20px;
-    padding: 15px 10px;
-    height: auto;
-  }
+    from {
+        height: 0;
+        margin: 0 20px 10px 20px;
+        padding: 0;
+    }
+
+    to {
+        margin: 0 20px 10px 20px;
+        margin-top: 20px;
+        padding: 15px 10px;
+        height: auto;
+    }
 }
+
 .select-tag > div {
     flex-direction: column;
     align-items: center;
     display: flex;
 }
+
 .select-tag > div > svg,
 .select-tag > div > span:first-child {
     background: var(--color-card-2);
@@ -1607,6 +1872,7 @@ body.with-bar .msg-menu {
     width: 0.8rem;
     padding: 15px;
 }
+
 .select-tag > div > span:first-child {
     border: 1px solid var(--color-main);
     text-align: center;
@@ -1615,6 +1881,7 @@ body.with-bar .msg-menu {
     font-size: calc(0.8rem + 3px);
     padding: 12px 15px 18px 15px;
 }
+
 .select-tag > div > span {
     color: var(--color-font-2);
     font-size: 0.75rem;
@@ -1632,17 +1899,20 @@ body.with-bar .msg-menu {
     display: flex;
     height: 0;
 }
+
 .reply-tag.show {
     margin: 0 20px -10px 20px;
     margin-top: 20px;
     padding: 10px;
     height: auto;
 }
+
 .reply-tag svg {
     color: var(--color-font-2);
     margin-right: 10px;
     height: 1rem;
 }
+
 .reply-tag > span {
     max-width: calc(100% - 2rem);
     text-overflow: ellipsis;
@@ -1650,6 +1920,7 @@ body.with-bar .msg-menu {
     overflow: hidden;
     flex: 1;
 }
+
 .reply-tag > div {
     height: calc(1rem + 40px);
     justify-content: center;
@@ -1658,6 +1929,7 @@ body.with-bar .msg-menu {
     display: flex;
     width: 2rem;
 }
+
 .reply-tag > div > svg {
     margin-right: 0 !important;
     color: var(--color-font-1);
@@ -1675,11 +1947,13 @@ body.with-bar .msg-menu {
     margin: 0;
     height: 0;
 }
+
 .at-tag.show {
     margin: 20px 20px -5px 20px;
     transform: scaleY(1);
     height: unset;
 }
+
 .at-tag > div {
     align-items: center;
     border-radius: 7px;
@@ -1687,20 +1961,25 @@ body.with-bar .msg-menu {
     padding: 10px;
     display: flex;
 }
+
 .at-tag > div:hover {
     background: var(--color-card-2);
 }
+
 .at-tag > div > img {
     border-radius: 100%;
     margin-right: 10px;
     height: 1rem;
 }
+
 .at-tag > div > span {
     flex: 1;
 }
+
 .at-tag > div > span.emp {
     text-align: center;
 }
+
 .at-tag > div > a {
     color: var(--color-font-2);
     font-size: 0.8rem;
@@ -1716,6 +1995,7 @@ body.with-bar .msg-menu {
     min-width: 360px;
     max-width: 60vh;
 }
+
 @media (max-width: 500px) {
     .forward-pan {
         width: 100%;
@@ -1723,9 +2003,11 @@ body.with-bar .msg-menu {
         min-width: unset;
     }
 }
+
 .forward-pan > div:nth-child(1) {
     display: flex;
 }
+
 .forward-pan > div:nth-child(1) > input {
     background: var(--color-card-1);
     border-radius: 7px;
@@ -1736,6 +2018,7 @@ body.with-bar .msg-menu {
     width: auto;
     flex: 1;
 }
+
 .forward-pan > div:nth-child(1) > button {
     min-width: 4rem;
     width: 4rem;
@@ -1746,9 +2029,11 @@ body.with-bar .msg-menu {
     border: 0;
     transition: 0.3s;
 }
+
 .forward-pan > div:nth-child(1) > button:hover {
     background: var(--color-card-2);
 }
+
 .forward-pan > div:nth-child(2) {
     flex-direction: column;
     overflow-y: scroll;
@@ -1768,6 +2053,7 @@ div.tiny-session-body {
     height: 40px;
     width: calc(100% - 20px);
 }
+
 div.tiny-session-body > div:nth-child(1) {
     height: 1.8rem;
     width: 5px;
@@ -1778,15 +2064,19 @@ div.tiny-session-body > div:nth-child(1) {
     transition: all 0.3s;
     transform: scaleY(0);
 }
+
 div.tiny-session-body.selected {
     background: linear-gradient(to right, var(--color-card-1), 60%, #00000000);
 }
+
 div.tiny-session-body.selected > div:nth-child(1) {
     transform: scaleY(1);
 }
+
 div.tiny-session-body:hover {
     background: var(--color-card-2);
 }
+
 div.tiny-session-body > img {
     border-radius: 7px;
     margin-right: 10px;
@@ -1794,6 +2084,7 @@ div.tiny-session-body > img {
     width: 2.5rem;
     object-fit: cover;
 }
+
 div.tiny-session-body > svg {
     border-radius: 7px;
     margin-right: 10px;
@@ -1802,9 +2093,11 @@ div.tiny-session-body > svg {
     padding: 0.625rem;
     background-color: var(--color);
 }
+
 div.tiny-session-body > div {
     overflow: hidden;
 }
+
 div.tiny-session-body > div p {
     color: var(--color-font);
     white-space: nowrap;
@@ -1813,16 +2106,19 @@ div.tiny-session-body > div p {
     display: block;
     margin: 0;
 }
+
 div.tiny-session-body > div:nth-child(3) {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
 }
+
 div.tiny-session-body > div:nth-child(3) > p {
     min-height: 1rem;
     height: 1rem;
 }
+
 div.tiny-session-body > div:nth-child(3) > div {
     display: flex;
     align-items: center;
@@ -1831,6 +2127,7 @@ div.tiny-session-body > div:nth-child(3) > div {
     overflow: hidden;
     white-space: nowrap;
 }
+
 div.tiny-session-body > div:nth-child(3) > div > span {
     color: var(--color-font-1);
     font-size: 0.8rem;
@@ -1839,10 +2136,12 @@ div.tiny-session-body > div:nth-child(3) > div > span {
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
 div.tiny-session-body > div:nth-child(3) > div {
     flex: 1;
     display: flex;
 }
+
 div.tiny-session-body > div:nth-child(3) > div > svg {
     margin-right: 5px;
     height: 1rem;
@@ -1863,9 +2162,11 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
     transition: all 0.3s !important;
     margin-left: -12px;
 }
+
 .respond:hover {
     background: var(--color-bg) !important;
 }
+
 .respond > svg {
     color: var(--color-font-2);
     margin-right: 10px;
@@ -1874,6 +2175,7 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
     padding: 2.5px;
     border-radius: 7px;
 }
+
 .respond > span,
 .respond > img {
     transition: background 0.3s;
@@ -1883,6 +2185,7 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
     height: 25px;
     width: 25px;
 }
+
 .respond > span:hover,
 .respond > svg:hover,
 .respond > img:hover {
@@ -1900,23 +2203,28 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
     margin-top: -140px !important;
     margin-bottom: 20px !important;
 }
+
 .respond.open > svg {
     display: none;
 }
 
 @media (max-width: 700px) {
+
     /* 消息面板 */
     .chat-pan {
         height: calc(100% - 75px - var(--safe-area-bottom));
         left: 80px !important;
     }
+
     body.with-bar .chat-pan {
         height: calc(100% - 115px);
         top: 40px;
     }
+
     .chat-pan.open {
         transform: translateX(220px);
     }
+
     /* 群信息面板 */
     .chat-info {
         width: calc(100% - 80px);
@@ -1925,21 +2233,26 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
         margin: 20px;
         bottom: 75px;
     }
+
     .chat-info-pan {
         height: calc(100% + 75px);
     }
+
     /* AT 信息悬浮面板 */
     .member-info > div:first-child {
         max-width: 55%;
     }
+
     /* 合并转发消息面板 */
     .merge-pan.show > div:last-child {
         width: 90%;
     }
+
     /* 发送图片面板 */
     .img-sender > div.card {
         width: calc(100% - 80px);
     }
+
     /* 转发面板 */
     .forward-pan > div.card {
         width: calc(100% - 120px);
@@ -1947,6 +2260,7 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
 }
 
 @media (max-width: 500px) {
+
     /* 群信息面板 */
     .chat-info {
         height: calc(100% - 115px);
@@ -1956,37 +2270,46 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
         min-width: unset;
         margin: 0;
     }
+
     .chat-info:hover {
         box-shadow: none;
     }
+
     /* 表情面板 */
     .face-pan {
         width: calc(100% - 40px);
         height: 330px;
     }
+
     .base-face,
     .face-stickers {
         height: calc(330px - 120px);
     }
+
     .base-face > div {
         height: 50px;
         width: 50px;
     }
+
     .base-face > div > img {
         height: 30px;
         width: 30px;
     }
+
     .face-stickers > img {
         height: 60px;
         width: 60px;
     }
+
     /* 合并转发消息面板 */
     .merge-pan.show > div:last-child {
         width: 100%;
     }
+
     .merge-pan.show > div:last-child:hover {
         box-shadow: none;
     }
+
     /* 图片发送器 */
     .img-sender > div.card {
         height: calc(100% - 40px);
@@ -1996,6 +2319,7 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
         box-shadow: none;
         margin: 0;
     }
+
     /* 转发面板 */
     .forward-pan > div.card {
         height: calc(100% - 40px);
@@ -2005,13 +2329,16 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
         box-shadow: none;
         margin: 0;
     }
+
     /* 聊天面板（二级侧栏） */
     .chat-pan {
         left: 0 !important;
     }
+
     .chat-pan.open {
         transform: translateX(100%);
     }
+
     .chat-pan > div.info > svg {
         display: block;
     }

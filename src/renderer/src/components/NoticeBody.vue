@@ -16,7 +16,7 @@
             <!-- 撤回 -->
             <template v-if="data instanceof RecallNotice">
                 <template v-if="data.selfRevoke">
-                    <a v-user="data.user" />
+                    <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                     <span>
                         {{ $t('撤回了一条消息') }}
                         <template v-if="data.suffix">
@@ -25,60 +25,78 @@
                     </span>
                 </template>
                 <template v-else>
-                    <a v-user="data.operator" />
+                    <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
                     <span>{{ $t('撤回了') }}</span>
-                    <a v-user="data.user" />
+                    <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                     <span>{{ $t('的消息') }}</span>
                 </template>
             </template>
             <!-- 禁言 -->
             <template v-else-if="data instanceof BanNotice">
-                <a v-user="data.operator" />
+                <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
                 <span>{{ $t('禁言了') }}</span>
-                <span v-if="data.tome">{{ $t('你') }}</span>
-                <a v-else v-user="data.user" />
+                <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                 <span>{{ data.fTime }}</span>
             </template>
             <!-- 解除禁言 -->
             <template v-else-if="data instanceof BanLiftNotice">
-                <a v-user="data.operator" />
+                <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
                 <span>{{ $t('解除了') }}</span>
-                <span v-if="data.tome">{{ $t('你') }}</span>
-                <a v-else v-user="data.user" />
+                <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                 <span>{{ $t('的禁言') }}</span>
             </template>
             <!-- 戳一戳 -->
             <template v-else-if="data instanceof PokeNotice">
-                <a v-user="data.user" />
-                <img :src="data.ico">
+                <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
+                <img :src="data.ico" :alt="data.action">
                 <span>{{ data.action }}</span>
-                <a v-user="data.target" />
+                <NoticeUser :user="data.target" :user-info-pan="userInfoPan" />
                 <span>{{ data.suffix }}</span>
                 <div class="space" />
             </template>
+            <!-- 加群通知 -->
             <template v-else-if="data instanceof JoinNotice">
                 <template v-if="data.operator">
-                    <a v-user="data.operator" />
+                    <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
                     <span>{{ $t('通过了') }}</span>
                 </template>
                 <template v-if="data.invitor">
-                    <a v-user="data.invitor" />
+                    <NoticeUser :user="data.invitor" :user-info-pan="userInfoPan" />
                     <span>{{ $t('邀请') }}</span>
                 </template>
-                <a v-user="data.user" />
+                <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                 <span>{{ $t('加入了群聊') }}</span>
             </template>
+            <!-- 退群通知 -->
             <template v-else-if="data instanceof LeaveNotice">
                 <template v-if="data.kick">
-                    <a v-user="data.operator" />
+                    <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
                     <span>{{ $t('将') }}</span>
-                    <a v-user="data.user" />
+                    <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                     <span>{{ $t('移出群聊') }}</span>
                 </template>
                 <template v-else>
-                    <a v-user="data.user" />
+                    <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                     <span>{{ $t('离开了群聊') }}</span>
                 </template>
+            </template>
+            <!-- 表情回应 -->
+            <template v-else-if="data instanceof ResponseNotice">
+                <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
+                <span>{{ $t('回应了') }}</span>
+                <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
+                <span>{{ $t('的') }}</span>
+                <a v-long-hover
+                    @v-long-hover="msgPrevPan?.open(
+                        [data.msg],
+                        ($event.detail as MenuEventData).x,
+                        ($event.detail as MenuEventData).y,
+                    )"
+                    @v-long-hover-end="msgPrevPan?.close()">
+                    {{ $t('消息') }}
+                </a>
+                <span>:</span>
+                <EmojiFace :emoji="Emoji.get(data.emojiId)" />
             </template>
             <!-- #endregion -->
 
@@ -101,75 +119,39 @@
 </template>
 
 <script setup lang="ts">
+import { MenuEventData } from '@renderer/function/elements/information';
+import Emoji from '@renderer/function/model/emoji';
 import {
-    Notice,
+    BanLiftNotice,
     BanNotice,
     DeleteNotice,
-    BanLiftNotice,
+    InfoNotice,
+    JoinNotice,
+    LeaveNotice,
+    Notice,
     PokeNotice,
     RecallNotice,
-    TimeNotice,
-    LeaveNotice,
-    JoinNotice,
-    InfoNotice
-} from '@renderer/function/model/notice'
-import { IUser } from '@renderer/function/model/user'
-import { runtimeData } from '@renderer/function/msg'
-import { usePasttime, useStayEvent } from '@renderer/function/utils/vuse'
-import app from '@renderer/main'
+    ResponseNotice,
+    TimeNotice
+} from '@renderer/function/model/notice';
+import { vLongHover } from '@renderer/function/utils/vcmd';
+import { usePasttime } from '@renderer/function/utils/vuse';
 import {
-    Directive,
-    ComputedRef
-} from 'vue'
-import { UserInfoPan } from './UserInfoPan.vue'
-const { data, id, userInfoPan } = defineProps<{
+    ComputedRef,
+} from 'vue';
+import EmojiFace from './EmojiFace.vue';
+import { MsgPrevPan } from './MsgPrevPan.vue';
+import NoticeUser from './NoticeUser.vue';
+import { UserInfoPan } from './UserInfoPan.vue';
+const { data, id, userInfoPan, msgPrevPan } = defineProps<{
     data: Notice
     id?: string
     userInfoPan?: UserInfoPan
+    msgPrevPan?: MsgPrevPan
 }>()
-
-const $t = app.config.globalProperties.$t
-
-const {
-    handle: userHoverHandle,
-    handleEnd: userHoverEnd,
-} = useStayEvent((event: MouseEvent) => {
-        return {x: event.clientX, y: event.clientY,}
-    },{
-        onFit: (eventData, ctx: IUser)=>{
-            userInfoPan?.open(ctx, eventData.x, eventData.y)
-        },
-        onLeave: ()=>{
-            userInfoPan?.close()
-        }
-    }, 495
-)
-
+console.log(msgPrevPan)
 let pastTime: ComputedRef<string> | undefined
 if (data instanceof TimeNotice && data.time != undefined) {
     pastTime = usePasttime(data.time.time)
-}
-
-const vUser: Directive<HTMLAnchorElement, IUser> = {
-    mounted(el, binding: {value: IUser}) {
-        const user = binding.value
-        // 特殊处理自己 (开摆!这玩意上不了转发别表,不考虑不特殊处理自己的兼容了)
-        if (user.user_id === runtimeData.loginInfo.uin) {
-            el.innerText = $t('你')
-            el.classList.add('me')
-        }else {
-            el.addEventListener('mouseenter',
-            (event) => userHoverHandle(event, binding.value))
-            el.addEventListener('mousemove',
-            (event) => userHoverHandle(event, binding.value))
-            el.addEventListener('mouseleave', userHoverEnd)
-            el.innerHTML = binding.value.name
-        }
-    },
-    unmounted(el) {
-        el.removeEventListener('mouseenter', userHoverHandle)
-        el.removeEventListener('mousemove', userHoverHandle)
-        el.removeEventListener('mouseleave', userHoverEnd)
-    }
 }
 </script>

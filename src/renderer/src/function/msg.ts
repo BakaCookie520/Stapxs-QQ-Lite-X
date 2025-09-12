@@ -20,28 +20,28 @@ import { optDefault } from './option'
 import Umami from '@stapxs/umami-logger-typescript'
 
 import {
-    getInch,
-    randomNum,
-} from '@renderer/function/utils/systemUtil'
-import {
     reloadUsers,
 } from '@renderer/function/utils/appUtil'
 import {
-    reactive,
-    markRaw,
+    getInch,
+    randomNum,
+} from '@renderer/function/utils/systemUtil'
+import { backend } from '@renderer/runtime/backend'
+import {
     defineAsyncComponent,
+    markRaw,
+    reactive,
     watchEffect
 } from 'vue'
-import { PopInfo, PopType, Logger, LogType } from './base'
+import { Logger, LogType, PopInfo, PopType } from './base'
 import {
     RunTimeDataElem,
 } from './elements/information'
-import { Notify } from './notify'
 import { Msg, SelfMsg } from './model/msg'
-import { Session } from './model/session'
-import { htmlPopBox } from './utils/popBox'
 import { ProxyUrl } from './model/proxyUrl'
-import { backend } from '@renderer/runtime/backend'
+import { Session } from './model/session'
+import { Notify } from './notify'
+import { htmlPopBox } from './utils/popBox'
 
 // 其他 tag
 const logger = new Logger()
@@ -249,19 +249,21 @@ export function resetRuntime(resetAll = false) {
 
 let testId = 0
 const testUrl = 'https://q1.qlogo.cn/g?b=qq&s=0&nk=0'
-watchEffect(()=>{
-    testId++
-    const thisId = testId
-    runtimeData.tags.canCors = false
-    const url = ProxyUrl.forceProxy(testUrl)
-    if (backend.type === 'electron') {
-        runtimeData.tags.canCors = true
-        return
-    }
-    // 没有代理直接返回
-    if (url === testUrl) return
-    fetch(url, { method: 'HEAD' }).then(res=>{
-            if (testId > thisId) return
-            runtimeData.tags.canCors = res.ok
-        })
-})
+setTimeout(() => {
+    watchEffect(()=>{
+        testId++
+        const thisId = testId
+        runtimeData.tags.canCors = false
+        const url = ProxyUrl.forceProxy(testUrl)
+        if (backend.type === 'electron') {
+            runtimeData.tags.canCors = true
+            return
+        }
+        // 没有代理直接返回
+        if (url === testUrl) return
+        fetch(url, { method: 'HEAD' }).then(res=>{
+                if (testId > thisId) return
+                runtimeData.tags.canCors = res.ok
+            })
+    })
+},0)

@@ -1,6 +1,6 @@
 <!--
  * @FileDescription: 群成员消息悬浮窗
- * @Author: Stapxs
+ * @Author: Mr.Lee
  * @Date: 2025/09/01
  * @Version: 1.0
 -->
@@ -16,7 +16,7 @@
                         leave: data.user.leave,
                     }">
                     <div>
-                        <img :src="data.user.face">
+                        <img :src="data.user.face" :alt="data.user.name">
                         <div>
                             <span name="id">{{ data.user.user_id }}</span>
                             <div>
@@ -59,7 +59,7 @@
                     ref="body"
                     class="ss-card leave">
                     <div>
-                        <img :src="'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + data.user">
+                        <img :src="'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + data.user" :alt="String(data.user)">
                         <div>
                             <span name="id">{{ data.user }}</span>
                             <div>
@@ -73,7 +73,7 @@
                     ref="body"
                     class="ss-card">
                     <div>
-                        <img :src="data.user.face">
+                        <img :src="data.user.face" :alt="data.user.name">
                         <div>
                             <span name="id">{{ data.user.user_id }}</span>
                             <div>
@@ -93,7 +93,7 @@
                     ref="body"
                     class="ss-card">
                     <div>
-                        <img :src="data.user.face">
+                        <img :src="data.user.face" :alt="data.user.name">
                         <div>
                             <span name="id">{{ data.user.user_id }}</span>
                             <div>
@@ -120,16 +120,16 @@
 </template>
 
 <script setup lang="ts">
-import { vUserRole } from '@renderer/function/utils/vcmd'
-import { IUser, Member, User } from '@renderer/function/model/user'
+import { Role } from '@renderer/function/adapter/enmu';
+import { IUser, Member, User } from '@renderer/function/model/user';
+import { vUserRole } from '@renderer/function/utils/vcmd';
 import {
+    reactive,
+    Reactive,
     ref,
     type Ref,
     watchEffect,
-    reactive,
-    Reactive,
-} from 'vue'
-import { Role } from '@renderer/function/adapter/enmu'
+} from 'vue';
 
 const { data } = defineProps<{
     data: {
@@ -187,8 +187,6 @@ export interface UserInfoPan {
 }
 .member-info-enter-active > .ss-card, .member-info-leave-active > .ss-card {
     transition: all 0.2s;
-}
-.member-info-enter-active > .ss-card, .member-info-leave-active > .ss-card {
     transform-origin: top;
 }
 .member-info-enter-from > .ss-card, .member-info-leave-to > .ss-card {

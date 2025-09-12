@@ -14,7 +14,7 @@ import {
     EventType
 } from './adapter/interface'
 import { BanEvent, BanLiftEvent, Event, JoinEvent, LeaveEvent, MsgEvent, PokeEvent, RecallEvent, ResponseEvent } from './model/event'
-import { newMsg, recallMsg } from './msg'
+import { newMsg, recallMsg, runtimeData } from './msg'
 
 type EventHook<T extends Event> = ((event: T) => void | Promise<void>)
 const eventHooks: Map<EventType, EventHook<any>[]> = new Map()
@@ -88,5 +88,21 @@ eventHandle('leave', async (event: LeaveEvent) => {
 
 // 表情回应
 eventHandle('response', async (event: ResponseEvent) => {
+    if (runtimeData.sysConfig.close_respond) return
     event.msg.setEmoji(event.emojiId, event.operator.user_id, event.add)
+    switch (runtimeData.sysConfig.show_response_message) {
+    case 'none':
+        return
+    case 'self':
+        if (
+            event.operator.user_id !== runtimeData.selfInfo?.user_id &&
+            event.msg.sender.user_id !== runtimeData.selfInfo?.user_id
+        ) return
+        break
+    case 'all':
+        break
+    default:
+        throw new Error(`Unknown show_response_message: ${runtimeData.sysConfig.show_response_message}`)
+    }
+    event.session.addMessage(event.message)
 })

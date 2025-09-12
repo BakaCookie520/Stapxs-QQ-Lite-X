@@ -6,7 +6,6 @@
  * @Description: 用于处理适配器收到的事件
  */
 
-import { Message } from './message'
 import type {
     BanEventData,
     BanLiftEventData,
@@ -21,7 +20,7 @@ import type {
     ResponseEventData,
     SessionEventType
 } from '../adapter/interface'
-import { GroupSession, Session } from './session'
+import { Message } from './message'
 import { Msg } from './msg'
 import {
     BanLiftNotice,
@@ -29,8 +28,10 @@ import {
     JoinNotice,
     LeaveNotice,
     PokeNotice,
-    RecallNotice
+    RecallNotice,
+    ResponseNotice
 } from './notice'
+import { GroupSession, Session } from './session'
 import { BaseUser, getSender, Member } from './user'
 
 type EventConstructor = { new (...args: any[]): Event }
@@ -67,25 +68,6 @@ export abstract class SessionEvent extends Event {
     constructor(session: Session) {
         super()
         this.session = session
-    }
-}
-
-@registerEventType('response')
-export class ResponseEvent extends SessionEvent {
-    override readonly type = 'response'
-    declare session: GroupSession
-    msg: Msg
-    operator: Member | BaseUser
-    emojiId: string
-    add: boolean
-    constructor(data: ResponseEventData) {
-        super(Session.getSession(data.session))
-        const msg = this.session.getMsgById(data.message_id)
-        if (!msg) throw new Error('找不到对应的消息')
-        this.msg = msg
-        this.operator = getSender(data.operator, this.session)
-        this.emojiId = data.emojiId
-        this.add = data.add
     }
 }
 
@@ -209,6 +191,28 @@ export class LeaveEvent extends MessageEvent {
         const session = Session.getSession(data.session)
         const notice = new LeaveNotice(data)
         super(session, notice)
+    }
+}
+
+@registerEventType('response')
+export class ResponseEvent extends MessageEvent {
+    override readonly type = 'response'
+    declare message: ResponseNotice
+    declare session: GroupSession
+    msg: Msg
+    operator: Member | BaseUser
+    emojiId: string
+    add: boolean
+    constructor(data: ResponseEventData) {
+        const session = Session.getSession(data.session)
+        const msg = session.getMsgById(data.message_id)
+        if (!msg) throw new Error('找不到对应的消息')
+        const notice = new ResponseNotice(data)
+        super(session, notice)
+        this.msg = msg
+        this.operator = getSender(data.operator, this.session)
+        this.emojiId = data.emojiId
+        this.add = data.add
     }
 }
 

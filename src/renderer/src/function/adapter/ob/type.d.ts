@@ -872,4 +872,14 @@ export interface NcObPokeEvent extends ObPokeEvent {
         {txt: string}
     ]
 }
+export interface NcObGroupMsgEmojiLikeEvent extends ObNoticeEvent{
+    notice_type: 'group_msg_emoji_like'
+    likes: [{
+        emoji_id: string
+        count: 1
+    }],
+    user_id: number
+    group_id: number
+    message_id: number
+}
 //#endregion
