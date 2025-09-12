@@ -87,6 +87,7 @@
                 :show-msg-menu="showMsgMenu"
                 :show-user-menu="showUserMenu"
                 :user-info-pan="userInfoPanFunc"
+                :msg-prev-pan="msgPrevPanFunc"
                 @image-loaded="imgLoadedScroll"
                 @left-move="replyMsg"
                 @sender-double-click="(user)=>sendPoke(user)"
@@ -338,6 +339,8 @@
         <MergePan ref="mergePan" />
         <!-- At 信息悬浮窗 -->
         <UserInfoPanComponent :data="userInfoPanData" />
+        <!-- msg 预览栏 -->
+        <MsgPrevPanComponent :data="msgPrevPanData"/>
         <!-- 消息右击菜单 -->
         <Menu ref="msgMenu" name="chat-menu">
             <div class="ss-card msg-menu-body">
@@ -465,18 +468,19 @@
 </template>
 
 <script setup lang="ts">
+import EmojiFace from '@renderer/components/EmojiFace.vue'
 import FacePan from '@renderer/components/FacePan.vue'
 import Menu from '@renderer/components/Menu.vue'
 import MergePan from '@renderer/components/MergePan.vue'
 import MsgBar from '@renderer/components/MsgBar.vue'
+import MsgPrevPanComponent, { MsgPrevPan } from '@renderer/components/MsgPrevPan.vue'
+import UserInfoPanComponent, { UserInfoPan } from '@renderer/components/UserInfoPan.vue'
 import Option, { get } from '@renderer/function/option'
 import SendUtil from '@renderer/function/sender'
 import app from '@renderer/main'
 import Info from '@renderer/pages/Info.vue'
 import imageCompression from 'browser-image-compression'
 
-import EmojiFace from '@renderer/components/EmojiFace.vue'
-import UserInfoPanComponent, { UserInfoPan } from '@renderer/components/UserInfoPan.vue'
 import { Logger, LogType, PopInfo, PopType } from '@renderer/function/base'
 import {
     MenuEventData,
@@ -550,6 +554,27 @@ const userInfoPanFunc: UserInfoPan = {
     },
     close: () => {
         userInfoPanData.user = undefined
+    },
+}
+//#endregion
+//#region == 消息预览栏相关 ================================
+const msgPrevPanData = shallowReactive<{
+    msgs: undefined | Msg[] | string,
+    x: number,
+    y: number,
+}>({
+    msgs: undefined,
+    x: 0,
+    y: 0,
+})
+const msgPrevPanFunc: MsgPrevPan = {
+    open: (msgs: Msg[] | string, x: number, y: number) => {
+        msgPrevPanData.msgs = msgs
+        msgPrevPanData.x = x
+        msgPrevPanData.y = y
+    },
+    close: () => {
+        msgPrevPanData.msgs = undefined
     },
 }
 //#endregion

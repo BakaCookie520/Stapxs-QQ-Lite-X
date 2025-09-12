@@ -33,6 +33,7 @@
                 :data="msgIndex"
                 :config="config"
                 :user-info-pan="userInfoPan"
+                :msg-prev-pan="msgPrevPan"
                 @click="msgClick($event, msgIndex)"
                 @image-loaded="arg=>$emit('imageLoaded', arg)"
                 @show-msg-menu="(eventData, msg) => openMsgMenu(eventData, msg)"
@@ -52,20 +53,21 @@
 </template>
 <script setup lang="ts">
 import {
-    shallowRef,
     shallowReactive,
+    shallowRef,
 } from 'vue'
 import MsgBody, { MsgBodyConfig } from './MsgBody.vue'
 import NoticeBody from './NoticeBody.vue'
 
-import { isShowTime } from '@renderer/function/utils/msgUtil'
-import { runtimeData } from '@renderer/function/msg'
-import { Msg } from '@renderer/function/model/msg'
+import { MenuEventData } from '@renderer/function/elements/information'
 import { Message } from '@renderer/function/model/message'
+import { Msg } from '@renderer/function/model/msg'
 import { Notice, SystemNotice } from '@renderer/function/model/notice'
 import { IUser } from '@renderer/function/model/user'
-import { MenuEventData } from '@renderer/function/elements/information'
+import { runtimeData } from '@renderer/function/msg'
+import { isShowTime } from '@renderer/function/utils/msgUtil'
 import app from '@renderer/main'
+import { MsgPrevPan } from './MsgPrevPan.vue'
 import { UserInfoPan } from './UserInfoPan.vue'
 
 //#region ====定义与导出============================================
@@ -80,12 +82,14 @@ const {
         dimNonExistentMsg: true,
     },
     userInfoPan,
+    msgPrevPan,
 } = defineProps<{
     msgs: Message[],
     showMsgMenu?: (eventData: MenuEventData, msg: Msg) => (Promise<void> | void),
     showUserMenu?: (eventData: MenuEventData, user: IUser) => (Promise<void> | void),
     config?: MsgBodyConfig & { canInteraction?: boolean },
     userInfoPan?: UserInfoPan,
+    msgPrevPan?: MsgPrevPan,
 }>()
 
 const emit = defineEmits<{

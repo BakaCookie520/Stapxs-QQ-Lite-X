@@ -210,6 +210,15 @@
                             </div>
                             <template v-else-if="item instanceof ForwardSeg">
                                 <div class="msg-raw-forward"
+                                    v-long-hover
+                                    @v-long-hover="msgPrevPan?.open(
+                                        item.content !== undefined ?
+                                        item.content
+                                        : $t('加载消息中...'),
+                                        ($event.detail as MenuEventData).x,
+                                        ($event.detail as MenuEventData).y,
+                                    )"
+                                    @v-long-hover-end="msgPrevPan?.close()"
                                     @click="openMerge(item)">
                                     <span>{{ $t('合并转发消息') }}</span>
                                     <div class="forward-msg">
@@ -248,11 +257,20 @@
                                 </div>
                             </template>
                             <div v-else-if="item instanceof ReplySeg"
+                                v-long-hover
                                 :class="{
                                     'msg-reply': true,
                                     'me': needSpecialMe(),
                                 }"
-                                @click="scrollToMsg(item.id)">
+                                @click="scrollToMsg(item.id)"
+                                @v-long-hover="console.log('test');msgPrevPan?.open(
+                                    data.session?.getMsgById(item.id) ?
+                                    [data.session!.getMsgById(item.id)!]
+                                    : $t('加载消息失败'),
+                                    ($event.detail as MenuEventData).x,
+                                    ($event.detail as MenuEventData).y,
+                                )"
+                                @v-long-hover-end="msgPrevPan?.close()">
                                 <font-awesome-icon :icon="['fas', 'reply']" />
                                 <a :class="getRepMsg(item.id) ? '' : 'msg-unknown'"
                                     style="cursor: pointer">
@@ -461,6 +479,7 @@ import {
     defineComponent,
     useTemplateRef
 } from 'vue'
+import { MsgPrevPan } from './MsgPrevPan.vue'
 
 //#region == 声明变量 ================================================================
 const {
@@ -471,12 +490,14 @@ const {
         showIcon: true,
         dimNonExistentMsg: true,
     },
-    userInfoPan
+    userInfoPan,
+    msgPrevPan,
 } = defineProps<{
     data: Msg | SelfMsg
     selected?: boolean
     config: MsgBodyConfig
     userInfoPan?: UserInfoPan
+    msgPrevPan?: MsgPrevPan
 }>()
 
 const emit = defineEmits<{
