@@ -1,3 +1,4 @@
+import driver from '@renderer/function/driver'
 import { GroupFile } from '@renderer/function/model/file'
 import { Msg } from '@renderer/function/model/msg'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
@@ -41,28 +42,27 @@ import {
     VideoSegData,
     XmlSegData
 } from '../interface'
-import driver from '@renderer/function/driver'
 
-import * as MilkyType from '@saltify/milky-types'
-import {
-    IncomingMessage,
-    IncomingSegment,
-    IncomingForwardedMessage,
-    OutgoingSegment,
-    OutgoingForwardedMessage,
-    Event
-} from '@saltify/milky-types'
-import * as ISeg from './incomeSeg'
-import * as OSeg from './outgoingSeg'
-import z from 'zod'
 import { Logger } from '@renderer/function/base'
-import { $t, createSender, getGender, getRole } from './utils'
+import { handleEvent } from '@renderer/function/event'
+import { Resource } from '@renderer/function/model/ressource'
 import { AtAllSeg, AtSeg, FaceSeg, ForwardSeg, ImgSeg, JsonSeg, MfaceSeg, ReplySeg, Seg, TxtSeg, UnknownSeg, VideoSeg, XmlSeg } from '@renderer/function/model/seg'
 import { queueWait } from '@renderer/function/utils/systemUtil'
-import { handleEvent } from '@renderer/function/event'
+import * as MilkyType from '@saltify/milky-types'
+import {
+    Event,
+    IncomingForwardedMessage,
+    IncomingMessage,
+    IncomingSegment,
+    OutgoingForwardedMessage,
+    OutgoingSegment
+} from '@saltify/milky-types'
 import { Component } from 'vue'
+import z from 'zod'
+import * as ISeg from './incomeSeg'
 import MkInfo from './MkInfo.vue'
-import { Resource } from '@renderer/function/model/ressource'
+import * as OSeg from './outgoingSeg'
+import { $t, createSender, getGender, getRole } from './utils'
 
 
 // 提取输出类型的工具类型
@@ -1015,7 +1015,7 @@ export class MilkyAdapter implements AdapterInterface {
         }
     }
     async forwardSerializer(seg: ForwardSeg): Promise<OSeg.ForwardSeg> {
-        const msgs = seg.content as Msg[]
+        const msgs = seg.content
         const messagesList = await Promise.all(msgs.map(msg => this.serializeMsg(msg)))
         const out: OSeg.ForwardSeg = {
             type: 'forward',
@@ -1095,7 +1095,7 @@ export class MilkyAdapter implements AdapterInterface {
      * @returns
      */
     async customForwardSerializer(seg: ForwardSeg): Promise<OSeg.ForwardSeg[]> {
-        const msgs = seg.content as Msg[]
+        const msgs = seg.content
         const messagesList = await Promise.all(msgs.map(msg => this.serializeMsg(msg)))
         const out: OSeg.ForwardSeg = {
             type: 'forward',

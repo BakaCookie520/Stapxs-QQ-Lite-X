@@ -1,3 +1,30 @@
+import { handleEvent } from '@renderer/function/event'
+import { Msg } from '@renderer/function/model/msg'
+import { Resource } from '@renderer/function/model/ressource'
+import {
+    AtAllSeg,
+    AtSeg,
+    FaceSeg,
+    ForwardSeg,
+    ImgSeg,
+    JsonSeg,
+    PokeSeg,
+    ReplySeg,
+    Seg,
+    TxtSeg,
+    UnknownSeg,
+    VideoSeg,
+    XmlSeg
+} from '@renderer/function/model/seg'
+import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
+import { Member } from '@renderer/function/model/user'
+import { queueWait } from '@renderer/function/utils/systemUtil'
+import { v4 as uuid } from 'uuid'
+import {
+    shallowReactive,
+    shallowRef,
+    ShallowRef,
+} from 'vue'
 import { Logger } from '../../base'
 import type {
     AdapterInterface,
@@ -32,72 +59,45 @@ import type {
     VideoSegData,
     XmlSegData
 } from '../interface'
+import { LoginInfo } from '../interface'
 import ObInfo from './ObInfo.vue'
-import { $t, createSender, getGender, getRole, ObConnector } from './utils'
 import type {
+    ObAnonymousSender,
+    ObAtSeg,
+    ObFaceSeg,
+    ObForwardNodeSeg,
+    ObForwardSeg,
+    ObFriendRecallEvent,
+    ObGetForwardMsg,
     ObGetFriendList,
     ObGetGroupList,
     ObGetGroupMemberList,
     ObGetLoginInfo,
+    ObGetMsg,
     ObGetStrangerInfo,
     ObGetVersionInfo,
-    ObTextSeg,
-    ObImgSeg,
-    ObFaceSeg,
-    ObAtSeg,
-    ObForwardSeg,
-    ObForwardNodeSeg,
-    ObPokeSeg,
-    ObXmlSeg,
-    ObSeg,
-    ObGetForwardMsg,
-    ObVideoSeg,
-    ObJsonSeg,
-    ObMsg,
-    ObGroupSender,
-    ObPrivateSender,
-    ObAnonymousSender,
-    ObGetMsg,
-    ObReplySeg,
-    ObSendMsg,
-    ObMessageEvent,
-    ObHeartEvent,
-    ObNoticeEvent,
-    ObGroupRecallEvent,
-    ObGroupIncreaseEvent,
-    ObGroupDecreaseEvent,
     ObGroupBanEvent,
-    ObFriendRecallEvent,
+    ObGroupDecreaseEvent,
+    ObGroupIncreaseEvent,
+    ObGroupRecallEvent,
+    ObGroupSender,
+    ObHeartEvent,
+    ObImgSeg,
+    ObJsonSeg,
+    ObMessageEvent,
+    ObMsg,
+    ObNoticeEvent,
     ObPokeEvent,
+    ObPokeSeg,
+    ObPrivateSender,
+    ObReplySeg,
+    ObSeg,
+    ObSendMsg,
+    ObTextSeg,
+    ObVideoSeg,
+    ObXmlSeg,
 } from './type'
-import { LoginInfo } from '../interface'
-import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
-import { Member } from '@renderer/function/model/user'
-import { v4 as uuid } from 'uuid'
-import {
-    AtAllSeg,
-    AtSeg,
-    FaceSeg,
-    ForwardSeg,
-    ImgSeg,
-    JsonSeg,
-    PokeSeg,
-    ReplySeg,
-    Seg,
-    TxtSeg,
-    UnknownSeg,
-    VideoSeg,
-    XmlSeg
-} from '@renderer/function/model/seg'
-import { Msg } from '@renderer/function/model/msg'
-import { queueWait } from '@renderer/function/utils/systemUtil'
-import { handleEvent } from '@renderer/function/event'
-import {
-    shallowReactive,
-    shallowRef,
-    ShallowRef,
-} from 'vue'
-import { Resource } from '@renderer/function/model/ressource'
+import { $t, createSender, getGender, getRole, ObConnector } from './utils'
 
 const logger = new Logger()
 
@@ -410,7 +410,6 @@ export class OneBotAdapter implements AdapterInterface {
     //#endregion
     //#endregion
     //#endregion
-
 
     //#region == 消息相关 ===========================================
     async parseMsg(data: ObMsg): Promise<MsgData> {
@@ -753,13 +752,14 @@ export class OneBotAdapter implements AdapterInterface {
     }
     noticeEventProcessers: Record<string, (event: any) => Promise<EventData | undefined>> = {}
     async noticeEvent(event: ObNoticeEvent): Promise<undefined | EventData> {
+        console.log(event)
         const eventType = event.notice_type === 'notify' ? event.sub_type : event.notice_type
-        const processer = this.noticeEventProcessers[eventType ?? '']
-        if (!processer) return
+        const processor = this.noticeEventProcessers[eventType ?? '']
+        if (!processor) return
         const sessionId = event.group_id || event.user_id
         const type = event.group_id ? 'group' : 'user'
         return await queueWait(
-            processer(event),
+            processor(event),
             `${type}-${sessionId}`
         )
     }
@@ -889,9 +889,9 @@ export class OneBotAdapter implements AdapterInterface {
      * @returns
      */
     protected handleEvent(event: any) {
-        const eventProcesser = this.eventProcessers[event.post_type]
-        if (!eventProcesser) return
-        eventProcesser(event)
+        const eventProcessor = this.eventProcessers[event.post_type]
+        if (!eventProcessor) return
+        eventProcessor(event)
             .then((data) => {
                 if (!data) return
                 handleEvent(data)
