@@ -263,7 +263,7 @@
                                     'me': needSpecialMe(),
                                 }"
                                 @click="scrollToMsg(item.id)"
-                                @v-long-hover="console.log('test');msgPrevPan?.open(
+                                @v-long-hover="msgPrevPan?.open(
                                     data.session?.getMsgById(item.id) ?
                                     [data.session!.getMsgById(item.id)!]
                                     : $t('加载消息失败'),

@@ -10,13 +10,9 @@
  * @Description: 设置功能相关模块
  */
 
-import app from '@renderer/main'
 import languageConfig from '@renderer/assets/l10n/_l10nconfig.json'
+import app from '@renderer/main'
 
-import { i18n } from '@renderer/main'
-import { markRaw, defineAsyncComponent } from 'vue'
-import { Logger, LogType, PopInfo, PopType } from './base'
-import { runtimeData } from './msg'
 import {
     loadWinColor,
     sendStatEvent,
@@ -26,11 +22,15 @@ import {
     getPortableFileLang,
     getTrueLang,
 } from '@renderer/function/utils/systemUtil'
-import { GroupSession, Session } from './model/session'
-import { BubbleBox } from './model/box'
-import { textPopBox } from './utils/popBox'
+import { i18n } from '@renderer/main'
 import { backend } from '@renderer/runtime/backend'
+import { defineAsyncComponent, markRaw } from 'vue'
+import { Logger, LogType, PopInfo, PopType } from './base'
+import { BubbleBox } from './model/box'
+import { GroupSession, Session } from './model/session'
+import { runtimeData } from './msg'
 import { refreshFavicon } from './utils/favicon'
+import { textPopBox } from './utils/popBox'
 
 let cacheConfigs: { [key: string]: any }
 
@@ -69,6 +69,7 @@ export const optDefault = {
     msg_taill: '',
     quick_send: 'default',
     group_notice_type: 'none',
+    show_response_message: 'self',
     send_face: false,
     use_breakline: false,
     close_browser: false,

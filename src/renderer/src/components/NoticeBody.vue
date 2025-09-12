@@ -54,6 +54,7 @@
                 <span>{{ data.suffix }}</span>
                 <div class="space" />
             </template>
+            <!-- 加群通知 -->
             <template v-else-if="data instanceof JoinNotice">
                 <template v-if="data.operator">
                     <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
@@ -66,6 +67,7 @@
                 <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                 <span>{{ $t('加入了群聊') }}</span>
             </template>
+            <!-- 退群通知 -->
             <template v-else-if="data instanceof LeaveNotice">
                 <template v-if="data.kick">
                     <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
@@ -77,6 +79,24 @@
                     <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                     <span>{{ $t('离开了群聊') }}</span>
                 </template>
+            </template>
+            <!-- 表情回应 -->
+            <template v-else-if="data instanceof ResponseNotice">
+                <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
+                <span>{{ $t('回应了') }}</span>
+                <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
+                <span>{{ $t('的') }}</span>
+                <a v-long-hover
+                    @v-long-hover="msgPrevPan?.open(
+                        [data.msg],
+                        ($event.detail as MenuEventData).x,
+                        ($event.detail as MenuEventData).y,
+                    )"
+                    @v-long-hover-end="msgPrevPan?.close()">
+                    {{ $t('消息') }}
+                </a>
+                <span>:</span>
+                <EmojiFace :emoji="Emoji.get(data.emojiId)" />
             </template>
             <!-- #endregion -->
 
@@ -99,6 +119,8 @@
 </template>
 
 <script setup lang="ts">
+import { MenuEventData } from '@renderer/function/elements/information';
+import Emoji from '@renderer/function/model/emoji';
 import {
     BanLiftNotice,
     BanNotice,
@@ -109,20 +131,25 @@ import {
     Notice,
     PokeNotice,
     RecallNotice,
+    ResponseNotice,
     TimeNotice
-} from '@renderer/function/model/notice'
-import { usePasttime } from '@renderer/function/utils/vuse'
+} from '@renderer/function/model/notice';
+import { vLongHover } from '@renderer/function/utils/vcmd';
+import { usePasttime } from '@renderer/function/utils/vuse';
 import {
     ComputedRef,
-} from 'vue'
-import NoticeUser from './NoticeUser.vue'
-import { UserInfoPan } from './UserInfoPan.vue'
-const { data, id, userInfoPan } = defineProps<{
+} from 'vue';
+import EmojiFace from './EmojiFace.vue';
+import { MsgPrevPan } from './MsgPrevPan.vue';
+import NoticeUser from './NoticeUser.vue';
+import { UserInfoPan } from './UserInfoPan.vue';
+const { data, id, userInfoPan, msgPrevPan } = defineProps<{
     data: Notice
     id?: string
     userInfoPan?: UserInfoPan
+    msgPrevPan?: MsgPrevPan
 }>()
-
+console.log(msgPrevPan)
 let pastTime: ComputedRef<string> | undefined
 if (data instanceof TimeNotice && data.time != undefined) {
     pastTime = usePasttime(data.time.time)

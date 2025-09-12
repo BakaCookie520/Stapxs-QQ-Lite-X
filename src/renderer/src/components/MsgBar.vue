@@ -47,7 +47,8 @@
                 :id="msgIndex.uuid"
                 :key="'notice-' + index"
                 :user-info-pan="userInfoPan"
-                :data="msgIndex" />
+                :data="msgIndex"
+                :msg-prev-pan="msgPrevPan" />
         </template>
     </TransitionGroup>
 </template>
