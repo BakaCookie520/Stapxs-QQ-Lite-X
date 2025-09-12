@@ -9,31 +9,31 @@
  */
 
 import app from '@renderer/main'
-import option from '../option'
 import {
-    shallowRef,
-    ShallowRef,
-    shallowReactive,
     ComputedRef,
+    ShallowRef,
     computed,
+    reactive,
+    shallowReactive,
+    shallowRef,
     toRaw,
 } from 'vue'
-import { queueWait } from '../utils/systemUtil'
-import { Name } from './data'
-import { Message } from './message'
-import { EssenceMsg, Msg } from './msg'
-import { reactive } from 'vue'
-import { runtimeData } from '../msg'
-import { SystemNotice } from './notice'
-import { Logger, PopInfo, PopType } from '../base'
-import { BaseUser, Member, IUser, User } from './user'
-import { Ann } from './ann'
-import { GroupFile, GroupFileFolder } from './file'
-import { SessionBox } from './box'
 import { Role } from '../adapter/enmu'
 import { SessionData } from '../adapter/interface'
+import { Logger, PopInfo, PopType } from '../base'
+import { runtimeData } from '../msg'
+import option from '../option'
+import { queueWait } from '../utils/systemUtil'
+import { Ann } from './ann'
+import { SessionBox } from './box'
+import { Name } from './data'
+import { GroupFile, GroupFileFolder } from './file'
 import { Img } from './img'
+import { Message } from './message'
+import { EssenceMsg, Msg } from './msg'
+import { SystemNotice } from './notice'
 import { ProxyUrl } from './proxyUrl'
+import { BaseUser, IUser, Member, User } from './user'
 
 export type VoidReturn = void | Promise<void>
 
@@ -122,22 +122,23 @@ export abstract class Session {
      * 卸载
      */
     unactive() {
-        this.runHook('beforeUnactiveHook')
-        this.messageList.length = 0
-        this.imgHead = undefined
-        this.imgTail = undefined
-        this.headMsg = undefined
-        this.preMessage = undefined
-        this.highlightInfo.length = 0
-        this.isActive = false
-        this.activePromise = undefined
-        this.newMsg = 0
-        this.showNotice = false
-        this.loadHistoryLock.value = undefined
-        this.lastLoadFaileFlag.value = false
-        this.canLoadMoreHistory.value = true
-        Session.activeSessions.delete(this)
-        this.runHook('afterUnactiveHook')
+        const self = toRaw(this)
+        self.runHook('beforeUnactiveHook')
+        self.messageList.length = 0
+        self.imgHead = undefined
+        self.imgTail = undefined
+        self.headMsg = undefined
+        self.preMessage = undefined
+        self.highlightInfo.length = 0
+        self.isActive = false
+        self.activePromise = undefined
+        self.newMsg = 0
+        self.showNotice = false
+        self.loadHistoryLock.value = undefined
+        self.lastLoadFaileFlag.value = false
+        self.canLoadMoreHistory.value = true
+        Session.activeSessions.delete(self)
+        self.runHook('afterUnactiveHook')
     }
     abstract prepareUnactive(): void
     //#endregion
