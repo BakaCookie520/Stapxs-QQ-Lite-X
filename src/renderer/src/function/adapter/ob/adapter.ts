@@ -752,7 +752,6 @@ export class OneBotAdapter implements AdapterInterface {
     }
     noticeEventProcessers: Record<string, (event: any) => Promise<EventData | undefined>> = {}
     async noticeEvent(event: ObNoticeEvent): Promise<undefined | EventData> {
-        console.log(event)
         const eventType = event.notice_type === 'notify' ? event.sub_type : event.notice_type
         const processor = this.noticeEventProcessers[eventType ?? '']
         if (!processor) return
