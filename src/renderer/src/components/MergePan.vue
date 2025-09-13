@@ -87,7 +87,7 @@
         </Teleport>
     </Transition>
     <Menu ref="msgMenu" name="chat-menu">
-        <div class="ss-card msg-menu-body">
+        <div class="ss-card msg-menu-body" @click.stop>
             <div v-show="menuDisplay.canForward" @click="showForWard()">
                 <div><font-awesome-icon :icon="['fas', 'share']" /></div>
                 <a>{{ $t('转发') }}</a>
@@ -109,19 +109,19 @@
 </template>
 
 <script lang="ts">
-    import MsgBar from './MsgBar.vue'
     import Menu from './Menu.vue'
+import MsgBar from './MsgBar.vue'
 
-    import { defineComponent, nextTick, Reactive } from 'vue'
-    import { runtimeData } from '@renderer/function/msg'
-    import { isShowTime, mergeForward, singleForward } from '@renderer/function/utils/msgUtil'
-    import { wheelMask } from '@renderer/function/utils/input'
-    import { Msg } from '@renderer/function/model/msg'
-    import { MenuEventData } from '@renderer/function/elements/information'
     import { Logger, PopInfo, PopType } from '@renderer/function/base'
-    import { downloadFile } from '@renderer/function/utils/appUtil'
-    import { copyToClipboard, getViewTime } from '@renderer/function/utils/systemUtil'
-    import { Message } from '@renderer/function/model/message'
+import { MenuEventData } from '@renderer/function/elements/information'
+import { Message } from '@renderer/function/model/message'
+import { Msg } from '@renderer/function/model/msg'
+import { runtimeData } from '@renderer/function/msg'
+import { downloadFile } from '@renderer/function/utils/appUtil'
+import { wheelMask } from '@renderer/function/utils/input'
+import { isShowTime, mergeForward, singleForward } from '@renderer/function/utils/msgUtil'
+import { copyToClipboard, getViewTime } from '@renderer/function/utils/systemUtil'
+import { defineComponent, nextTick, Reactive } from 'vue'
 
     type ComponentRefs = {
         msgBar: InstanceType<typeof MsgBar>
