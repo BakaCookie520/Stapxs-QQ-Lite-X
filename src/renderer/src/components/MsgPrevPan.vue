@@ -56,10 +56,9 @@ watchEffect(() => {
     if (!body.value) return
     // 高度
     const panHeight = body.value.clientHeight
-    const bodyHeight = document.body.clientHeight
-    if (data.y + panHeight > bodyHeight - 20) {
+    if (data.y < panHeight + 20) {
         posInfo['--y'] =
-            bodyHeight - panHeight - 10 + 'px'
+            panHeight + 20 + 'px'
     }
     // 宽度
     const menuWidth = body.value.clientWidth
