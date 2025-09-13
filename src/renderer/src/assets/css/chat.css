@@ -130,11 +130,10 @@ body.with-bar .chat-pan {
     margin-left: 20px;
     margin-top: -90px;
     padding-top: 90px;
+    margin-bottom: -90px;
+    padding-bottom: 90px;
     z-index: 1;
     flex: 1;
-}
-
-.chat-pan > div.chat {
     height: calc(100% - var(--safe-area-bottom));
 }
 
@@ -143,17 +142,16 @@ body.with-bar .chat-pan {
 }
 
 .chat-pan > div.new-msg {
-    /* border-right: 7px solid var(--color-card); */
-    border-right: 7px solid transparent;
-    border-radius: 50px 0 0 50px;
-    margin: -50px 20px 0 auto;
     pointer-events: all;
     cursor: pointer;
-    height: 50px;
     z-index: 2;
+    transition: all 0.3s;
 }
 
 .chat-pan > div.new-msg > div {
+    position: absolute;
+    right: 40px;
+    bottom: 130px;
     background: rgba(var(--color-card-1-rgb), 0.7);
     backdrop-filter: blur(50px);
     justify-content: center;
@@ -162,7 +160,6 @@ body.with-bar .chat-pan {
     margin-right: -7px;
     margin-top: 10px;
     display: flex;
-    height: 100%;
     padding: 0;
 }
 
@@ -179,7 +176,8 @@ body.with-bar .chat-pan {
 }
 
 .chat-pan > div.more {
-    background: rgba(var(--color-card-rgb), 0.1);
+    background: rgba(var(--color-card-rgb), 0.8);
+    backdrop-filter: blur(50px);
     transition: background 0.3s;
     pointer-events: all;
 }

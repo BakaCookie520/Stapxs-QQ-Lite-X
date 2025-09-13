@@ -94,7 +94,7 @@
                 @emoji-click="changeRespond" />
         </div>
         <!-- 滚动到底部悬浮标志 -->
-        <div v-show="tags.showBottomButton"
+        <div v-hide="!tags.showBottomButton"
             class="new-msg"
             @click="scrollBottom(true)">
             <div class="ss-card">
@@ -514,7 +514,7 @@ import {
     delay,
     getViewTime,
 } from '@renderer/function/utils/systemUtil'
-import { vMenu, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
+import { vHide, vMenu, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
 import app from '@renderer/main'
 import Info from '@renderer/pages/Info.vue'
 import { backend } from '@renderer/runtime/backend'
@@ -707,11 +707,6 @@ function chatScroll(event: Event) {
     if ((body.scrollTop + body.clientHeight + 10) >= body.scrollHeight) {
         chat.setRead()
         tags.showBottomButton = false
-        // 去除阴影
-        if (bar) {
-            bar.style.transition = 'background .3s'
-            bar.classList.add('btn')
-        }
     }
     // 显示回到底部
     if (
@@ -720,16 +715,6 @@ function chatScroll(event: Event) {
         tags.showBottomButton !== true
     ) {
         tags.showBottomButton = true
-    }
-    // 添加阴影
-    if (
-        body.scrollTop <
-        body.scrollHeight - body.clientHeight - 10
-    ) {
-        if (bar) {
-            bar.style.transition = 'background 1s'
-            bar.classList.remove('btn')
-        }
     }
 }
 
