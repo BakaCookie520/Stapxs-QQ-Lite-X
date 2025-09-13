@@ -10,7 +10,7 @@
 -->
 <template>
     <Menu ref="menu" name="chat-menu">
-        <div class="ss-card msg-menu-body">
+        <div class="ss-card msg-menu-body" @click.stop>
             <div v-if="displayTag.top" @click="clickTop">
                 <div><font-awesome-icon :icon="['fas', 'fa-thumbtack']" /></div>
                 <a>{{ $t('置顶') }}</a>
@@ -66,23 +66,23 @@
 <script setup lang="ts">
 import Menu from './Menu.vue'
 
-import {
-    shallowRef,
-    ShallowRef,
-    shallowReactive,
-    ShallowReactive,
-    ref,
-    Ref,
-    markRaw,
-} from 'vue'
 import { MenuEventData } from '@renderer/function/elements/information'
-import { GroupSession, Session } from '@renderer/function/model/session'
 import { BubbleBox, SessionBox } from '@renderer/function/model/box'
-import { i18n } from '@renderer/main'
+import { GroupSession, Session } from '@renderer/function/model/session'
 import { runtimeData } from '@renderer/function/msg'
 import { ensurePopBox, popBox } from '@renderer/function/utils/popBox'
+import { i18n } from '@renderer/main'
 import ConfigBox from '@renderer/popboxes/ConfigBox.vue'
 import SelectBox from '@renderer/popboxes/SelectBox.vue'
+import {
+    markRaw,
+    ref,
+    Ref,
+    shallowReactive,
+    ShallowReactive,
+    shallowRef,
+    ShallowRef,
+} from 'vue'
 
 //#region == 声明变量 ================================================================
 const $t = i18n.global.t

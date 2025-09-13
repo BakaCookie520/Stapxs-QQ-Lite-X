@@ -94,7 +94,7 @@
                 @emoji-click="changeRespond" />
         </div>
         <!-- 滚动到底部悬浮标志 -->
-        <div v-show="tags.showBottomButton"
+        <div v-hide="!tags.showBottomButton"
             class="new-msg"
             @click="scrollBottom(true)">
             <div class="ss-card">
@@ -343,65 +343,77 @@
         <MsgPrevPanComponent :data="msgPrevPanData"/>
         <!-- 消息右击菜单 -->
         <Menu ref="msgMenu" name="chat-menu">
-            <div class="ss-card msg-menu-body">
+            <div>
                 <div v-if="chat instanceof GroupSession"
                     v-show="menuDisplay.showRespond"
                     :class="{
                         'ss-card': true,
                         'respond': true,
                         'open': menuDisplay.respond
-                    }">
-                    <template v-for="(num, index) in Emoji.responseId" :key="'respond-' + num">
-                        <EmojiFace :emoji="Emoji.get(num)!" @click="menuDisplay.menuSelectedMsg ?
-                            changeRespond(String(num), menuDisplay.menuSelectedMsg as Msg): ''" />
-                        <font-awesome-icon v-if="index == 4" :icon="['fas', 'angle-up']" @click="menuDisplay.respond = true" />
-                    </template>
+                    }"
+                    @click.stop>
+                    <div @wheel="
+                        !menuDisplay.respond ?
+                        ($event.currentTarget as HTMLElement).scrollLeft += $event.deltaY
+                        : ''
+                        ">
+                        <EmojiFace
+                            v-for="num in Emoji.responseId"
+                            :key="'respond-' + num"
+                            :emoji="Emoji.get(num)"
+                            @click="menuDisplay.menuSelectedMsg ?
+                            changeRespond(String(num), menuDisplay.menuSelectedMsg as Msg): ''"
+                            />
+                    </div>
+                    <font-awesome-icon :icon="['fas', 'angle-up']" @click="menuDisplay.respond = true" />
                 </div>
-                <span id="anchor" />
-                <div v-show="menuDisplay.add" @click="forwardSelf()">
-                    <div><font-awesome-icon :icon="['fas', 'plus']" /></div>
-                    <a>{{ $t('+ 1') }}</a>
-                </div>
-                <div v-show="menuDisplay.reply" @click="menuReplyMsg(true)">
-                    <div><font-awesome-icon :icon="['fas', 'message']" /></div>
-                    <a>{{ $t('回复') }}</a>
-                </div>
-                <div v-show="menuDisplay.forward" @click="showForWard()">
-                    <div><font-awesome-icon :icon="['fas', 'share']" /></div>
-                    <a>{{ $t('转发') }}</a>
-                </div>
-                <div v-show="menuDisplay.select" @click="intoMultipleSelect()">
-                    <div><font-awesome-icon :icon="['fas', 'circle-check']" /></div>
-                    <a>{{ $t('多选') }}</a>
-                </div>
-                <div v-show="menuDisplay.copy" @click="copyMsg">
-                    <div><font-awesome-icon :icon="['fas', 'clipboard']" /></div>
-                    <a>{{ $t('复制') }}</a>
-                </div>
-                <div v-show="menuDisplay.copySelect" @click="copySelectMsg">
-                    <div><font-awesome-icon :icon="['fas', 'code']" /></div>
-                    <a>{{ $t('复制选中文本') }}</a>
-                </div>
-                <div v-show="menuDisplay.downloadImg != false" @click="downloadImg">
-                    <div><font-awesome-icon :icon="['fas', 'floppy-disk']" /></div>
-                    <a>{{ $t('下载图片') }}</a>
-                </div>
-                <div v-show="menuDisplay.revoke" @click="recallMsg">
-                    <div><font-awesome-icon :icon="['fas', 'xmark']" /></div>
-                    <a>{{ $t('撤回') }}</a>
-                </div>
-                <div v-show="menuDisplay.jumpToMsg" @click="jumpSearchMsg">
-                    <div><font-awesome-icon :icon="['fas', 'arrow-up-right-from-square']" /></div>
-                    <a>{{ $t('跳转到消息') }}</a>
-                </div>
-                <div v-show="menuDisplay.dev" @click="consoleLogMsg">
-                    <div><font-awesome-icon :icon="['fas', 'screwdriver-wrench']" /></div>
-                    <a>{{ $t('调试信息') }}</a>
+                <span id="anchor" @click.stop/>
+                <div class="ss-card msg-menu-body" @click.stop>
+                    <div v-show="menuDisplay.add" @click="forwardSelf()">
+                        <div><font-awesome-icon :icon="['fas', 'plus']" /></div>
+                        <a>{{ $t('+ 1') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.reply" @click="menuReplyMsg(true)">
+                        <div><font-awesome-icon :icon="['fas', 'message']" /></div>
+                        <a>{{ $t('回复') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.forward" @click="showForWard()">
+                        <div><font-awesome-icon :icon="['fas', 'share']" /></div>
+                        <a>{{ $t('转发') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.select" @click="intoMultipleSelect()">
+                        <div><font-awesome-icon :icon="['fas', 'circle-check']" /></div>
+                        <a>{{ $t('多选') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.copy" @click="copyMsg">
+                        <div><font-awesome-icon :icon="['fas', 'clipboard']" /></div>
+                        <a>{{ $t('复制') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.copySelect" @click="copySelectMsg">
+                        <div><font-awesome-icon :icon="['fas', 'code']" /></div>
+                        <a>{{ $t('复制选中文本') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.downloadImg != false" @click="downloadImg">
+                        <div><font-awesome-icon :icon="['fas', 'floppy-disk']" /></div>
+                        <a>{{ $t('下载图片') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.revoke" @click="recallMsg">
+                        <div><font-awesome-icon :icon="['fas', 'xmark']" /></div>
+                        <a>{{ $t('撤回') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.jumpToMsg" @click="jumpSearchMsg">
+                        <div><font-awesome-icon :icon="['fas', 'arrow-up-right-from-square']" /></div>
+                        <a>{{ $t('跳转到消息') }}</a>
+                    </div>
+                    <div v-show="menuDisplay.dev" @click="consoleLogMsg">
+                        <div><font-awesome-icon :icon="['fas', 'screwdriver-wrench']" /></div>
+                        <a>{{ $t('调试信息') }}</a>
+                    </div>
                 </div>
             </div>
         </Menu>
         <Menu ref="userMenu" name="chat-menu">
-            <div class="ss-card msg-menu-body">
+            <div class="ss-card msg-menu-body" @click.stop>
                 <div v-show="menuDisplay.at"
                     @click="menuDisplay.menuSelectedUser ? addSpecialSeg(new AtSeg(menuDisplay.menuSelectedUser!.user_id)): '';
                             toMainInput();
@@ -475,12 +487,6 @@ import MergePan from '@renderer/components/MergePan.vue'
 import MsgBar from '@renderer/components/MsgBar.vue'
 import MsgPrevPanComponent, { MsgPrevPan } from '@renderer/components/MsgPrevPan.vue'
 import UserInfoPanComponent, { UserInfoPan } from '@renderer/components/UserInfoPan.vue'
-import Option, { get } from '@renderer/function/option'
-import SendUtil from '@renderer/function/sender'
-import app from '@renderer/main'
-import Info from '@renderer/pages/Info.vue'
-import imageCompression from 'browser-image-compression'
-
 import { Logger, LogType, PopInfo, PopType } from '@renderer/function/base'
 import {
     MenuEventData,
@@ -493,6 +499,8 @@ import { AtSeg, FaceSeg, FileSeg, ImgSeg, Seg, TxtSeg } from '@renderer/function
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { BaseUser, IUser, Member } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
+import Option, { get } from '@renderer/function/option'
+import SendUtil from '@renderer/function/sender'
 import { downloadFile, scrollToMsg, shouldAutoFocus } from '@renderer/function/utils/appUtil'
 import {
     closeSession,
@@ -506,8 +514,11 @@ import {
     delay,
     getViewTime,
 } from '@renderer/function/utils/systemUtil'
-import { vMenu, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
+import { vHide, vMenu, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
+import app from '@renderer/main'
+import Info from '@renderer/pages/Info.vue'
 import { backend } from '@renderer/runtime/backend'
+import imageCompression from 'browser-image-compression'
 import {
     computed,
     nextTick,
@@ -517,7 +528,6 @@ import {
     useTemplateRef,
     watch,
 } from 'vue'
-
 //#region == 常量声明 ====================================================================
 const { chat } = defineProps<{chat: Session}>()
 
@@ -697,11 +707,6 @@ function chatScroll(event: Event) {
     if ((body.scrollTop + body.clientHeight + 10) >= body.scrollHeight) {
         chat.setRead()
         tags.showBottomButton = false
-        // 去除阴影
-        if (bar) {
-            bar.style.transition = 'background .3s'
-            bar.classList.add('btn')
-        }
     }
     // 显示回到底部
     if (
@@ -710,16 +715,6 @@ function chatScroll(event: Event) {
         tags.showBottomButton !== true
     ) {
         tags.showBottomButton = true
-    }
-    // 添加阴影
-    if (
-        body.scrollTop <
-        body.scrollHeight - body.clientHeight - 10
-    ) {
-        if (bar) {
-            bar.style.transition = 'background 1s'
-            bar.classList.remove('btn')
-        }
     }
 }
 

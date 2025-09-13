@@ -130,11 +130,10 @@ body.with-bar .chat-pan {
     margin-left: 20px;
     margin-top: -90px;
     padding-top: 90px;
+    margin-bottom: -90px;
+    padding-bottom: 90px;
     z-index: 1;
     flex: 1;
-}
-
-.chat-pan > div.chat {
     height: calc(100% - var(--safe-area-bottom));
 }
 
@@ -143,17 +142,16 @@ body.with-bar .chat-pan {
 }
 
 .chat-pan > div.new-msg {
-    /* border-right: 7px solid var(--color-card); */
-    border-right: 7px solid transparent;
-    border-radius: 50px 0 0 50px;
-    margin: -50px 20px 0 auto;
     pointer-events: all;
     cursor: pointer;
-    height: 50px;
     z-index: 2;
+    transition: all 0.3s;
 }
 
 .chat-pan > div.new-msg > div {
+    position: absolute;
+    right: 40px;
+    bottom: 130px;
     background: rgba(var(--color-card-1-rgb), 0.7);
     backdrop-filter: blur(50px);
     justify-content: center;
@@ -162,7 +160,6 @@ body.with-bar .chat-pan {
     margin-right: -7px;
     margin-top: 10px;
     display: flex;
-    height: 100%;
     padding: 0;
 }
 
@@ -179,7 +176,8 @@ body.with-bar .chat-pan {
 }
 
 .chat-pan > div.more {
-    background: rgba(var(--color-card-rgb), 0.1);
+    background: rgba(var(--color-card-rgb), 0.8);
+    backdrop-filter: blur(50px);
     transition: background 0.3s;
     pointer-events: all;
 }
@@ -706,6 +704,10 @@ body.with-bar .msg-menu {
     overflow: hidden;
     max-width: 55%;
     width: fit-content;
+}
+
+.msg-preview > div {
+    max-height: 40vh;
 }
 
 .msg-preview > div > div {
@@ -2137,71 +2139,64 @@ div.tiny-session-body > div:nth-child(3) > div > span {
     overflow: hidden;
 }
 
-div.tiny-session-body > div:nth-child(3) > div {
-    flex: 1;
-    display: flex;
-}
-
 div.tiny-session-body > div:nth-child(3) > div > svg {
     margin-right: 5px;
     height: 1rem;
 }
 
 .respond {
-    width: calc(100% + 65px);
     overflow: hidden;
-    display: flex;
-    flex-direction: row !important;
-    margin-top: -70px !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 10px;
+    background: rgba(var(--color-bg-rgb), 0.7);
+    backdrop-filter: blur(50px);
     border: 1px solid var(--color-shader);
-    background: var(--color-bg) !important;
     box-shadow: 0 0 5px var(--color-shader);
-    min-height: 40px !important;
-    height: 40px !important;
-    transition: all 0.3s !important;
+    height: 40px;
+    transition: all 0.3s;
     margin-left: -12px;
+    padding: 5px;
+    display: flex;
 }
 
-.respond:hover {
-    background: var(--color-bg) !important;
-}
-
-.respond > svg {
-    color: var(--color-font-2);
-    margin-right: 10px;
-    min-width: 20px;
-    height: 20px;
-    padding: 2.5px;
-    border-radius: 7px;
-}
-
-.respond > span,
-.respond > img {
+.respond > svg,
+.respond .emoji-face {
     transition: background 0.3s;
     border-radius: 7px;
     margin-right: 5px;
     padding: 5px;
     height: 25px;
     width: 25px;
+    color: var(--color-font-2);
+    font-size: 20px;
+    display: block;
 }
 
-.respond > span:hover,
 .respond > svg:hover,
-.respond > img:hover {
+.respond .emoji-face:hover {
     background: var(--color-card-2);
+}
+
+.respond > div {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    width: 160px;
+    scroll-behavior: smooth;
 }
 
 .respond.open {
     height: 100px !important;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    overflow-y: scroll;
     padding: 10px !important;
     margin-top: -140px !important;
     margin-bottom: 20px !important;
+}
+
+.respond.open > div {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    overflow-y: scroll;
 }
 
 .respond.open > svg {

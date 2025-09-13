@@ -11,7 +11,7 @@
                 <div v-if="typeof data.msgs === 'string'" class="ss-card" ref="body">
                     {{ data.msgs }}
                 </div>
-                <div v-else class="ss-card">
+                <div v-else class="ss-card" ref="body">
                     <MsgBar
                         :msgs="data.msgs"
                         :config="{canInteraction: false}" />
@@ -25,10 +25,8 @@
 import { Msg } from '@renderer/function/model/msg';
 import {
     reactive,
-    Reactive,
-    ref,
-    type Ref,
-    watchEffect,
+    useTemplateRef,
+    watchEffect
 } from 'vue';
 import MsgBar from './MsgBar.vue';
 
@@ -40,8 +38,8 @@ const { data } = defineProps<{
     }
 }>()
 
-const body: Ref<HTMLElement|undefined> = ref(undefined)
-const posInfo: Reactive<{'--x': string, '--y': string, '--width': string}> = reactive({
+const body = useTemplateRef<HTMLDivElement>('body')
+const posInfo = reactive({
     '--x': '0px',
     '--y': '0px',
     '--width': '0px',
@@ -55,14 +53,12 @@ watchEffect(() => {
         posInfo['--width'] = body.value.offsetWidth + 'px'
     }
 
-    // 出界处理
     if (!body.value) return
     // 高度
     const panHeight = body.value.clientHeight
-    const bodyHeight = document.body.clientHeight
-    if (data.y + panHeight > bodyHeight - 20) {
+    if (data.y < panHeight + 20) {
         posInfo['--y'] =
-            bodyHeight - panHeight - 10 + 'px'
+            panHeight + 20 + 'px'
     }
     // 宽度
     const menuWidth = body.value.clientWidth

@@ -149,7 +149,6 @@ const { data, id, userInfoPan, msgPrevPan } = defineProps<{
     userInfoPan?: UserInfoPan
     msgPrevPan?: MsgPrevPan
 }>()
-console.log(msgPrevPan)
 let pastTime: ComputedRef<string> | undefined
 if (data instanceof TimeNotice && data.time != undefined) {
     pastTime = usePasttime(data.time.time)
