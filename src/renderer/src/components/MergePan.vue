@@ -36,9 +36,9 @@
                                     :key="'merge-' + nowData.id"
                                     :msgs="nowData.content as Message[]"
                                     :show-msg-menu="showMsgMenu"
-                                    :config="{
-                                        specialMe: false,
-                                    }"
+                                    :special-self="false"
+                                    :direction="vw * 100 > 450 ? 'right' : 'left'"
+                                    :show-time="false"
                                     class="merge-node" />
                             </KeepAlive>
                         </Transition>
@@ -108,11 +108,11 @@
     </Menu>
 </template>
 
-<script lang="ts">
-    import Menu from './Menu.vue'
+<script setup lang="ts">
+import Menu from './Menu.vue'
 import MsgBar from './MsgBar.vue'
 
-    import { Logger, PopInfo, PopType } from '@renderer/function/base'
+import { Logger, PopInfo, PopType } from '@renderer/function/base'
 import { MenuEventData } from '@renderer/function/elements/information'
 import { Message } from '@renderer/function/model/message'
 import { Msg } from '@renderer/function/model/msg'
@@ -121,8 +121,14 @@ import { downloadFile } from '@renderer/function/utils/appUtil'
 import { wheelMask } from '@renderer/function/utils/input'
 import { isShowTime, mergeForward, singleForward } from '@renderer/function/utils/msgUtil'
 import { copyToClipboard, getViewTime } from '@renderer/function/utils/systemUtil'
+import { useViewportUnits } from '@renderer/function/utils/vuse'
 import { defineComponent, nextTick, Reactive } from 'vue'
 
+const { vw } = useViewportUnits()
+
+</script>
+
+<script lang="ts">
     type ComponentRefs = {
         msgBar: InstanceType<typeof MsgBar>
         msgMenu: InstanceType<typeof Menu>
@@ -132,7 +138,6 @@ import { defineComponent, nextTick, Reactive } from 'vue'
 
     export default defineComponent({
         name: 'MergePan',
-        components: { MsgBar, Menu },
         data() {
             const stack = runtimeData.mergeMsgStack
             return {
@@ -373,7 +378,7 @@ import { defineComponent, nextTick, Reactive } from 'vue'
                 if (!menu) return
                 if (menu.isShow()) return
 
-                this.menuDisplay.selectMsg = msg as Reactive<Msg>
+                this.menuDisplay.selectMsg = msg as unknown as Reactive<Msg>
                 this.menuDisplay.canForward = true
                 this.menuDisplay.downloadImgSrc = ''
 
@@ -409,7 +414,7 @@ import { defineComponent, nextTick, Reactive } from 'vue'
             showForWard() {
                 if (!this.menuDisplay.selectMsg) return
 
-                singleForward([this.menuDisplay.selectMsg as Msg])
+                singleForward([this.menuDisplay.selectMsg as unknown as Msg])
                 this.closeMsgMenu()
             },
             /**
@@ -420,7 +425,7 @@ import { defineComponent, nextTick, Reactive } from 'vue'
                 msgBar?.startMultiselect()
                 this.isMultiselectMode = true
                 if (this.menuDisplay.selectMsg) {
-                    msgBar?.forceAddToMultiselectList(this.menuDisplay.selectMsg as Msg)
+                    msgBar?.forceAddToMultiselectList(this.menuDisplay.selectMsg as unknown as Msg)
                 }
                 this.closeMsgMenu()
             },

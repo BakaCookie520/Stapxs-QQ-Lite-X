@@ -299,6 +299,42 @@
                 </label>
             </div>
             <div class="opt-item">
+                <div :class="checkDefault('hide_self_avatar')" />
+                <font-awesome-icon :icon="['fas', 'user']" />
+                <div>
+                    <span>{{ $t('隐藏自己的头像') }}</span>
+                    <span>
+                        {{ $t('干净整洁多了！') }}
+                    </span>
+                </div>
+                <label class="ss-switch">
+                    <input v-model="runtimeData.sysConfig.hide_self_avatar"
+                        type="checkbox" name="hide_self_avatar" @change="save">
+                    <div>
+                        <div />
+                    </div>
+                </label>
+            </div>
+            <div class="opt-item">
+                <div :class="checkDefault('self_msg_direction')" />
+                <font-awesome-icon :icon="['fas', 'chart-bar']" />
+                <div>
+                    <span>{{ $t('自己消息位置') }}</span>
+                    <span>
+                        {{ $t('是靠左边好呢？还是靠右边好呢？') }}
+                    </span>
+                </div>
+                <select v-model="runtimeData.sysConfig.self_msg_direction"
+                    name="self_msg_direction" title="self_msg_direction" @change="save">
+                    <option value="left">
+                        {{ $t('左边') }}
+                    </option>
+                    <option value="right">
+                        {{ $t('右边（默认）') }}
+                    </option>
+                </select>
+            </div>
+            <div class="opt-item">
                 <font-awesome-icon :icon="['fas', 'arrows-rotate']" />
                 <div>
                     <span>{{ $t('不要点这个') }}</span>
@@ -317,16 +353,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRaw } from 'vue'
-    import { runtimeData } from '../../function/msg'
-    import { runASWEvent as save, get, checkDefault } from '../../function/option'
-    import { BrowserInfo, detect } from 'detect-browser'
     import { getDeviceType } from '@renderer/function/utils/systemUtil'
+import { BrowserInfo, detect } from 'detect-browser'
+import { defineComponent, toRaw } from 'vue'
+import { runtimeData } from '../../function/msg'
+import { checkDefault, get, runASWEvent as save } from '../../function/option'
 
-    import languages from '../../assets/l10n/_l10nconfig.json'
     import { sendStatEvent } from '@renderer/function/utils/appUtil'
-    import { closePopBox, textPopBox } from '@renderer/function/utils/popBox'
-    import { backend } from '@renderer/runtime/backend'
+import { closePopBox, textPopBox } from '@renderer/function/utils/popBox'
+import { backend } from '@renderer/runtime/backend'
+import languages from '../../assets/l10n/_l10nconfig.json'
 
     export default defineComponent({
         name: 'ViewOptTheme',

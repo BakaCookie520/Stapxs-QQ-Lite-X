@@ -102,8 +102,6 @@ function calcMenu(
     const rightSpace = width - xa + SPACE
     const topSpace = ya + SPACE
     const bottomSpace = height - ya + SPACE
-    console.log({ leftSpace, rightSpace, topSpace, bottomSpace })
-    console.log({ width, height })
 
     // 出界处理
     // 左留白

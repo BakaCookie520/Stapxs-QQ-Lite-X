@@ -12,29 +12,37 @@
             'disable-interaction': !allowInteraction || multiselectMode,
         }"
         tag="div">
-        <template v-for="(msgIndex, index) in msgs">
+        <template v-for="(message, index) in msgs">
             <!-- 时间戳 -->
             <NoticeBody
-                v-if="msgIndex.time && isShowTime(msgs.at(index - 1)?.time?.time, msgIndex.time.time)"
-                :key="'notice-time-' + (msgIndex.time.time / ( 4 * 60 )).toFixed(0)"
-                :data="SystemNotice.time(msgIndex.time.time)" />
+                v-if="message.time && isShowTime(msgs.at(index - 1)?.time?.time, message.time.time)"
+                :key="'notice-time-' + (message.time.time / ( 4 * 60 )).toFixed(0)"
+                :data="SystemNotice.time(message.time.time)" />
             <!-- [已删除]消息 -->
             <NoticeBody
                 v-if="
                     !runtimeData.sysConfig.dont_parse_delete &&
-                        msgIndex instanceof Msg &&
-                        msgIndex.isDelete"
-                :key="'delete-' + msgIndex.uuid"
+                        message instanceof Msg &&
+                        message.isDelete"
+                :key="'delete-' + message.uuid"
                 :data="SystemNotice.delete()" />
             <!-- 消息体 -->
-            <MsgBody v-else-if="msgIndex instanceof Msg"
-                :key="'msg-' + msgIndex.uuid"
-                :selected="isSelected(msgIndex)"
-                :data="msgIndex"
-                :config="config"
+            <MsgBody v-else-if="message instanceof Msg"
+                :key="'msg-' + message.uuid"
+                :selected="isSelected(message)"
+                :data="message"
+
+                :direction="getDirection(message)"
+                :special="getSpecial(message)"
+                :show-avatar="getShowAvatar(message)"
+                :show-icon="showIcon"
+                :dim-non-existent-msg="dimNonExistentMsg"
+                :without-avatar="getWithoutAvatar(message)"
+                :show-time="showTime"
+
                 :user-info-pan="userInfoPan"
                 :msg-prev-pan="msgPrevPan"
-                @click="msgClick($event, msgIndex)"
+                @click="msgClick($event, message)"
                 @image-loaded="arg=>$emit('imageLoaded', arg)"
                 @show-msg-menu="(eventData, msg) => openMsgMenu(eventData, msg)"
                 @show-user-menu="(eventData, user) => openUserMenu(eventData, user)"
@@ -43,11 +51,11 @@
                 @sender-double-click="arg => $emit('senderDoubleClick', arg)"
                 @emoji-click="(id, msg) => $emit('emojiClick', id, msg)" />
             <!-- 其他通知消息 -->
-            <NoticeBody v-else-if="msgIndex instanceof Notice"
-                :id="msgIndex.uuid"
+            <NoticeBody v-else-if="message instanceof Notice"
+                :id="message.uuid"
                 :key="'notice-' + index"
                 :user-info-pan="userInfoPan"
-                :data="msgIndex"
+                :data="message"
                 :msg-prev-pan="msgPrevPan" />
         </template>
     </TransitionGroup>
@@ -57,7 +65,7 @@ import {
     shallowReactive,
     shallowRef,
 } from 'vue'
-import MsgBody, { MsgBodyConfig } from './MsgBody.vue'
+import MsgBody from './MsgBody.vue'
 import NoticeBody from './NoticeBody.vue'
 
 import { MenuEventData } from '@renderer/function/elements/information'
@@ -76,19 +84,76 @@ const {
     msgs,
     showMsgMenu,
     showUserMenu,
-    config = {
-        canInteraction: true,
-        specialMe: true,
-        showIcon: true,
-        dimNonExistentMsg: true,
-    },
+
+    direction = 'left',
+    canInteraction = true,
+    showAvatar = true,
+    specialSelf = true,
+    selfDirection,
+    showSelfAvatar,
+    showIcon = true,
+    dimNonExistentMsg = true,
+    withoutAvatar = false,
+    showTime = true,
+
     userInfoPan,
     msgPrevPan,
 } = defineProps<{
     msgs: Message[],
     showMsgMenu?: (eventData: MenuEventData, msg: Msg) => (Promise<void> | void),
     showUserMenu?: (eventData: MenuEventData, user: IUser) => (Promise<void> | void),
-    config?: MsgBodyConfig & { canInteraction?: boolean },
+
+    /**
+     * 消息对齐方向
+     */
+    direction?: 'left' | 'right'
+    /**
+     * 是否允许交互
+     */
+    canInteraction?: boolean
+    /**
+     * 是否显示头像
+     * 注意：这个只是隐藏头像，并不会移除头像占位
+     * 要移除头像占位，请使用 `withoutAvatar` 属性
+     */
+    showAvatar?: boolean
+    /**
+     * 是否对自己的消息使用特殊样式
+     * 如果为 true，则自己的消息会根据 `selfDirection` 属性来决定对齐
+     * 并对自己的消息标注特殊颜色
+     */
+    specialSelf?: boolean
+    /**
+     * 自己的消息对齐方向
+     * 仅在 `specialSelf` 为 true 时有效
+     */
+    selfDirection?: 'left' | 'right'
+    /**
+     * 是否显示自己的头像
+     * 注意：这个只是隐藏头像，并不会移除头像占位
+     * 要移除头像占位，请使用 `withoutAvatar` 属性
+     * 仅在 `specialSelf` 为 true 时有效
+     */
+    showSelfAvatar?: boolean
+    /**
+     * 是否显示消息 icon
+     * 如正在发送中图标，发送失败图标等
+     */
+    showIcon?: boolean
+    /**
+     * 是否将不存在的消息（如正在发送中的消息）变暗显示
+     * 仅在 `showAvatar` 为 true 时有效
+     */
+    dimNonExistentMsg?: boolean
+    /**
+     * 是否移除头像占位
+     */
+    withoutAvatar?: boolean
+    /**
+     * 是否显示时间
+     */
+    showTime?: boolean
+
     userInfoPan?: UserInfoPan,
     msgPrevPan?: MsgPrevPan,
 }>()
@@ -102,7 +167,7 @@ const emit = defineEmits<{
     emojiClick: [id: string, msg: Msg],
 }>()
 
-const allowInteraction = shallowRef<boolean>(config.canInteraction ?? true)
+const allowInteraction = shallowRef<boolean>(canInteraction ?? true)
 const multiselectMode = shallowRef<boolean>(false)
 const multipleSelectList = shallowReactive<Set<Msg>>(new Set)
 const multipleSelectListCardNum = shallowRef<number>(0)
@@ -243,6 +308,35 @@ function toggleMsgInMultiselectList(msg: Msg) {
         multipleSelectList.delete(msg)
         if (msg.hasCard()) multipleSelectListCardNum.value --
     }
+}
+//#endregion
+
+
+//#region ====配置相关==============================================
+function getDirection(msg: Msg): 'left' | 'right' {
+    if (runtimeData.loginInfo.uin !== msg.sender.user_id) return direction
+    if (!specialSelf) return direction
+    return selfDirection ?? direction
+}
+
+function getSpecial(msg: Msg): boolean {
+    if (!specialSelf) return false
+    return msg.sender.user_id === runtimeData.loginInfo.uin
+}
+
+function getShowAvatar(msg: Msg): boolean {
+    if (msg.sender.user_id !== runtimeData.loginInfo.uin) return showAvatar
+    if (!specialSelf) return showAvatar
+    return showSelfAvatar ?? showAvatar
+}
+
+function getWithoutAvatar(msg: Msg): boolean {
+    if (withoutAvatar) return true
+    if (msg.sender.user_id !== runtimeData.loginInfo.uin) return false
+    if (!specialSelf) return false
+    if (getShowAvatar(msg)) return false
+    if (selfDirection === direction) return false
+    return true
 }
 //#endregion
 

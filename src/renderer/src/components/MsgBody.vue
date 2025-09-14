@@ -14,14 +14,17 @@
         ref="msgMain"
         :class="{
             'message': true,
-            'me': needSpecialMe(),
+            'left': direction === 'left',
+            'right': direction === 'right',
             'selected': selected,
+            'without-avatar': withoutAvatar
         }"
         :data-raw="data.plaintext()"
         :data-sender="data.sender.user_id"
         :data-time="data.time"
         @mouseleave="hiddenUserInfo">
-        <img v-show="!needSpecialMe()"
+        <img v-if="direction === 'left'" v-hide="!showAvatar"
+            class="avatar"
             v-menu.prevent="event => $emit('showUserMenu', event, data.sender)"
             v-long-hover
             :src="data.sender.face"
@@ -33,38 +36,43 @@
             )"
             @v-long-hover-end="userInfoPan?.close()"
             @dblclick="$emit('senderDoubleClick', data.sender)">
-        <div v-if="needSpecialMe()"
+        <div v-if="direction === 'right'"
             class="message-space" />
         <div :class="{
             'message-body': true,
-            'me': needSpecialMe(),
+            'special': special,
+            'hide-face': !showAvatar,
         }">
-            <!-- 一帮头衔之类的 -->
-            <template v-if="data.sender instanceof Member && !needSpecialMe()">
-                <span v-user-role="data.sender.role">
-                    <template v-if="data.sender.role === Role.Bot">
-                        <font-awesome-icon :icon="['fas', 'robot']" />
-                    </template>
-                    <template v-if="data.sender.level">
-                        {{ 'Lv.' + data.sender.level }}
-                    </template>
-                    <template v-if="data.sender.title">
-                        {{ data.sender.title.replace(/[\u202A-\u202E\u2066-\u2069]/g, '') }}
-                    </template>
-                </span>
-            </template>
-            <a v-show="!needSpecialMe()">
-                {{ data.sender.name }}
-            </a>
-            <a v-if="selected" class="time">
-                {{ data.time?.format('year') }}
-            </a>
+            <div class="message-info">
+                <a v-if="showTime && direction === 'right'" :class="{ 'force-show': selected, 'time': true }">
+                    {{ data.time?.format('year') }}
+                </a>
+                <!-- 一帮头衔之类的 -->
+                <template v-if="data.sender instanceof Member && showAvatar">
+                    <span v-user-role="data.sender.role">
+                        <template v-if="data.sender.role === Role.Bot">
+                            <font-awesome-icon :icon="['fas', 'robot']" />
+                        </template>
+                        <template v-if="data.sender.level">
+                            {{ 'Lv.' + data.sender.level }}
+                        </template>
+                        <template v-if="data.sender.title">
+                            {{ data.sender.title.replace(/[\u202A-\u202E\u2066-\u2069]/g, '') }}
+                        </template>
+                    </span>
+                </template>
+                <a v-if="showAvatar" class="sender-name">
+                    {{ data.sender.name }}
+                </a>
+                <a v-if="showTime && direction === 'left'" :class="{ 'force-show': selected, 'time': true }">
+                    {{ data.time?.format('year') }}
+                </a>
+            </div>
             <div class="message-content">
-                <div v-if="data.icon && getConfig('showIcon')" :class="{
+                <div v-if="data.icon && showIcon && direction === 'right'" :class="{
                     rotate: data.icon.rotate,
                     icon: true,
                     left: true,
-                    me: needSpecialMe(),
                 }">
                     <div @click="data.iconClick">
                         <font-awesome-icon
@@ -77,7 +85,7 @@
                 <div v-menu.prevent="event => $emit('showMsgMenu', event, data)"
                     :class="{
                         'main': true,
-                        'not-exist': !data.exist && getConfig('dimNonExistentMsg')
+                        'not-exist': !data.exist && dimNonExistentMsg
                     }"
                     v-move="moveOptions"
                     @v-move-left.prevent="$emit('leftMove', data)"
@@ -101,7 +109,6 @@
                             <span v-else-if="isDebugMsg" class="msg-text">{{ item }}</span>
                             <template v-else-if="item instanceof TxtSeg">
                                 <div v-if="hasMarkdown()" class="msg-md-title" />
-                                <!-- {{ item.text }} -->
                                 <span v-else v-show="item.praseMsg !== ''"
                                     class="msg-text" @click="textClick" v-html="item.praseMsg" />
                             </template>
@@ -125,15 +132,14 @@
                             <template v-else-if="item instanceof FaceSeg">
                                 <EmojiFace :emoji="item.face" class="msg-face" />
                             </template>
-                            <div v-else-if="item instanceof AtSeg"
-                                :class="{
-                                    'msg-at': true,
-                                    'me': needSpecialMe(),
-                                    'atme': item.user_id == runtimeData.loginInfo.uin,
-                                }">
+                            <template v-else-if="item instanceof AtSeg">
                                 <a :data-id="item.user_id"
                                     :data-group="data.session?.id"
                                     v-long-hover
+                                    :class="{
+                                        'msg-at': true,
+                                        'atme': item.user_id === runtimeData.loginInfo.uin && showToMe,
+                                    }"
                                     @v-long-hover="userInfoPan?.open(
                                         getAtMember(item.user_id),
                                         ($event.detail as MenuEventData).x,
@@ -142,18 +148,16 @@
                                     @v-long-hover-end="userInfoPan?.close()">
                                     {{ item.plaintext(data) }}
                                 </a>
-                            </div>
-                            <div v-else-if="item instanceof AtAllSeg"
-                                :class="{
+                            </template>
+                            <template v-else-if="item instanceof AtAllSeg">
+                                <a :class="{
                                     'msg-at': true,
-                                    'atme': true,
+                                    'atme': showToMe,
                                 }">
-                                <a>@{{ $t('全体成员') }}</a>
-                            </div>
-                            <div v-else-if="item instanceof FileSeg" :class="{
-                                'msg-file': true,
-                                'me': needSpecialMe(),
-                            }">
+                                    @{{ $t('全体成员') }}
+                                </a>
+                            </template>
+                            <div v-else-if="item instanceof FileSeg" class=msg-file>
                                 <div>
                                     <div>
                                         <a>
@@ -258,10 +262,7 @@
                             </template>
                             <div v-else-if="item instanceof ReplySeg"
                                 v-long-hover
-                                :class="{
-                                    'msg-reply': true,
-                                    'me': needSpecialMe(),
-                                }"
+                                class="msg-reply"
                                 @click="scrollToMsg(item.id)"
                                 @v-long-hover="msgPrevPan?.open(
                                     data.session?.getMsgById(item.id) ?
@@ -297,10 +298,7 @@
                     <div v-if="pageViewInfo !== undefined && Object.keys(pageViewInfo).length > 0"
                         :class="'msg-link-view ' + linkViewStyle">
                         <template v-if="pageViewInfo.type == undefined">
-                            <div :class="{
-                                bar: true,
-                                me: needSpecialMe()
-                            }" />
+                            <div class="bar" />
                             <div>
                                 <img v-if="pageViewInfo.img !== undefined"
                                     :id="data.uuid + '-linkview-img'"
@@ -355,7 +353,7 @@
                                 <div>
                                     <img :src="pageViewInfo.data.cover"
                                         :alt="'[' + $t('图片') + ']'">
-                                    <div :id="'music163-audio-' + data.uuid" :class="{me: needSpecialMe()}">
+                                    <div :id="'music163-audio-' + data.uuid">
                                         <a>{{ pageViewInfo.data.info.name }}
                                             <a v-if="pageViewInfo.data.info.free != null">{{ $t('（试听）') }}</a>
                                         </a>
@@ -380,11 +378,9 @@
                         </template>
                     </div>
                 </div>
-                <div v-if="data.icon && getConfig('showIcon')" :class="{
+                <div v-if="data.icon && showIcon && direction === 'left'" :class="{
                     rotate: data.icon.rotate,
-                    right: true,
                     icon: true,
-                    me: needSpecialMe(),
                 }">
                     <div @click="data.iconClick">
                         <font-awesome-icon
@@ -396,10 +392,22 @@
                 </div>
             </div>
         </div>
+        <img v-if="direction === 'right'" v-hide="!showAvatar"
+            v-menu.prevent="event => $emit('showUserMenu', event, data.sender)"
+            v-long-hover
+            class="avatar"
+            :src="data.sender.face"
+            :alt="data.sender.name"
+            @v-long-hover="userInfoPan?.open(
+                data.sender,
+                ($event.detail as MenuEventData).x,
+                ($event.detail as MenuEventData).y,
+            )"
+            @v-long-hover-end="userInfoPan?.close()"
+            @dblclick="$emit('senderDoubleClick', data.sender)">
         <div v-if="data.emojis"
             :class="{
                 'emoji-like': true,
-                'me': needSpecialMe(),
             }">
             <div class="emoji-like-body">
                 <TransitionGroup name="emoji-like">
@@ -468,11 +476,12 @@ import {
     getViewTime
 } from '@renderer/function/utils/systemUtil'
 import {
+    vHide,
     vLongHover,
     vMenu,
     vMove,
     VMoveOptions,
-    vUserRole,
+    vUserRole
 } from '@renderer/function/utils/vcmd'
 import { backend } from '@renderer/runtime/backend'
 import {
@@ -485,17 +494,55 @@ import { MsgPrevPan } from './MsgPrevPan.vue'
 const {
     data,
     selected,
-    config = {
-        specialMe: true,
-        showIcon: true,
-        dimNonExistentMsg: true,
-    },
     userInfoPan,
     msgPrevPan,
+    showIcon = true,
+    dimNonExistentMsg = true,
+    special = false,
+    showToMe = true,
+    direction = 'left',
+    showAvatar = true,
+    showTime = true,
+    withoutAvatar = false,
 } = defineProps<{
     data: Msg | SelfMsg
     selected?: boolean
-    config: MsgBodyConfig
+    /**
+     * 显示消息icon（如发送中，发送失败）
+     */
+    showIcon?: boolean
+    /**
+     * 淡化不存在的消息（如正在发送中消息）
+     */
+    dimNonExistentMsg?: boolean
+    /**
+     * 特殊消息（如自己发的消息等）
+     */
+    special?: boolean
+    /**
+     * @我自己时高亮
+     */
+    showToMe?: boolean
+    /**
+     * 消息对齐方向（左侧/右侧）
+     */
+    direction?: 'left' | 'right'
+    /**
+     * 显示头像
+     * 设置为 false 时隐藏头像。
+     * 想移除头像占位请使用 withoutAvatar 选项
+     * 如果设为 true 不显示头像，请检查 withoutAvatar 选项
+     */
+    showAvatar?: boolean
+    /**
+     * 移除头像占位
+     * 设置为 true 时移除头像占位
+     */
+    withoutAvatar?: boolean
+    /**
+     * 显示时间
+     */
+    showTime?: boolean
     userInfoPan?: UserInfoPan
     msgPrevPan?: MsgPrevPan
 }>()
@@ -553,7 +600,6 @@ defineExpose({
     setupProps: {
         data,
         selected,
-        config,
         userInfoPan
     },
 })
@@ -1114,21 +1160,6 @@ defineExpose({
                 }
                 runtimeData.mergeMsgStack.push(seg)
             },
-
-            //#region ==配置相关================================
-            getConfig(key: keyof MsgBodyConfig): boolean {
-                const defaultConfig: MsgBodyConfig = {
-                    specialMe: true,
-                    showIcon: true,
-                    dimNonExistentMsg: true,
-                }
-                if (this.config[key] != undefined) return this.config[key]
-                return defaultConfig[key] as boolean
-            },
-            needSpecialMe() {
-                return this.getConfig('specialMe') && this.isMe
-            },
-            //#endregion
         },
     })
 </script>
@@ -1166,7 +1197,7 @@ defineExpose({
         margin: auto;
         margin-left: 10px;
     }
-    .emoji-like-body .emoji {
+    .emoji-like-body .emoji-face {
         width: 20px;
         height: 20px;
         font-size: 1rem;
@@ -1199,16 +1230,6 @@ defineExpose({
         to {
             opacity: 1;
             transform: scaleX(1);
-        }
-    }
-
-    @container message-body (min-width: 49.5rem) {
-        .emoji-like.me {
-            flex-direction: row-reverse;
-        }
-        .emoji-like.me > div.emoji-like-body {
-            flex-direction: row-reverse;
-            margin-right: -5px;
         }
     }
 

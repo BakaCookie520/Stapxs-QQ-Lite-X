@@ -34,26 +34,26 @@
 </template>
 
 <script setup lang="ts">
-import TinySessionBody from '@renderer/components/TinySessionBody.vue'
 import MsgBar from '@renderer/components/MsgBar.vue'
+import TinySessionBody from '@renderer/components/TinySessionBody.vue'
 
-import { runtimeData } from '@renderer/function/msg'
-import { markRaw } from 'vue'
+import { Logger, PopInfo, PopType } from '@renderer/function/base'
 import { Msg, SelfMsg, SelfPreMsg } from '@renderer/function/model/msg'
 import { Session } from '@renderer/function/model/session'
+import { runtimeData } from '@renderer/function/msg'
+import { changeSession } from '@renderer/function/utils/msgUtil'
+import { popBox } from '@renderer/function/utils/popBox'
+import { vAutoFocus, vSearch } from '@renderer/function/utils/vcmd'
+import app from '@renderer/main'
 import {
+    computed,
+    h,
+    markRaw,
+    nextTick,
+    shallowReactive,
     shallowRef,
     ShallowRef,
-    shallowReactive,
-    computed,
-    nextTick,
 } from 'vue'
-import app from '@renderer/main'
-import { changeSession } from '@renderer/function/utils/msgUtil'
-import { vSearch } from '@renderer/function/utils/vcmd'
-import { popBox } from '@renderer/function/utils/popBox'
-import { vAutoFocus } from '@renderer/function/utils/vcmd'
-import { Logger, PopInfo, PopType } from '@renderer/function/base'
 
 //#region == 声明/导出变量 ===========================================================
 // 变量
@@ -122,12 +122,20 @@ async function runForward(){
 
     popBox({
         title: title,
-        template: MsgBar,
-        templateValue: markRaw({ msgs: previewMsg, config: {
-            canInteraction: false,
-            showIcon: false,
-            dimNonExistentMsg: false,
-        } }),
+        template: () => h(
+            'div',
+            {style: {overflowY: 'auto'}},
+            [h(
+                MsgBar,
+                markRaw({
+                    msgs: previewMsg,
+                    canInteraction: false,
+                    showIcon: false,
+                    dimNonExistentMsg: false,
+                    withoutAvatar: true,
+                })
+            )]
+        ),
         button: [{
             text: $t('取消'),
         }, {

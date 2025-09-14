@@ -87,12 +87,14 @@
                 <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />
                 <span>{{ $t('的') }}</span>
                 <a v-long-hover
+                    class="cursor-pointer"
                     @v-long-hover="msgPrevPan?.open(
                         [data.msg],
                         ($event.detail as MenuEventData).x,
                         ($event.detail as MenuEventData).y,
                     )"
-                    @v-long-hover-end="msgPrevPan?.close()">
+                    @v-long-hover-end="msgPrevPan?.close()"
+                    @click="scrollToMsg(data.msg)">
                     {{ $t('消息') }}
                 </a>
                 <span>:</span>
@@ -134,6 +136,7 @@ import {
     ResponseNotice,
     TimeNotice
 } from '@renderer/function/model/notice';
+import { scrollToMsg } from '@renderer/function/utils/appUtil';
 import { vLongHover } from '@renderer/function/utils/vcmd';
 import { usePasttime } from '@renderer/function/utils/vuse';
 import {

@@ -14,9 +14,11 @@
     font-size: 1rem;
     flex-wrap: wrap;
 }
+
 .message.selected {
     background: #0000001d;
 }
+
 .message.forward {
     border: 2px solid var(--color-card-2);
     width: calc(100% - 45px);
@@ -24,90 +26,118 @@
     overflow-y: scroll;
     max-height: 40vh;
 }
-.message > img {
+
+.message > img.avatar {
     width: 35px;
     height: 35px;
     border-radius: 7px;
+}
+
+.message.left > img.avatar {
     margin: 10px 15px 0 0;
 }
-div.icon {
-    display: flex;
-    height: auto;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 3px;
-    align-items: flex-end;
+
+.message.right > img.avatar {
+    margin: 10px 0 0 15px;
 }
-div.icon > div {
-    width: 1rem;
-    height: 1rem;
-    padding: 10%;
-    border-radius: 30%;
-    transition: 0.1s;
-}
-div.icon > div:hover {
-    background-color: var(--color-card-1);
-}
-div.icon > div > svg {
-  opacity: 0.8;
-  width: 0.8rem;
-}
-div.icon.left {
-  display: none;
-}
-div.icon.left.me {
-  display: flex;
-}
-div.icon.right.me {
-  display: none;
-}
-div.rotate > div > svg {
-    animation: rotate 1.5s linear infinite;
+
+.without-avatar img.avatar {
+    display: none;
 }
 
 .message-body {
     color: var(--color-font);
-    max-width: 60%;
+    width: calc(100% - 50px);
+    max-width: calc(0.6 * (100vw - 375px));
+    display: flex;
+    flex-direction: column;
 }
-.message-body.me {
+
+.without-avatar .message-body {
+    width: 100%;
+}
+
+.right .message-body {
+    justify-content: end;
+}
+
+.right .message-body > .message-content {
+    justify-content: end;
+}
+
+.message-body.special {
     color: var(--color-font-r);
 }
-.message.merge > div.message-body {
-    max-width: calc(100% - 50px);
+
+.message-body.hide-face {
+    margin-top: -1rem;
 }
+
+.message.merge > div.message-body {
+    width: calc(100% - 50px);
+}
+
 .message-body a {
     color: var(--color-font);
 }
-.message-body.me a {
+
+.message-body.special a {
     color: var(--color-font-r);
 }
+
 .message-body a:link {
     text-decoration: underline;
     display: inline-block;
     padding: 0 5px;
     opacity: 0.8;
 }
+
 .message-body a:link:before {
     text-align: center;
     content: '🔗';
     color: transparent;
     text-shadow: 0 0 0 var(--color-font-1);
 }
-.message-body.me a:link::before {
+
+.message-body.special a:link::before {
     text-shadow: 0 0 0 var(--color-font-1-r);
 }
-.message-body > a {
+
+.message-info {
+    display: flex;
+}
+
+.right .message-info {
+    justify-content: end;
+}
+
+.message-info > a {
     color: var(--color-font-1);
-    display: inline-block;
+    display: inline;
     font-size: 0.9rem;
     margin: 0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: keep-all;
 }
-.message-body > a.time {
+
+.message-info > a.time {
+    transition: opacity 0.3s;
     color: var(--color-font-2);
     font-size: 0.75rem;
+    opacity: 0.0;
+}
+
+.message-info > a.time:hover,
+.message-info > a.time.force-show {
     opacity: 0.7;
 }
-.message-body.me > div.message-content > div.main {
+
+.message-info > a.sender-name {
+    color: var(--color-font-1);
+}
+
+.message-body.special > div.message-content > div.main {
     background: var(--color-main);
 }
 
@@ -115,6 +145,7 @@ div.rotate > div > svg {
     display: flex;
     width: 100%;
 }
+
 .message-content > div.main {
     background: var(--color-card-1);
     border-radius: 7px;
@@ -135,9 +166,11 @@ div.rotate > div > svg {
     background: var(--color-main) !important;
     color: var(--color-font-r) !important;
 }
+
 .message-mine a {
     color: var(--color-font-r) !important;
 }
+
 .message-mine a:link {
     opacity: 0.8;
 }
@@ -148,12 +181,13 @@ div.rotate > div > svg {
     color: transparent;
     text-shadow: 0 0 0 var(--color-font-1-r);
 }
+
 .message-mine svg {
     color: var(--color-font-r) !important;
 }
 
 .msg-inline {
-    display: inline-block;
+    display: inline;
 }
 
 .msg-text {
@@ -170,10 +204,12 @@ div.rotate > div > svg {
     display: flex;
     margin: 0;
 }
+
 .msg-md img {
     border-radius: 7px;
     max-width: 100%;
 }
+
 .msg-md blockquote {
     border-left: 3px solid var(--color-font-2);
     color: var(--color-font-2);
@@ -198,27 +234,31 @@ div.rotate > div > svg {
     display: block;
     max-width: 100%;
 }
+
 .msg-img.top {
     margin: 0 0 5px 0;
 }
+
 .msg-img.bottom {
     margin: 5px 0 0 5px;
 }
+
 .msg-img.alone {
     border: 1px solid var(--color-main);
     max-width: calc(100% + 20px);
     margin: -10px;
 }
+
 .msg-img.face {
-	max-width: calc(var(--width) / 2 + 20px);
+    max-width: calc(var(--width) / 2 + 20px);
 }
 
 .msg-face {
     width: 1.5rem;
     height: 1.5rem;
     margin: 0 2px -5px 2px;
-    /* image-rendering: pixelated; */
 }
+
 .msg-face-svg {
     color: var(--color-font-1);
     margin: -5px 2px -3px 2px;
@@ -226,19 +266,24 @@ div.rotate > div > svg {
     width: 1.2rem;
     opacity: 0.7;
 }
+
 .msg-face-svg.me {
     color: var(--color-font-1-r);
 }
+
 .msg-face-long > span {
     display: inline-block;
     margin: 5px 0;
 }
+
 .msg-face-long > span:nth-child(odd) {
     transform: translateY(5px);
 }
+
 .msg-face-long > span:nth-child(even) {
     transform: translateY(-5px);
 }
+
 .msg-face-long > span:nth-child(3n) {
     opacity: 0;
     width: 8px;
@@ -249,21 +294,20 @@ div.rotate > div > svg {
 }
 
 .msg-at {
-    display: inline-block;
-}
-.msg-at > a {
     color: var(--color-main) !important;
-    /* text-decoration: underline; */
     cursor: pointer;
     padding: 3px;
+    display: inline-block;
 }
-.msg-at.me > a {
-    color: var(--color-font-r) !important;
-}
-.msg-at.atme > a {
+
+.msg-at.atme {
     color: var(--color-font-r) !important;
     background: var(--color-main);
     border-radius: 4px;
+}
+
+.message-body.special .msg-at {
+    color: var(--color-main-r) !important;
 }
 
 .msg-reply {
@@ -275,6 +319,7 @@ div.rotate > div > svg {
     height: 0.9rem;
     padding: 10px;
 }
+
 .msg-reply a {
     line-height: calc(0.9rem + 10px);
     margin-left: calc(1rem + 10px);
@@ -283,14 +328,15 @@ div.rotate > div > svg {
     margin-top: -5px;
     display: block;
 }
+
 .msg-reply svg {
     margin-bottom: calc(-1rem - 5px);
-    color: var(--color-font-1);
     margin-right: 5px;
     margin-top: 1px;
     display: block;
     height: 1rem;
 }
+
 .msg-reply.me svg {
     color: var(--color-font-1-r);
 }
@@ -298,12 +344,15 @@ div.rotate > div > svg {
 .msg-xml {
     padding: 5px 15px;
 }
+
 .msg-xml p {
     margin-bottom: 2px;
 }
+
 .msg-xml hr {
     display: none;
 }
+
 .msg-xml-summary {
     display: block;
     font-size: 0.9rem;
@@ -312,6 +361,7 @@ div.rotate > div > svg {
     padding: 5px 5px 5px 10px;
     border-radius: 0 0 7px 7px;
 }
+
 .msg-xml-img {
     width: 3rem;
     float: right;
@@ -322,13 +372,16 @@ div.rotate > div > svg {
     display: flex;
     margin: 0 5px;
 }
+
 .msg-record > i {
     display: inline-block;
     font-size: 2rem;
 }
+
 .msg-record > div {
     margin-left: 10px;
 }
+
 .msg-record > div a {
     line-height: 2rem;
 }
@@ -338,6 +391,7 @@ div.rotate > div > svg {
     border-radius: 7px;
     overflow: hidden;
 }
+
 .msg-video video {
     width: 100%;
     max-height: 50vh;
@@ -350,32 +404,39 @@ div.rotate > div > svg {
     align-items: center;
     flex-wrap: wrap;
 }
+
 .msg-file svg {
     color: var(--color-font-1);
 }
+
 .msg-file.me svg {
     color: var(--color-font-1-r);
 }
+
 .msg-file > div:nth-child(1) {
     display: flex;
     flex-direction: column;
     flex: 1;
 }
+
 .msg-file > div:nth-child(1) a {
     font-size: 0.75rem;
     display: block;
     opacity: 0.7;
 }
+
 .msg-file > div:nth-child(1) i {
     font-size: 0.8rem;
     font-style: normal;
     overflow-wrap: anywhere;
 }
+
 .msg-file > div:nth-child(1) p {
     display: inline-block;
     font-size: 1rem;
     margin: 5px 0 0 0;
 }
+
 .msg-file > div:nth-child(2) {
     background: #0000002e;
     border-radius: 100%;
@@ -383,16 +444,19 @@ div.rotate > div > svg {
     margin-right: 5px;
     cursor: pointer;
 }
+
 .msg-file > div:nth-child(2) svg {
     margin: 15px 10px 10px 10px;
     height: 20px;
     width: 27px;
 }
+
 .msg-file > div:nth-child(2) svg.download-bar {
     --main-size: 24px;
     margin: 3px 1px -4px 0 !important;
     padding: 10px;
 }
+
 .msg-file.me > div:nth-child(2) svg.download-bar > circle:last-child {
     stroke: var(--color-card-2);
 }
@@ -405,6 +469,7 @@ div.rotate > div > svg {
     margin-top: 7px;
     padding: 10px;
 }
+
 .msg-link-view > div.bar {
     width: 5px;
     min-width: 5px;
@@ -412,13 +477,16 @@ div.rotate > div > svg {
     border-radius: 5px;
     margin-right: 7px;
 }
+
 .msg-link-view > div.bar.me {
     background: var(--color-font-r);
     opacity: 0.6;
 }
+
 .msg-link-view > div {
     display: flex;
 }
+
 .msg-link-view > div > img {
     border-radius: 7px;
     margin-right: 7px;
@@ -426,26 +494,32 @@ div.rotate > div > svg {
     max-height: 7rem;
     max-width: 50%;
 }
+
 .msg-link-view > div > div.body {
     flex-direction: column;
     display: flex;
 }
+
 .msg-link-view > div > div.body p {
     font-weight: bold;
     margin-bottom: 0;
 }
+
 .msg-link-view > div > div.body span {
     font-size: 0.9rem;
 }
+
 .msg-link-view > div > div.body span:nth-child(3) {
     font-size: 0.8rem;
     opacity: 0.7;
 }
+
 .msg-link-view.large > div {
     flex-direction: column-reverse;
     align-items: center;
     display: flex;
 }
+
 .msg-link-view.large > div > img {
     margin-bottom: 5px;
     border-radius: 7px;
@@ -457,14 +531,17 @@ div.rotate > div > svg {
 .msg-json {
     cursor: pointer;
 }
+
 .msg-json > p {
     font-weight: bold;
     margin: 0;
 }
+
 .msg-json > span {
     opacity: 0.7;
     font-size: 0.9rem;
 }
+
 .msg-json > img {
     max-width: 100%;
     height: 25vh;
@@ -474,6 +551,7 @@ div.rotate > div > svg {
     margin-left: 50%;
     transform: translate(-50%);
 }
+
 .msg-json > div:nth-child(4) {
     display: flex;
     flex-direction: row;
@@ -483,15 +561,47 @@ div.rotate > div > svg {
     border-radius: 0 0 7px 7px;
     padding: 5px;
 }
+
 .msg-json > div:nth-child(4) > img {
     height: 1.1rem;
     border-radius: 5px;
     margin-left: 7px;
 }
+
 .msg-json > div:nth-child(4) > span {
     font-size: 0.9rem;
     opacity: 0.7;
     margin-left: 7px;
+}
+
+div.icon {
+    display: flex;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    align-items: flex-end;
+}
+
+div.icon > div {
+    width: 1rem;
+    height: 1rem;
+    padding: 10%;
+    border-radius: 30%;
+    transition: 0.1s;
+}
+
+div.icon > div:hover {
+    background-color: var(--color-card-1);
+}
+
+div.icon > div > svg {
+    opacity: 0.8;
+    width: 0.8rem;
+}
+
+div.rotate > div > svg {
+    animation: rotate 1.5s linear infinite;
 }
 
 span.user-title {
@@ -504,12 +614,15 @@ span.user-title {
     border-radius: 0.5rem;
     padding: 1px 4px;
 }
+
 span.user-title.owner {
     background: var(--color-yellow);
 }
+
 span.user-title.admin {
     background: var(--color-green);
 }
+
 span.user-title.robot {
     background: var(--color-blue);
 }
@@ -517,10 +630,12 @@ span.user-title.robot {
 .loading {
     opacity: 0.0;
 }
+
 .loading > svg {
     animation: rotate 1.5s linear infinite;
 }
-.loading > .show{
+
+.loading > .show {
     opacity: 1.0;
 }
 
@@ -528,13 +643,16 @@ span.user-title.robot {
     cursor: pointer;
     width: var(--merge-forward-width);
 }
+
 .msg-raw-forward > span {
     font-weight: bold;
 }
+
 .msg-raw-forward > div.forward-msg {
     display: block;
     margin: 15px 15px 5px 15px;
 }
+
 .msg-raw-forward > div.forward-msg > div {
     font-size: 0.9rem;
     opacity: 0.7;
@@ -542,6 +660,7 @@ span.user-title.robot {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .msg-raw-forward > div:last-child {
     display: flex;
     flex-direction: row;
@@ -552,15 +671,18 @@ span.user-title.robot {
     padding: 5px;
     font-size: 0.9rem;
 }
+
 .msg-raw-forward > div:last-child > span {
     opacity: 0.7;
     margin-left: 7px;
 }
+
 .note {
     justify-content: center;
     margin: 10px 0;
     display: flex;
 }
+
 .note-base {
     border-radius: calc(3rem + 30px);
     background: var(--color-card-1);
@@ -568,24 +690,26 @@ span.user-title.robot {
     padding: 5px 30px;
     font-size: 0.8rem;
     display: flex;
-}
-.note-base {
     transition: border 0.5s;
     border: 1px solid transparent;
 }
+
 .note-base img {
     display: inline-block;
     height: 1rem;
     margin: 0 3px;
 }
+
 .note-base a {
     margin: 0 3px;
     color: var(--color-main);
     font-weight: bold;
 }
+
 .note.poking > div.note-notify {
     border: 1px solid var(--color-main);
 }
+
 .note-base > a.me {
     color: var(--color-font-1);
 }
@@ -598,6 +722,7 @@ span.user-title.robot {
     opacity: 0.5;
     width: 80%;
 }
+
 .note-nomsg > a {
     background: var(--color-card);
     color: var(--color-font);
@@ -606,6 +731,7 @@ span.user-title.robot {
     padding: 0 20px;
     z-index: 1;
 }
+
 .note-nomsg > hr {
     border-style: inset !important;
     border: 0 !important;
@@ -630,10 +756,12 @@ span.user-title.robot {
     max-height: 30vh;
     max-width: 100%;
 }
+
 .file-view > video {
     margin: -10px;
     width: 100%;
 }
+
 .file-view > span.txt {
     font-family: monospace;
     white-space: pre-wrap;
@@ -641,6 +769,7 @@ span.user-title.robot {
     opacity: 0.6;
     width: 100%;
 }
+
 .file-view > span.txt > a {
     display: block;
     width: 100%;
@@ -649,28 +778,4 @@ span.user-title.robot {
 .message-body-container {
     container-type: inline-size;
     container-name: message-body;
-}
-
-@container message-body (max-width: 49.5rem) {
-    /* 消息体 */
-    .message > img {
-        display: unset !important;
-    }
-    .message-space {
-        display: none;
-    }
-    .message-body {
-        max-width: calc(100% - 50px);
-    }
-    .message-body > a:first-child {
-        color: var(--color-font-1) !important;
-        display: unset !important;
-    }
-
-    div.icon.left.me {
-        display: none;
-    }
-    div.icon.right.me {
-        display: flex;
-    }
 }
