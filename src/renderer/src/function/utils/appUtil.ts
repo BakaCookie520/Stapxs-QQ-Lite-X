@@ -34,7 +34,7 @@ const logger = new Logger()
  * @param showHighlight 是否高亮显示
  * @returns 跳转是否成功
  */
-export function scrollToMsg(msg: Message, showAnimation: boolean, showHighlight = true): boolean {
+export function scrollToMsg(msg: Message, showAnimation: boolean = true, showHighlight = true): boolean {
     if (msg.session === undefined) return false
     if (msg.session !== runtimeData.nowChat) return false
     if (msg.session.isActive === false) return false
