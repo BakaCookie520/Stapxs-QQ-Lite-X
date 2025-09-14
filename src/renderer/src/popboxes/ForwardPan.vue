@@ -47,6 +47,7 @@ import { vAutoFocus, vSearch } from '@renderer/function/utils/vcmd'
 import app from '@renderer/main'
 import {
     computed,
+    h,
     markRaw,
     nextTick,
     shallowReactive,
@@ -121,14 +122,20 @@ async function runForward(){
 
     popBox({
         title: title,
-        template: MsgBar,
-        templateValue: markRaw({
-            msgs: previewMsg,
-            canInteraction: false,
-            showIcon: false,
-            dimNonExistentMsg: false,
-            withoutAvatar: true,
-        }),
+        template: () => h(
+            'div',
+            {style: {overflowY: 'auto'}},
+            [h(
+                MsgBar,
+                markRaw({
+                    msgs: previewMsg,
+                    canInteraction: false,
+                    showIcon: false,
+                    dimNonExistentMsg: false,
+                    withoutAvatar: true,
+                })
+            )]
+        ),
         button: [{
             text: $t('取消'),
         }, {
