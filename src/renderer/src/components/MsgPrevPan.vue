@@ -1,5 +1,5 @@
 <!--
- * @FileDescription: 群成员消息悬浮窗
+ * @FileDescription: 消息预览框
  * @Author: Mr.Lee
  * @Date: 2025/09/12
  * @Version: 1.0
@@ -14,7 +14,9 @@
                 <div v-else class="ss-card" ref="body">
                     <MsgBar
                         :msgs="data.msgs"
-                        :config="{canInteraction: false}" />
+                        :without-avatar="data.msgs.length === 1 ? true : false"
+                        :can-interaction="false"
+                        :show-time="false" />
                 </div>
             </div>
         </Transition>

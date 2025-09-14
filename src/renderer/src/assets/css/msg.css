@@ -27,73 +27,61 @@
     max-height: 40vh;
 }
 
-.message > img {
+.message > img.avatar {
     width: 35px;
     height: 35px;
     border-radius: 7px;
+}
+
+.message.left > img.avatar {
     margin: 10px 15px 0 0;
 }
 
-div.icon {
-    display: flex;
-    height: auto;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 3px;
-    align-items: flex-end;
+.message.right > img.avatar {
+    margin: 10px 0 0 15px;
 }
 
-div.icon > div {
-    width: 1rem;
-    height: 1rem;
-    padding: 10%;
-    border-radius: 30%;
-    transition: 0.1s;
-}
-
-div.icon > div:hover {
-    background-color: var(--color-card-1);
-}
-
-div.icon > div > svg {
-    opacity: 0.8;
-    width: 0.8rem;
-}
-
-div.icon.left {
+.without-avatar img.avatar {
     display: none;
-}
-
-div.icon.left.me {
-    display: flex;
-}
-
-div.icon.right.me {
-    display: none;
-}
-
-div.rotate > div > svg {
-    animation: rotate 1.5s linear infinite;
 }
 
 .message-body {
     color: var(--color-font);
-    max-width: 60%;
+    width: calc(100% - 50px);
+    max-width: calc(0.6 * (100vw - 375px));
+    display: flex;
+    flex-direction: column;
 }
 
-.message-body.me {
+.without-avatar .message-body {
+    width: 100%;
+}
+
+.right .message-body {
+    justify-content: end;
+}
+
+.right .message-body > .message-content {
+    justify-content: end;
+}
+
+.message-body.special {
     color: var(--color-font-r);
 }
 
+.message-body.hide-face {
+    margin-top: -1rem;
+}
+
 .message.merge > div.message-body {
-    max-width: calc(100% - 50px);
+    width: calc(100% - 50px);
 }
 
 .message-body a {
     color: var(--color-font);
 }
 
-.message-body.me a {
+.message-body.special a {
     color: var(--color-font-r);
 }
 
@@ -111,24 +99,45 @@ div.rotate > div > svg {
     text-shadow: 0 0 0 var(--color-font-1);
 }
 
-.message-body.me a:link::before {
+.message-body.special a:link::before {
     text-shadow: 0 0 0 var(--color-font-1-r);
 }
 
-.message-body > a {
-    color: var(--color-font-1);
-    display: inline-block;
-    font-size: 0.9rem;
-    margin: 0 5px;
+.message-info {
+    display: flex;
 }
 
-.message-body > a.time {
+.right .message-info {
+    justify-content: end;
+}
+
+.message-info > a {
+    color: var(--color-font-1);
+    display: inline;
+    font-size: 0.9rem;
+    margin: 0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: keep-all;
+}
+
+.message-info > a.time {
+    transition: opacity 0.3s;
     color: var(--color-font-2);
     font-size: 0.75rem;
+    opacity: 0.0;
+}
+
+.message-info > a.time:hover,
+.message-info > a.time.force-show {
     opacity: 0.7;
 }
 
-.message-body.me > div.message-content > div.main {
+.message-info > a.sender-name {
+    color: var(--color-font-1);
+}
+
+.message-body.special > div.message-content > div.main {
     background: var(--color-main);
 }
 
@@ -248,7 +257,6 @@ div.rotate > div > svg {
     width: 1.5rem;
     height: 1.5rem;
     margin: 0 2px -5px 2px;
-    /* image-rendering: pixelated; */
 }
 
 .msg-face-svg {
@@ -286,24 +294,20 @@ div.rotate > div > svg {
 }
 
 .msg-at {
+    color: var(--color-main) !important;
+    cursor: pointer;
+    padding: 3px;
     display: inline-block;
 }
 
-.msg-at > a {
-    color: var(--color-main) !important;
-    /* text-decoration: underline; */
-    cursor: pointer;
-    padding: 3px;
-}
-
-.msg-at.me > a {
-    color: var(--color-font-r) !important;
-}
-
-.msg-at.atme > a {
+.msg-at.atme {
     color: var(--color-font-r) !important;
     background: var(--color-main);
     border-radius: 4px;
+}
+
+.message-body.special .msg-at {
+    color: var(--color-main-r) !important;
 }
 
 .msg-reply {
@@ -327,7 +331,6 @@ div.rotate > div > svg {
 
 .msg-reply svg {
     margin-bottom: calc(-1rem - 5px);
-    color: var(--color-font-1);
     margin-right: 5px;
     margin-top: 1px;
     display: block;
@@ -571,6 +574,36 @@ div.rotate > div > svg {
     margin-left: 7px;
 }
 
+div.icon {
+    display: flex;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    align-items: flex-end;
+}
+
+div.icon > div {
+    width: 1rem;
+    height: 1rem;
+    padding: 10%;
+    border-radius: 30%;
+    transition: 0.1s;
+}
+
+div.icon > div:hover {
+    background-color: var(--color-card-1);
+}
+
+div.icon > div > svg {
+    opacity: 0.8;
+    width: 0.8rem;
+}
+
+div.rotate > div > svg {
+    animation: rotate 1.5s linear infinite;
+}
+
 span.user-title {
     margin-right: 3px;
     font-size: 0.9rem;
@@ -657,9 +690,6 @@ span.user-title.robot {
     padding: 5px 30px;
     font-size: 0.8rem;
     display: flex;
-}
-
-.note-base {
     transition: border 0.5s;
     border: 1px solid transparent;
 }
@@ -748,33 +778,4 @@ span.user-title.robot {
 .message-body-container {
     container-type: inline-size;
     container-name: message-body;
-}
-
-@container message-body (max-width: 49.5rem) {
-
-    /* 消息体 */
-    .message > img {
-        display: unset !important;
-    }
-
-    .message-space {
-        display: none;
-    }
-
-    .message-body {
-        max-width: calc(100% - 50px);
-    }
-
-    .message-body > a:first-child {
-        color: var(--color-font-1) !important;
-        display: unset !important;
-    }
-
-    div.icon.left.me {
-        display: none;
-    }
-
-    div.icon.right.me {
-        display: flex;
-    }
 }

@@ -88,6 +88,8 @@
                 :show-user-menu="showUserMenu"
                 :user-info-pan="userInfoPanFunc"
                 :msg-prev-pan="msgPrevPanFunc"
+                :show-self-avatar="runtimeData.sysConfig.hide_self_avatar === false"
+                :self-direction="runtimeData.sysConfig.self_msg_direction"
                 @image-loaded="imgLoadedScroll"
                 @left-move="replyMsg"
                 @sender-double-click="(user)=>sendPoke(user)"
@@ -103,7 +105,7 @@
             </div>
         </div>
         <!-- 底部区域 -->
-        <div ref="send-more" class="more">
+        <div class="more">
             <!-- 功能附加 -->
             <div>
                 <div>
@@ -542,7 +544,6 @@ const msgMenu = useTemplateRef<InstanceType<typeof Menu>>('msgMenu')
 const userMenu = useTemplateRef<InstanceType<typeof Menu>>('userMenu')
 const mainInput = useTemplateRef<HTMLTextAreaElement|HTMLInputElement>('main-input')
 const msgPan = useTemplateRef<HTMLDivElement>('msgPan')
-const sendMore = useTemplateRef<HTMLDivElement>('send-more')
 const chatPan = useTemplateRef<HTMLDivElement>('chat-pan')
 //#endregion
 
@@ -698,7 +699,6 @@ function init() {
  */
 function chatScroll(event: Event) {
     const body = event.target as HTMLDivElement
-    const bar = sendMore.value
     // 顶部
     if (body.scrollTop === 0 && chat.messageList.length > 0) {
         if (!details[3].open) loadHistory()

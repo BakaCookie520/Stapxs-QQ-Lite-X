@@ -2004,6 +2004,9 @@ msgstr ""
 msgid "表情回应通知"
 msgstr ""
 
+msgid "如果你觉得这东西刷屏或者不礼貌的话，可以关掉"
+msgstr ""
+
 msgid "不通知"
 msgstr ""
 
@@ -2011,4 +2014,22 @@ msgid "仅自己相关（默认）"
 msgstr ""
 
 msgid "全部消息"
+msgstr ""
+
+msgid "隐藏自己的头像"
+msgstr ""
+
+msgid "干净整洁多了！"
+msgstr ""
+
+msgid "自己消息位置"
+msgstr ""
+
+msgid "是靠左边好呢？还是靠右边好呢？"
+msgstr ""
+
+msgid "左边"
+msgstr ""
+
+msgid "右边（默认）"
 msgstr ""

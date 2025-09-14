@@ -61,6 +61,8 @@ export const optDefault = {
     merge_forward_width_type: false,
     use_favicon_notice: true,
     use_super_face: true,
+    hide_self_avatar: true,
+    self_msg_direction: 'right',
     // Function
     close_notice: false,
     bubble_sort_user: true,
