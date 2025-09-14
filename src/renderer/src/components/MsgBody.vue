@@ -1166,7 +1166,7 @@ defineExpose({
         margin: auto;
         margin-left: 10px;
     }
-    .emoji-like-body .emoji {
+    .emoji-like-body .emoji-face {
         width: 20px;
         height: 20px;
         font-size: 1rem;
