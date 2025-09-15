@@ -13,7 +13,7 @@
         <Transition :name="name">
             <div v-if="show" ref="space"
                 :class="{
-                    'menu': true,
+                    'menu-component': true,
                 }"
                 @click="closeMenu()">
                 <div ref="content" class="content">
@@ -177,7 +177,7 @@ defineExpose({
 </script>
 
 <style scoped>
-.menu {
+.menu-component {
     position: absolute;
     top: 0;
     left: 0;
