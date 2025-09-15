@@ -256,7 +256,7 @@
                         :title="$t('图片')"
                         @click="runSelectImg">
                         <font-awesome-icon :icon="['fas', 'image']" />
-                        <input id="choice-pic" type="file" style="display: none"
+                        <input ref="choice-pic" type="file" style="display: none"
                             @change="selectImg">
                     </div>
                     <div
@@ -537,6 +537,7 @@ const $t = app.config.globalProperties.$t
 
 //#region  == 模板引用 ======================================
 const choiceFile = useTemplateRef<HTMLInputElement>('choiceFile')
+const choicePic = useTemplateRef<HTMLInputElement>('choice-pic')
 const msgBar = useTemplateRef<InstanceType<typeof MsgBar>>('msgBar')
 const mergePan = useTemplateRef<InstanceType<typeof MergePan>>('mergePan')
 const infoRef = useTemplateRef<InstanceType<typeof Info>>('infoRef')
@@ -1176,7 +1177,7 @@ function addImg(event: ClipboardEvent) {
 }
 
 function runSelectImg() {
-    choiceFile.value?.click()
+    choicePic.value?.click()
 }
 
 /**
@@ -1257,10 +1258,7 @@ async function setImg(blob: File | null) {
 
 //#region == 文件处理 ==========================================
 function runSelectFile() {
-    const input = document.getElementById('choice-file')
-    if (input) {
-        input.click()
-    }
+    choiceFile.value?.click()
 }
 
 /**
