@@ -72,6 +72,7 @@
                             :key="'stickers-' + index"
                             loading="lazy"
                             :src="url"
+                            :alt="'[' + $t('动画表情') + ']'"
                             @click="addImgFace(url)">
                     </template>
                     <template v-else>
@@ -88,12 +89,12 @@
 </template>
 
 <script setup lang="ts">
-import { shallowRef } from 'vue'
 import { runtimeData } from '@renderer/function/msg'
+import { shallowRef } from 'vue'
 
-import BcTab from 'vue3-bcui/packages/bc-tab'
-import { FaceSeg, ImgSeg, Seg, TxtSeg } from '@renderer/function/model/seg'
 import Emoji from '@renderer/function/model/emoji'
+import { FaceSeg, ImgSeg, Seg, TxtSeg } from '@renderer/function/model/seg'
+import BcTab from 'vue3-bcui/packages/bc-tab'
 import EmojiFace from './EmojiFace.vue'
 
 const emit = defineEmits<{

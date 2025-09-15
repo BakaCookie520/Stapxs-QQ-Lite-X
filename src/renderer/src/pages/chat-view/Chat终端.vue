@@ -31,7 +31,7 @@
                         :class="{
                             'shell-msg': true,
                             'revoke': msgItem.exist,
-                            'reply': replyMsg === msgItem,
+                            'reply': replyMsg?.message_id === msgItem.message_id,
                         }"
                         style="cursor: pointer">
                         <span
@@ -141,33 +141,33 @@
 </template>
 
 <script lang="ts">
-    import SendUtil from '@renderer/function/sender'
     import Option from '@renderer/function/option'
+import SendUtil from '@renderer/function/sender'
 
     import {
-        defineComponent,
-        markRaw,
-        nextTick,
-        Reactive,
-    } from 'vue'
-    import { runtimeData } from '@renderer/function/msg'
-    import { copyToClipboard, getTrueLang, getVersion } from '@renderer/function/utils/systemUtil'
-    import {
-        Logger,
-        LogType,
-        PopInfo,
-        popList,
-        PopType,
-    } from '@renderer/function/base'
-    import { changeSession, closeSession, sendMsgRaw } from '@renderer/function/utils/msgUtil'
-    import { uptime } from '@renderer/main'
-    import { Msg } from '@renderer/function/model/msg'
-    import { ImgSeg, ReplySeg, Seg } from '@renderer/function/model/seg'
-    import { Session } from '@renderer/function/model/session'
-    import { Notice, RecallNotice } from '@renderer/function/model/notice'
-    import { Message } from '@renderer/function/model/message'
-    import SystemNotice from './SystemNotice.vue'
-    import { backend } from '@renderer/runtime/backend'
+    Logger,
+    LogType,
+    PopInfo,
+    popList,
+    PopType,
+} from '@renderer/function/base'
+import { Message } from '@renderer/function/model/message'
+import { Msg } from '@renderer/function/model/msg'
+import { Notice, RecallNotice } from '@renderer/function/model/notice'
+import { ImgSeg, ReplySeg, Seg } from '@renderer/function/model/seg'
+import { Session } from '@renderer/function/model/session'
+import { runtimeData } from '@renderer/function/msg'
+import { changeSession, closeSession, sendMsgRaw } from '@renderer/function/utils/msgUtil'
+import { copyToClipboard, getTrueLang, getVersion } from '@renderer/function/utils/systemUtil'
+import { uptime } from '@renderer/main'
+import { backend } from '@renderer/runtime/backend'
+import {
+    defineComponent,
+    markRaw,
+    nextTick,
+    Reactive,
+} from 'vue'
+import SystemNotice from './SystemNotice.vue'
 
     export default defineComponent({
         name: 'ChatShell',
@@ -276,7 +276,7 @@
                                     rawMsg,
                                     this.sendCache,
                                     this.imgCache,
-                                    this.replyMsg as Msg ?? undefined,
+                                    this.replyMsg as unknown as Msg ?? undefined,
                                 )
                                 sendMsgRaw(
                                     this.chat,

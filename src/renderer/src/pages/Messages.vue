@@ -102,32 +102,32 @@
 import FriendBody from '@renderer/components/FriendBody.vue'
 import FriendMenu from '@renderer/components/FriendMenu.vue'
 
-import {
-    onMounted,
-    watch,
-    shallowRef,
-    inject,
-    markRaw,
-    useTemplateRef,
-    toRaw,
-} from 'vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { runtimeData } from '@renderer/function/msg'
 import { getRaw as getOpt, run as runOpt } from '@renderer/function/option'
-import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+    inject,
+    markRaw,
+    onMounted,
+    shallowRef,
+    toRaw,
+    useTemplateRef,
+    watch,
+} from 'vue'
 
 import {
-    faThumbTack,
-    faTrashCan,
     faCheckToSlot,
     faGripLines,
+    faThumbTack,
+    faTrashCan,
 } from '@fortawesome/free-solid-svg-icons'
-import { Notify } from '@renderer/function/notify'
-import { Session } from '@renderer/function/model/session'
-import { Message } from '@renderer/function/model/message'
-import { vMenu } from '@renderer/function/utils/vcmd'
-import { SessionBox, BubbleBox } from '@renderer/function/model/box'
 import BoxBody from '@renderer/components/BoxBody.vue'
 import driver from '@renderer/function/driver'
+import { BubbleBox, SessionBox } from '@renderer/function/model/box'
+import { Message } from '@renderer/function/model/message'
+import { Session } from '@renderer/function/model/session'
+import { Notify } from '@renderer/function/notify'
+import { vMenu } from '@renderer/function/utils/vcmd'
 
 const emit = defineEmits<{
     userClick: [session: Session, fromBox?: SessionBox]

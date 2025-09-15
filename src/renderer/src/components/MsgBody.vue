@@ -411,14 +411,12 @@
             }">
             <div class="emoji-like-body">
                 <TransitionGroup name="emoji-like">
-                    <template v-for="info, id in data.emojis">
-                        <div v-if="Emoji.has(Number(id))"
-                            :key="'respond-' + data.uuid + '-' + id"
-                            :class="{
+                    <template v-for="info, id in data.emojis" :key="'respond-' + data.uuid + '-' + id">
+                        <div :class="{
                                 'me-send': info.includes(runtimeData.loginInfo.uin),
                             }"
                             @click="$emit('emojiClick', id as string, data)">
-                            <EmojiFace :emoji="Emoji.get(Number(id))!" />
+                            <EmojiFace :emoji="Emoji.get(Number(id))" />
                             <span>{{ info.length }}</span>
                         </div>
                     </template>
