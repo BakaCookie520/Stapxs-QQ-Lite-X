@@ -52,7 +52,6 @@ export const optDefault = {
     opt_auto_win_color: false,
     chat_background: '',
     chat_background_blur: 0,
-    chatview_name: '',
     opt_fast_animation: false,
     initial_scale: 0.85,
     fs_adaptation: 0,
@@ -96,7 +95,6 @@ const configFunction: { [key: string]: (value: any) => void } = {
     opt_dark: setDarkMode,
     opt_auto_dark: setAutoDark,
     theme_color: changeTheme,
-    chatview_name: changeChatView,
     initial_scale: changeInitialScale,
     opt_auto_win_color: updateWinColorOpt,
     opt_revolve: viewRevolve,
@@ -541,7 +539,7 @@ export function get(name: string): any {
  */
 export function getRaw(name: string) {
     if ('electron' == backend.type) {
-        return backend.callSync('opt:get', name)
+        return backend.call('opt:get', name, true)
     } else if('tauri' == backend.type) {
         return backend.call(undefined, 'opt:get', true, name)
     } else {
@@ -554,12 +552,13 @@ export function getRaw(name: string) {
                     const opt: string[] = list[i].split(':')
                     if (opt.length === 2) {
                         if (name == opt[0]) {
-                            return opt[1]
+                            return Promise.resolve(opt[1])
                         }
                     }
                 }
             }
         }
+        return Promise.resolve(null)
     }
 }
 

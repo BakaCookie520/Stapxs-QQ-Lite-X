@@ -10,6 +10,8 @@ import { User } from './model/user'
 import { resetRuntime, runtimeData } from './msg'
 import { reloadUsers, sendStatEvent, updateMenu } from './utils/appUtil'
 
+const SSL_WHITE_LIST = ['localhost', '127.0.0.1']
+
 const popInfo = new PopInfo()
 
 function $t(key: string): string {
@@ -166,7 +168,7 @@ async function preCheck(
     }
 
     // https http兼容测试
-    if (window.location.protocol === 'https:' && !ssl) {
+    if (window.location.protocol === 'https:' && !ssl && !SSL_WHITE_LIST.includes(parseUrl.host)) {
         return $t('https页面不支持非ssl连接，请配备证书或者更换至非http版本的页面')
     }
 

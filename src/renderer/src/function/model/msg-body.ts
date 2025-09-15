@@ -10,9 +10,10 @@ import xss from 'xss'
 
 import { openLink } from '@renderer/function/utils/appUtil'
 import { getDeviceType } from '@renderer/function/utils/systemUtil'
-import { linkView } from '../utils/linkViewUtil'
-import { backend } from '@renderer/runtime/backend'
 import app from '@renderer/main'
+import { backend } from '@renderer/runtime/backend'
+import { Logger } from '../base'
+import { linkView } from '../utils/linkViewUtil'
 import { JsonSeg, XmlSeg } from './seg'
 
 interface CardMessageInterface {
@@ -77,18 +78,14 @@ export class MsgBodyFuns {
             div.id = 'xml-' + msgid
             div.dataset.id = id
             div.innerHTML = item
-            for (let i = 0; i < div.children[0].children.length; i++) {
-                switch (div.children[0].children[i].nodeName) {
-                    case 'P': {
-                        const pBody = div.children[0].children[
-                            i
-                        ] as HTMLParagraphElement
-                        pBody.style.fontSize =
-                            (Number(pBody.dataset.size) / 30).toString() + 'rem'
-                        pBody.style.marginBottom =
-                            Number(pBody.dataset.size) / 5 + 'px'
-                        break
-                    }
+            for (const element of div.children[0].children) {
+                if (element.nodeName === 'P') {
+                    const pBody = element as HTMLParagraphElement
+                    pBody.style.fontSize =
+                        (Number(pBody.dataset.size) / 30).toString() + 'rem'
+                    pBody.style.marginBottom =
+                        Number(pBody.dataset.size) / 5 + 'px'
+                    break
                 }
             }
             // 解析 msg 消息体
@@ -102,39 +99,22 @@ export class MsgBodyFuns {
             header.innerHTML = msgHeader
             // 处理特殊的出处
             let sourceBody = undefined as HTMLElement | undefined
-            for (let i = 0; i < div.children.length; i++) {
-                if (div.children[i].nodeName === 'SOURCE') {
-                    sourceBody = div.children[i] as HTMLElement
+            for (const element of div.children) {
+                if (element.nodeName === 'SOURCE') {
+                    sourceBody = element as HTMLElement
                 }
             }
             if (sourceBody !== undefined) {
-                let source = sourceBody.dataset.name
-                if (source) {
-                    if (source.indexOf('聊天记录') >= 0) source = '聊天记录'
-                    switch (source) {
-                        case '聊天记录': {
-                            // 合并转发消息
-                            div.dataset.type = 'forward'
-                            div.dataset.id = (
-                                header.children[0] as HTMLElement
-                            ).dataset.resid
-                            div.style.cursor = 'pointer'
-                            break
-                        }
-                        case '群投票': {
-                            // 群投票
-                            return (
-                                '<a class="msg-unknow">（' +
-                                app.config.globalProperties.$t(
-                                    'chat_xml_unsupport',
-                                ) +
-                                '：' +
-                                source +
-                                '）</a>'
-                            )
-                        }
-                    }
-                }
+                const source = sourceBody.dataset.name
+                if (source === '群投票') return (
+                    '<a class="msg-unknow">（' +
+                    app.config.globalProperties.$t(
+                        'chat_xml_unsupport',
+                    ) +
+                    '：' +
+                    source +
+                    '）</a>'
+                )
             }
             // 附带链接的 xml 消息处理
             if ((header.children[0] as HTMLElement).dataset.url !== undefined) {
@@ -145,6 +125,7 @@ export class MsgBodyFuns {
             }
             return div.outerHTML
         } catch (ex) {
+            new Logger().error(ex as Error, 'xml 消息解析错误')
             return (
                 '<span v-else class="msg-unknown">( ' +
                 app.config.globalProperties.$t('解析消息错误') +
@@ -201,59 +182,56 @@ export class MsgBodyFuns {
                 info.icon = ''
                 info.name = json.desc
             }
-            if (json.app == 'com.tencent.mannounce') {
-                // base64 编码的群公告
-                info.title = this.decodeBase64Unicode(json.meta.mannounce.title)
-                info.desc = this.decodeBase64Unicode(json.meta.mannounce.text).replaceAll('\n', '<br>')
-                info.icon = ''
-                info.preview = undefined
-                info.name = this.decodeBase64Unicode(json.meta.mannounce.title)
-            }
-            if (json.app == 'com.tencent.multimsg') {
-                info.title = json.meta.detail.source
-                info.desc = '<div style="padding: 15px 20px 5px 20px">'
-                json.meta.detail.news.forEach((item: any) => {
-                    info.desc += '<span>' + item.text + '</span><br>'
-                })
-                info.desc += '</div>'
-                info.icon = ''
-                info.name = json.meta.detail.summary
-
-                append.type = 'forward'
-                append.id = json.meta.detail.resid
-            }
-            if (json.app == 'com.tencent.map') {
-                info.title = json.meta['Location.Search'].name
-                append.urlOpenType = '_self'
-                const deviceType = getDeviceType()
-                if (deviceType == 'Android') {
-                    info.url =
-                        'geo:' +
-                        json.meta['Location.Search'].lat +
-                        ',' +
-                        json.meta['Location.Search'].lng
-                } else if (deviceType == 'iOS' || deviceType == 'MacOS') {
-                    info.url =
-                        'http://maps.apple.com/?ll=' +
-                        json.meta['Location.Search'].lat +
-                        ',' +
-                        json.meta['Location.Search'].lng +
-                        '&q=' +
-                        json.meta['Location.Search'].name
-                }
-                info.desc = json.meta['Location.Search'].address
-                type = 'tencent.map'
-            }
-            if (json.app == 'com.tencent.miniapp_01' && info.name == '哔哩哔哩') {
-                backend.call('Onebot', 'sys:getFinalRedirectUrl', true, info.url)
-                .then((fistLink) => {
-                    linkView.bilibili(fistLink).then((result) => {
-                        card.$emit('page-view', fistLink, result)
-                    })
-                })
-                if (!backend.isWeb()) {
-                    return null
-                }
+            switch (json.app) {
+                // 群公告
+                case 'com.tencent.mannounce':
+                    // base64 编码的群公告
+                    info.title = this.decodeBase64Unicode(json.meta.mannounce.title)
+                    info.desc = this.decodeBase64Unicode(json.meta.mannounce.text).replaceAll('\n', '<br>')
+                    info.icon = ''
+                    info.preview = undefined
+                    info.name = this.decodeBase64Unicode(json.meta.mannounce.title)
+                    break
+                // 地图
+                case 'com.tencent.map':
+                    info.title = json.meta['Location.Search'].name
+                    append.urlOpenType = '_self'
+                    switch (getDeviceType()) {
+                        case 'Android':
+                            info.url =
+                                'geo:' +
+                                json.meta['Location.Search'].lat +
+                                ',' +
+                                json.meta['Location.Search'].lng
+                            break
+                        case 'iOS':
+                        case 'MacOS':
+                            info.url =
+                                'http://maps.apple.com/?ll=' +
+                                json.meta['Location.Search'].lat +
+                                ',' +
+                                json.meta['Location.Search'].lng +
+                                '&q=' +
+                                json.meta['Location.Search'].name
+                            break
+                    }
+                    info.desc = json.meta['Location.Search'].address
+                    type = 'tencent.map'
+                    break
+                // b站
+                case 'com.tencent.miniapp_01':
+                    if (info.name == '哔哩哔哩') {
+                        backend.call('Onebot', 'sys:getFinalRedirectUrl', true, info.url)
+                        .then((fistLink) => {
+                            linkView.bilibili(fistLink).then((result) => {
+                                card.$emit('page-view', fistLink, result)
+                            })
+                        })
+                        if (!backend.isWeb()) {
+                            return null
+                        }
+                    }
+                    break
             }
 
             return { type, app: info, append }
@@ -267,33 +245,22 @@ export class MsgBodyFuns {
      */
     static cardClick(bodyId: string) {
         const sender = document.getElementById(bodyId)
-        if (sender !== null) {
-            const type = sender.dataset.type
-            // 如果存在 url 项，优先打开 url
-            if (
-                sender.dataset.url !== undefined &&
-                sender.dataset.url !== 'undefined' &&
-                sender.dataset.url !== ''
-            ) {
-                const openType =
-                    sender.dataset.urlOpenType || sender.dataset.urlopentype
-                if (openType == '_self') {
-                    window.open(sender.dataset.url, '_self')
-                } else {
-                    // 默认都以 _blank 打开
-                    openLink(sender.dataset.url)
-                }
-                return
-            }
-            // 接下来按类型处理
-            switch (type) {
-                case 'forward': {
-                    // 解析合并转发消息
-                    // this.getForwardMsg(sender.dataset.id)
-                    // TODO 合并转发展开由msg.seg.id来确定,而非msg
-                    throw new Error('未实现，待写')
-                    break
-                }
+
+        if (!sender) return
+
+        // 如果存在 url 项，优先打开 url
+        if (
+            sender.dataset.url !== undefined &&
+            sender.dataset.url !== 'undefined' &&
+            sender.dataset.url !== ''
+        ) {
+            const openType =
+                sender.dataset.urlOpenType || sender.dataset.urlopentype
+            if (openType == '_self') {
+                window.open(sender.dataset.url, '_self')
+            } else {
+                // 默认都以 _blank 打开
+                openLink(sender.dataset.url)
             }
         }
     }

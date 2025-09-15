@@ -153,25 +153,6 @@
         <div class="ss-card">
             <header>{{ $t('页面') }}</header>
             <div class="opt-item">
-                <div :class="checkDefault('chatview_name')" />
-                <font-awesome-icon :icon="['fas', 'table-columns']" />
-                <div>
-                    <span>{{ $t('消息页面主题') }}</span>
-                    <span>{{ $t('一些好玩的主题！') }}</span>
-                </div>
-                <select v-model="runtimeData.sysConfig.chatview_name"
-                    name="chatview_name" title="chatview_name"
-                    @change="save($event);gaChatView($event)">
-                    <option value="">
-                        {{ $t('默认') }}
-                    </option>
-                    <option v-for="item in getAppendChatView()"
-                        :key="item" :value="item">
-                        {{ item.replace('Chat', '') }}
-                    </option>
-                </select>
-            </div>
-            <div class="opt-item">
                 <div :class="checkDefault('opt_fast_animation')" />
                 <font-awesome-icon :icon="['fas', 'car-side']" />
                 <div>

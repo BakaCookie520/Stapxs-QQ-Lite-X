@@ -102,32 +102,31 @@
 import FriendBody from '@renderer/components/FriendBody.vue'
 import FriendMenu from '@renderer/components/FriendMenu.vue'
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { runtimeData } from '@renderer/function/msg'
 import {
-    onMounted,
-    watch,
-    shallowRef,
     inject,
     markRaw,
-    useTemplateRef,
+    onMounted,
+    shallowRef,
     toRaw,
+    useTemplateRef,
+    watch,
 } from 'vue'
-import { runtimeData } from '@renderer/function/msg'
-import { getRaw as getOpt, run as runOpt } from '@renderer/function/option'
-import { library } from '@fortawesome/fontawesome-svg-core'
 
 import {
-    faThumbTack,
-    faTrashCan,
     faCheckToSlot,
     faGripLines,
+    faThumbTack,
+    faTrashCan,
 } from '@fortawesome/free-solid-svg-icons'
-import { Notify } from '@renderer/function/notify'
-import { Session } from '@renderer/function/model/session'
-import { Message } from '@renderer/function/model/message'
-import { vMenu } from '@renderer/function/utils/vcmd'
-import { SessionBox, BubbleBox } from '@renderer/function/model/box'
 import BoxBody from '@renderer/components/BoxBody.vue'
 import driver from '@renderer/function/driver'
+import { BubbleBox, SessionBox } from '@renderer/function/model/box'
+import { Message } from '@renderer/function/model/message'
+import { Session } from '@renderer/function/model/session'
+import { Notify } from '@renderer/function/notify'
+import { vMenu } from '@renderer/function/utils/vcmd'
 
 const emit = defineEmits<{
     userClick: [session: Session, fromBox?: SessionBox]
@@ -230,17 +229,6 @@ function userClick(data: Session, fromBox?: SessionBox) {
 
     // 更新聊天框
     emit('userClick', data, fromBox)
-    // 重置消息面板
-    // PS：这儿的作用是在运行时如果切换到了特殊面板，在点击联系人的时候可以切回来
-    if (
-        runtimeData.sysConfig.chatview_name != '' &&
-        runtimeData.sysConfig.chatview_name !=
-            decodeURIComponent(getOpt('chatview_name') ?? '')
-    ) {
-        runtimeData.sysConfig.chatview_name =
-            decodeURIComponent(getOpt('chatview_name') ?? '')
-        runOpt('chatview_name', decodeURIComponent(getOpt('chatview_name') ?? ''))
-    }
 }
 
 /**
