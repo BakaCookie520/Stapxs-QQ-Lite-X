@@ -48,7 +48,7 @@
 .message-body {
     color: var(--color-font);
     width: calc(100% - 50px);
-    max-width: calc(0.6 * (100vw - 375px));
+    max-width: max(calc(0.6 * (100vw - 375px)), 300px);
     display: flex;
     flex-direction: column;
 }
