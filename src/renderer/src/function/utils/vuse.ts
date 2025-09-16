@@ -6,7 +6,7 @@
  * @Description: 封装的一些vue组合函数
  */
 
-import { computed, ComputedRef, onMounted, onUnmounted, ref, ShallowRef, shallowRef, watch } from 'vue'
+import { computed, ComputedRef, onMounted, onUnmounted, shallowRef, watch } from 'vue'
 import { MenuEventData } from '../elements/information'
 import { pastTimeFormat } from './systemUtil'
 
@@ -169,7 +169,7 @@ export function useInterval(
 }
 
 export function usePasttime(time: number): ComputedRef<string> {
-    const trigger = ref(0)
+    const trigger = shallowRef(0)
     useInterval(() => {
         trigger.value++
     }, 1000 * 10)

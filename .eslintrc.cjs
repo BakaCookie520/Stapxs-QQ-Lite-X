@@ -31,6 +31,19 @@ module.exports = {
             'error',
             { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
         ],
+        // 禁止使用ref和reactive
+        'no-restricted-imports': [
+            'error',
+            {
+                paths: [
+                {
+                    name: 'vue',
+                    importNames: ['ref', 'reactive'],
+                    message: '禁止使用 ref 和 reactive'
+                }
+                ]
+            }
+        ],
 
         // === Vue 相关规则 ===
         // html 缩进

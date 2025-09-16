@@ -55,19 +55,18 @@
 
 <script setup lang="ts">
 
+import BoxBody from '@renderer/components/BoxBody.vue'
+import TinySessionBody from '@renderer/components/TinySessionBody.vue'
 import { SessionBox } from '@renderer/function/model/box'
+import { Session } from '@renderer/function/model/session'
 import { randomChoice, randomNum } from '@renderer/function/utils/systemUtil'
+import { vAutoFocus, vSearch } from '@renderer/function/utils/vcmd'
 import {
-    ref,
-    shallowRef,
-    shallowReactive,
     computed,
     onUnmounted,
+    shallowReactive,
+    shallowRef,
 } from 'vue'
-import { Session } from '@renderer/function/model/session'
-import { vAutoFocus, vSearch } from '@renderer/function/utils/vcmd'
-import TinySessionBody from '@renderer/components/TinySessionBody.vue'
-import BoxBody from '@renderer/components/BoxBody.vue'
 
 const allIcons = [
     // 常用分组图标
@@ -171,7 +170,7 @@ for (const [index, session] of [...searchInfo.originList].entries()) {
     selectedSession.value.push(session)
     searchInfo.originList.splice(index, 1)
 }
-const refreshDisplaySession = ref(0)
+const refreshDisplaySession = shallowRef(0)
 const displaySession = computed(() => {
     refreshDisplaySession.value
     const headSession = selectedSession.value

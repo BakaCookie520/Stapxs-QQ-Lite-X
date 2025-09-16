@@ -76,17 +76,16 @@ import ConfigBox from '@renderer/popboxes/ConfigBox.vue'
 import SelectBox from '@renderer/popboxes/SelectBox.vue'
 import {
     markRaw,
-    ref,
-    Ref,
     shallowReactive,
     ShallowReactive,
     shallowRef,
     ShallowRef,
+    useTemplateRef,
 } from 'vue'
 
 //#region == 声明变量 ================================================================
 const $t = i18n.global.t
-const menu: Ref<undefined|InstanceType<typeof Menu>> = ref()
+const menu = useTemplateRef('menu')
 const selectSession: ShallowRef<Session|undefined> = shallowRef(undefined)
 const selectBox: ShallowRef<SessionBox|undefined> = shallowRef(undefined)
 const from: ShallowRef<'message' | 'friend'> = shallowRef('message')

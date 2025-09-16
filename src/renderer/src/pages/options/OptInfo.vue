@@ -62,20 +62,19 @@
 </template>
 
 <script setup lang="ts">
-import { runtimeData } from '@renderer/function/msg'
-import { reloadUsers } from '@renderer/function/utils/appUtil'
 import { GroupSession } from '@renderer/function/model/session'
 import { Member } from '@renderer/function/model/user'
+import { runtimeData } from '@renderer/function/msg'
+import { reloadUsers } from '@renderer/function/utils/appUtil'
 import { delay } from '@renderer/function/utils/systemUtil'
 import app from '@renderer/main'
 
-import {
-    ref,
-    watch,
-    Ref,
-} from 'vue'
 import { PopInfo, PopType } from '@renderer/function/base'
 import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
+import {
+    shallowRef,
+    watch,
+} from 'vue'
 
 //#region == 声明变量 ================================================================
 const { $t } = app.config.globalProperties
@@ -86,8 +85,8 @@ const emit = defineEmits<{
     update_member_card: [mem: Member, value: string]
 }>()
 
-const meCard: Ref<string> = ref(chat.getMe().card?.toString() ?? '')
-const nowChatName: Ref<string> = ref(chat.showName ?? '')
+const meCard: Ref<string> = shallowRef(chat.getMe().card?.toString() ?? '')
+const nowChatName: Ref<string> = shallowRef(chat.showName ?? '')
 //#endregion
 
 //#region == 变量更新 ================================================================

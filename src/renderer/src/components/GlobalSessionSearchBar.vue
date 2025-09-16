@@ -51,29 +51,29 @@
 </template>
 
 <script setup lang="ts">
-import {
-    ref,
-    watchEffect,
-    computed,
-    shallowReactive,
-    useTemplateRef,
-    nextTick,
-} from 'vue'
-import TinySessionBody from './TinySessionBody.vue'
 import { Session } from '@renderer/function/model/session'
+import { runtimeData } from '@renderer/function/msg'
+import { changeSession } from '@renderer/function/utils/msgUtil'
+import { hasPopBox } from '@renderer/function/utils/popBox'
 import { vSearch } from '@renderer/function/utils/vcmd'
 import { useKeyboard } from '@renderer/function/utils/vuse'
-import { changeSession } from '@renderer/function/utils/msgUtil'
-import { runtimeData } from '@renderer/function/msg'
-import { hasPopBox } from '@renderer/function/utils/popBox'
 import { backend } from '@renderer/runtime/backend'
+import {
+    computed,
+    nextTick,
+    shallowReactive,
+    shallowRef,
+    useTemplateRef,
+    watchEffect,
+} from 'vue'
+import TinySessionBody from './TinySessionBody.vue'
 
 //#region == 常量声明 ====================================================================
-const show = ref<boolean>(false)
+const show = shallowRef<boolean>(false)
 const input = useTemplateRef<HTMLInputElement>('input')
 const sessionList = useTemplateRef<HTMLElement>('sessionList')
 const sessionItems = useTemplateRef<InstanceType<typeof TinySessionBody>[]>('sessionItems')
-const selectId = ref<number>(0)
+const selectId = shallowRef<number>(0)
 
 const searchInfo = shallowReactive({
     originList: shallowReactive([] as Session[]),

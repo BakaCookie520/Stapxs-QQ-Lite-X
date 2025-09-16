@@ -221,24 +221,30 @@
 </template>
 
 <script setup lang="ts">
-import app from '@renderer/main'
 import BulletinBody from '@renderer/components/BulletinBody.vue'
 import FileBody from '@renderer/components/FileBody.vue'
-import OptInfo from './options/OptInfo.vue'
+import app from '@renderer/main'
 import BcTab from 'vue3-bcui/packages/bc-tab'
+import OptInfo from './options/OptInfo.vue'
 
+import { Role } from '@renderer/function/adapter/enmu'
 import { PopInfo, PopType } from '@renderer/function/base'
-import { ref, ShallowRef, shallowRef, markRaw, nextTick, shallowReactive } from 'vue'
-import { copyToClipboard, delay, getTrueLang } from '@renderer/function/utils/systemUtil'
-import { runtimeData } from '@renderer/function/msg'
+import { Ann } from '@renderer/function/model/ann'
+import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { Member, User } from '@renderer/function/model/user'
-import { Ann } from '@renderer/function/model/ann'
+import { runtimeData } from '@renderer/function/msg'
 import { changeSession } from '@renderer/function/utils/msgUtil'
-import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
-import { Role } from '@renderer/function/adapter/enmu'
-import { vSearch } from '@renderer/function/utils/vcmd'
 import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
+import { copyToClipboard, delay, getTrueLang } from '@renderer/function/utils/systemUtil'
+import { vSearch } from '@renderer/function/utils/vcmd'
+import {
+    markRaw,
+    nextTick,
+    shallowReactive,
+    shallowRef,
+    ShallowRef
+} from 'vue'
 
 const { chat } = defineProps<{
     chat: Session
@@ -262,10 +268,10 @@ const searchInfo =  chat instanceof GroupSession ? shallowReactive({
     isSearch: false,
 }) : undefined
 
-const configMember = ref<Member | undefined>(undefined)
-const configTitle = ref<string>('')
-const configCard = ref<string>('')
-const configBanMin = ref<number>(0)
+const configMember = shallowRef<Member | undefined>(undefined)
+const configTitle = shallowRef<string>('')
+const configCard = shallowRef<string>('')
+const configBanMin = shallowRef<number>(0)
 
 const trueLang = getTrueLang()
 

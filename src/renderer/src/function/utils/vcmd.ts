@@ -6,7 +6,14 @@
  * @Description: 封装的一些v指令
  */
 
-import { Directive, ref, shallowReactive, watch, watchEffect, WatchHandle } from 'vue'
+import {
+    Directive,
+    shallowReactive,
+    shallowRef,
+    watch,
+    watchEffect,
+    WatchHandle
+} from 'vue'
 import { Role } from '../adapter/enmu'
 import { MenuEventData } from '../elements/information'
 import { shouldAutoFocus } from './appUtil'
@@ -184,7 +191,7 @@ function createVSearch<T extends { match(query: string): boolean }>(): Directive
     return {
         mounted(el, binding: DirectiveBinding<SearchBinding<T>>) {
             const controller = new AbortController()
-            const queryTxt = ref('')
+            const queryTxt = shallowRef('')
 
             el.addEventListener('input', () => {
                 queryTxt.value = el.value.trim()

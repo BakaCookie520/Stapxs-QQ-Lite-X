@@ -6,9 +6,9 @@
  * @Description: 此模块主要为程序相关的基础功能
  */
 
-import Option from './option'
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 import { PopInfoElem } from './elements/system'
+import Option from './option'
 
 // =============== 日志 ===============
 
@@ -276,4 +276,4 @@ export class PopInfo {
     }
 }
 
-export const popList: PopInfoElem[] = reactive([])
+export const popList: PopInfoElem[] = shallowReactive([])

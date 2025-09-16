@@ -124,10 +124,8 @@ import { Role } from '@renderer/function/adapter/enmu'
 import { IUser, Member, User } from '@renderer/function/model/user'
 import { vUserRole } from '@renderer/function/utils/vcmd'
 import {
-    reactive,
-    Reactive,
-    ref,
-    type Ref,
+    shallowReactive,
+    useTemplateRef,
     watchEffect,
 } from 'vue'
 
@@ -139,8 +137,8 @@ const { data } = defineProps<{
     }
 }>()
 
-const body: Ref<HTMLElement|undefined> = ref(undefined)
-const posInfo: Reactive<{'--x': string, '--y': string, '--width': string}> = reactive({
+const body = useTemplateRef('body')
+const posInfo = shallowReactive({
     '--x': '0px',
     '--y': '0px',
     '--width': '0px',

@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { Msg } from '@renderer/function/model/msg'
 import {
-    reactive,
+    shallowReactive,
     useTemplateRef,
     watchEffect
 } from 'vue'
@@ -40,7 +40,7 @@ const { data } = defineProps<{
 }>()
 
 const body = useTemplateRef<HTMLDivElement>('body')
-const posInfo = reactive({
+const posInfo = shallowReactive({
     '--x': '0px',
     '--y': '0px',
 })

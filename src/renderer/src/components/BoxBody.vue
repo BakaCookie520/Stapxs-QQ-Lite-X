@@ -93,20 +93,20 @@
 <script setup lang="ts">
 import { SessionBox } from '@renderer/function/model/box'
 import {
-    ref,
-    toRaw,
-    inject,
-    watch,
     computed,
+    inject,
+    shallowRef,
+    toRaw,
+    watch,
 } from 'vue'
 
-import FriendMenu from './FriendMenu.vue'
-import FriendBody from './FriendBody.vue'
-import { randomChoice, randomNum } from '@renderer/function/utils/systemUtil'
-import { i18n } from '@renderer/main'
-import { runtimeData } from '@renderer/function/msg'
 import { Session } from '@renderer/function/model/session'
+import { runtimeData } from '@renderer/function/msg'
+import { randomChoice, randomNum } from '@renderer/function/utils/systemUtil'
 import { vMenu } from '@renderer/function/utils/vcmd'
+import { i18n } from '@renderer/main'
+import FriendBody from './FriendBody.vue'
+import FriendMenu from './FriendMenu.vue'
 const $t = i18n.global.t
 //#region == 彩蛋相关 ============================================================
 const cialloList = [
@@ -144,7 +144,7 @@ const emit = defineEmits<{
     userClick: [session: Session],
 }>()
 
-const _open = ref(false)
+const _open = shallowRef(false)
 const menu = inject<Ref<InstanceType<typeof FriendMenu> | undefined>>('friendMenu')
 //#endregion
 
