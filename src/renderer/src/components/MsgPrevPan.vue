@@ -14,7 +14,6 @@
                 <div v-else class="ss-card" ref="body">
                     <MsgBar
                         :msgs="data.msgs"
-                        :without-avatar="data.msgs.length === 1 ? true : false"
                         :can-interaction="false"
                         :show-time="false" />
                 </div>
@@ -44,16 +43,12 @@ const body = useTemplateRef<HTMLDivElement>('body')
 const posInfo = reactive({
     '--x': '0px',
     '--y': '0px',
-    '--width': '0px',
 })
 
 // 切换css
 watchEffect(() => {
     posInfo['--x'] = data.x + 'px'
     posInfo['--y'] = data.y + 'px'
-    if (body.value) {
-        posInfo['--width'] = body.value.offsetWidth + 'px'
-    }
 
     if (!body.value) return
     // 高度
@@ -80,6 +75,10 @@ export interface MsgPrevPan {
 .msg-preview {
     margin-left: var(--x);
     margin-top: var(--y);
+    max-width: 30vw;
+}
+.msg-preview :deep(*) {
+    pointer-events: none !important;
 }
 .msg-preview-enter-active, .msg-preview-leave-active {
     animation: none 0.2s;

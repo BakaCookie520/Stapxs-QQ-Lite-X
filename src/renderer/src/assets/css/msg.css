@@ -774,8 +774,3 @@ span.user-title.robot {
     display: block;
     width: 100%;
 }
-
-.message-body-container {
-    container-type: inline-size;
-    container-name: message-body;
-}

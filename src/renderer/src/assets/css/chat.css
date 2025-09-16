@@ -710,10 +710,6 @@ body.with-bar .msg-menu {
     max-height: 40vh;
 }
 
-.msg-preview > div > div {
-    min-width: max(200px, 30vw);
-}
-
 .msg-preview .message {
     width: fit-content;
 }
