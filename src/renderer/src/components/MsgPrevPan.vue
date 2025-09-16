@@ -8,10 +8,10 @@
     <Teleport to="body">
         <Transition name="msg-preview">
             <div v-if="data.msgs" class="msg-preview" :style="posInfo">
-                <div v-if="typeof data.msgs === 'string'" class="ss-card" ref="body">
+                <div v-if="typeof data.msgs === 'string'" ref="body" class="ss-card">
                     {{ data.msgs }}
                 </div>
-                <div v-else class="ss-card" ref="body">
+                <div v-else ref="body" class="ss-card">
                     <MsgBar
                         :msgs="data.msgs"
                         :can-interaction="false"
@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { Msg } from '@renderer/function/model/msg';
+import { Msg } from '@renderer/function/model/msg'
 import {
     reactive,
     useTemplateRef,
     watchEffect
-} from 'vue';
-import MsgBar from './MsgBar.vue';
+} from 'vue'
+import MsgBar from './MsgBar.vue'
 
 const { data } = defineProps<{
     data: {

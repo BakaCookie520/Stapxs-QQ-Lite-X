@@ -121,8 +121,8 @@
 </template>
 
 <script setup lang="ts">
-import { MenuEventData } from '@renderer/function/elements/information';
-import Emoji from '@renderer/function/model/emoji';
+import { MenuEventData } from '@renderer/function/elements/information'
+import Emoji from '@renderer/function/model/emoji'
 import {
     BanLiftNotice,
     BanNotice,
@@ -135,17 +135,17 @@ import {
     RecallNotice,
     ResponseNotice,
     TimeNotice
-} from '@renderer/function/model/notice';
-import { scrollToMsg } from '@renderer/function/utils/appUtil';
-import { vLongHover } from '@renderer/function/utils/vcmd';
-import { usePasttime } from '@renderer/function/utils/vuse';
+} from '@renderer/function/model/notice'
+import { scrollToMsg } from '@renderer/function/utils/appUtil'
+import { vLongHover } from '@renderer/function/utils/vcmd'
+import { usePasttime } from '@renderer/function/utils/vuse'
 import {
     ComputedRef,
-} from 'vue';
-import EmojiFace from './EmojiFace.vue';
-import { MsgPrevPan } from './MsgPrevPan.vue';
-import NoticeUser from './NoticeUser.vue';
-import { UserInfoPan } from './UserInfoPan.vue';
+} from 'vue'
+import EmojiFace from './EmojiFace.vue'
+import { MsgPrevPan } from './MsgPrevPan.vue'
+import NoticeUser from './NoticeUser.vue'
+import { UserInfoPan } from './UserInfoPan.vue'
 const { data, id, userInfoPan, msgPrevPan } = defineProps<{
     data: Notice
     id?: string

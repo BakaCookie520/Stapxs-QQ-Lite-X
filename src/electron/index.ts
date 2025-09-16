@@ -32,7 +32,7 @@ async function createWindow() {
     logger.level = logLevel
 
     /* eslint-disable no-console */
-    console.log('');
+    console.log('')
     console.log('  ___ _                           _ _ _      __  __')
     console.log(' / __| |_ __ _ _ ____ ____ _ __ _| (_) |_ ___\\ \\/ /')
     console.log(' \\__ \\  _/ _` | \'_ \\ \\ / _` / _` | | |  _/ -_)>  < ')
