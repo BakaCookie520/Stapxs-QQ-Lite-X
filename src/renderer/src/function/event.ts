@@ -96,6 +96,9 @@ eventHandle('leave', async (event: LeaveEvent) => {
 eventHandle('response', async (event: ResponseEvent) => {
     if (runtimeData.sysConfig.close_respond) return
     event.msg.setEmoji(event.emojiId, event.operator.user_id, event.add)
+
+    // 显示消息回应
+    if (!event.add) return
     switch (runtimeData.sysConfig.show_response_message) {
     case 'none':
         return
@@ -108,7 +111,7 @@ eventHandle('response', async (event: ResponseEvent) => {
     case 'all':
         break
     default:
-        throw new Error(`Unknown show_response_message: ${runtimeData.sysConfig.show_response_message}`)
+        throw new Error(`未知的 show_response_message 设置项: ${runtimeData.sysConfig.show_response_message}`)
     }
     event.session.addMessage(event.message)
 })
