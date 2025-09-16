@@ -516,6 +516,7 @@ import {
     getViewTime,
 } from '@renderer/function/utils/systemUtil'
 import { vHide, vMenu, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
+import { useKeyboard } from '@renderer/function/utils/vuse'
 import app from '@renderer/main'
 import Info from '@renderer/pages/Info.vue'
 import { backend } from '@renderer/runtime/backend'
@@ -629,37 +630,41 @@ const canSendMsg = computed(() => {
 //#endregion
 
 //#region == 初始化 ======================================================================
-onMounted(()=>{
-    init()
+onMounted(init)
 
-    // Capacitor：系统返回操作（Android）
-    if(backend.type == 'capacitor' &&
-        backend.platform === 'android') {
-        backend.addListener('App', 'backButton', () => {
-            exitWin()
-        })
-    }
-    // 新消息滚动到底部
-    Session.beforeNewMessageHook.push(async (session, _msg)=>{
-        if (session !== chat) return
-
-        const pan = msgPan.value
-        if (!pan) return
-
-        // 计算当前滚动位置距离底部的距离
-        const distanceToBottom = pan.scrollHeight - pan.scrollTop - pan.clientHeight
-        // 计算vh的像素值
-        const vh = window.innerHeight / 100
-        // 如果距离底部大于20vh，则不自动滚动
-        if (distanceToBottom > 20 * vh) return
-
-        nextTick(()=>{
-            // 等待渲染完成
-            setTimeout(() => {
-                scrollBottom(true)
-            }, 100)
-        })
+// Capacitor：系统返回操作（Android）
+if(backend.type == 'capacitor' &&
+    backend.platform === 'android') {
+    backend.addListener('App', 'backButton', () => {
+        exitWin()
     })
+}
+// 新消息滚动到底部
+Session.beforeNewMessageHook.push(async (session, _msg)=>{
+    if (session !== chat) return
+
+    const pan = msgPan.value
+    if (!pan) return
+
+    // 计算当前滚动位置距离底部的距离
+    const distanceToBottom = pan.scrollHeight - pan.scrollTop - pan.clientHeight
+    // 计算vh的像素值
+    const vh = window.innerHeight / 100
+    // 如果距离底部大于20vh，则不自动滚动
+    if (distanceToBottom > 20 * vh) return
+
+    nextTick(()=>{
+        // 等待渲染完成
+        setTimeout(() => {
+            scrollBottom(true)
+        }, 100)
+    })
+})
+
+// ctrl+w 关闭聊天框
+useKeyboard('ctrl+w', ()=>{
+    exitWin()
+    return true
 })
 //#endregion
 

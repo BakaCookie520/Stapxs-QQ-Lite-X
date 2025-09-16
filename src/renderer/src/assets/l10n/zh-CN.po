@@ -2033,3 +2033,9 @@ msgstr ""
 
 msgid "右边（默认）"
 msgstr ""
+
+msgid "回应了"
+msgstr ""
+
+msgid "的"
+msgstr ""

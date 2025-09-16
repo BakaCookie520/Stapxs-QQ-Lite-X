@@ -7,7 +7,11 @@
  */
 
 import app from '@renderer/main'
-import { markRaw } from 'vue'
+import {
+    markRaw,
+    shallowReactive,
+    shallowRef
+} from 'vue'
 import type { EssenceData, ForwardNodeData, MsgData, SegData, SenderData } from '../adapter/interface'
 import { PopInfo, PopType } from '../base'
 import { runtimeData } from '../msg'
@@ -40,7 +44,7 @@ export class Msg extends Message {
     /**
      * 消息发送者
      */
-    sender: IUser
+    _sender = shallowRef<IUser>()
     /**
      * 是否提及了自己
      */
@@ -62,7 +66,7 @@ export class Msg extends Message {
      * key: 表情id
      * value: 操作者uid列表
      */
-    emojis: { [emojiId: string]: number[] } = {}
+    emojis = shallowReactive<{ [emojiId: string]: number[] }>({})
     /**
      * 是否为已删除消息
      */
@@ -254,6 +258,14 @@ export class Msg extends Message {
             content: this.message.map(seg => seg.serializeData())
         })
     }
+
+    get sender(): IUser {
+        if (!this._sender.value) throw new Error('消息发送者未初始化')
+        return this._sender.value
+    }
+    set sender(user: IUser) {
+        this._sender.value = user
+    }
 }
 
 /**
@@ -271,12 +283,12 @@ export class SelfMsg extends Msg {
     }
 
     static create(segs: Seg[], session: Session): SelfMsg {
-        return markRaw(new this(segs, session)) as unknown as SelfMsg
+        return markRaw(shallowReactive(new this(segs, session)))
     }
 
     static createMerge(messages: Msg[], session: Session): SelfMsg {
         const segs = [new ForwardSeg(messages)]
-        return markRaw(new this(segs, session)) as unknown as SelfMsg
+        return markRaw(shallowReactive(new this(segs, session)))
     }
 
     /**
