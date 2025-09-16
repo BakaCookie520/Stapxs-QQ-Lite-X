@@ -13,12 +13,12 @@
 
 <template>
     <div ref="chat-pan"
+        v-move="chatMoveOptions"
         :class="{
             'chat-pan': true,
             'open': runtimeData.tags.openSideBar,
         }"
         :style="`background-image: url(${runtimeData.sysConfig.chat_background});`"
-        v-move="chatMoveOptions"
         @v-move-right.prevent="exitWin()">
         <!-- 聊天基本信息 -->
         <div class="info">
@@ -51,7 +51,7 @@
             </div>
         </div>
         <!-- 消息显示区 -->
-        <div ref="msgPan" id="msgPan" class="chat"
+        <div id="msgPan" ref="msgPan" class="chat"
             style="scroll-behavior: smooth"
             @scroll="chatScroll">
             <!-- 前缀 -->
@@ -149,7 +149,7 @@
                                                 :emoji="seg.face" class="msg-face" />
                                             <img v-if="seg instanceof ImgSeg"
                                                 :src="seg.src"
-                                                :alt="'[' + $t('图片') + ']'"/>
+                                                :alt="'[' + $t('图片') + ']'">
                                         </template>
                                     </div>
                                 </div>
@@ -256,7 +256,7 @@
                         :title="$t('图片')"
                         @click="runSelectImg">
                         <font-awesome-icon :icon="['fas', 'image']" />
-                        <input id="choice-pic" type="file" style="display: none"
+                        <input ref="choice-pic" type="file" style="display: none"
                             @change="selectImg">
                     </div>
                     <div
@@ -327,8 +327,8 @@
                             @input="searchMessage" />
                     </form>
                     <div :class="{
-                            'disable': msgWhileSend.trim() === ''
-                        }"
+                             'disable': msgWhileSend.trim() === ''
+                         }"
                         @click="sendMsg">
                         <font-awesome-icon v-if="details[3].open" :icon="['fas', 'search']" />
                         <font-awesome-icon v-else :icon="['fas', 'angle-right']" />
@@ -342,7 +342,7 @@
         <!-- At 信息悬浮窗 -->
         <UserInfoPanComponent :data="userInfoPanData" />
         <!-- msg 预览栏 -->
-        <MsgPrevPanComponent :data="msgPrevPanData"/>
+        <MsgPrevPanComponent :data="msgPrevPanData" />
         <!-- 消息右击菜单 -->
         <Menu ref="msgMenu" name="chat-menu">
             <div>
@@ -356,20 +356,19 @@
                     @click.stop>
                     <div @wheel="
                         !menuDisplay.respond ?
-                        ($event.currentTarget as HTMLElement).scrollLeft += $event.deltaY
-                        : ''
-                        ">
+                            ($event.currentTarget as HTMLElement).scrollLeft += $event.deltaY
+                            : ''
+                    ">
                         <EmojiFace
                             v-for="num in Emoji.responseId"
                             :key="'respond-' + num"
                             :emoji="Emoji.get(num)"
                             @click="menuDisplay.menuSelectedMsg ?
-                            changeRespond(String(num), menuDisplay.menuSelectedMsg as Msg): ''"
-                            />
+                                changeRespond(String(num), menuDisplay.menuSelectedMsg as Msg): ''" />
                     </div>
                     <font-awesome-icon :icon="['fas', 'angle-up']" @click="menuDisplay.respond = true" />
                 </div>
-                <span id="anchor" @click.stop/>
+                <span id="anchor" @click.stop />
                 <div class="ss-card msg-menu-body" @click.stop>
                     <div v-show="menuDisplay.add" @click="forwardSelf()">
                         <div><font-awesome-icon :icon="['fas', 'plus']" /></div>
@@ -537,6 +536,7 @@ const $t = app.config.globalProperties.$t
 
 //#region  == 模板引用 ======================================
 const choiceFile = useTemplateRef<HTMLInputElement>('choiceFile')
+const choicePic = useTemplateRef<HTMLInputElement>('choice-pic')
 const msgBar = useTemplateRef<InstanceType<typeof MsgBar>>('msgBar')
 const mergePan = useTemplateRef<InstanceType<typeof MergePan>>('mergePan')
 const infoRef = useTemplateRef<InstanceType<typeof Info>>('infoRef')
@@ -1176,7 +1176,7 @@ function addImg(event: ClipboardEvent) {
 }
 
 function runSelectImg() {
-    choiceFile.value?.click()
+    choicePic.value?.click()
 }
 
 /**
@@ -1257,10 +1257,7 @@ async function setImg(blob: File | null) {
 
 //#region == 文件处理 ==========================================
 function runSelectFile() {
-    const input = document.getElementById('choice-file')
-    if (input) {
-        input.click()
-    }
+    choiceFile.value?.click()
 }
 
 /**

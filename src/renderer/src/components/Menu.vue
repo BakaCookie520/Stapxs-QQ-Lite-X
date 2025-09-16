@@ -13,7 +13,7 @@
         <Transition :name="name">
             <div v-if="show" ref="space"
                 :class="{
-                    'menu': true,
+                    'menu-component': true,
                 }"
                 @click="closeMenu()">
                 <div ref="content" class="content">
@@ -24,7 +24,7 @@
     </Teleport>
 </template>
 <script setup lang="ts">
-import { nextTick, shallowRef, useTemplateRef } from 'vue';
+import { nextTick, shallowRef, useTemplateRef } from 'vue'
 const { name } = defineProps<{
     name: string
 }>()
@@ -177,7 +177,7 @@ defineExpose({
 </script>
 
 <style scoped>
-.menu {
+.menu-component {
     position: absolute;
     top: 0;
     left: 0;

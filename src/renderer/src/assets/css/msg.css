@@ -48,7 +48,7 @@
 .message-body {
     color: var(--color-font);
     width: calc(100% - 50px);
-    max-width: calc(0.6 * (100vw - 375px));
+    max-width: max(calc(0.6 * (100vw - 375px)), 300px);
     display: flex;
     flex-direction: column;
 }
@@ -773,9 +773,4 @@ span.user-title.robot {
 .file-view > span.txt > a {
     display: block;
     width: 100%;
-}
-
-.message-body-container {
-    container-type: inline-size;
-    container-name: message-body;
 }

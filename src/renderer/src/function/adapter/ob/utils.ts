@@ -1,10 +1,10 @@
+import app from '@renderer/main'
 import { v4 as uuid } from 'uuid'
 import { Logger } from '../../base'
 import driver from '../../driver'
-import { ObRequest, ObResponse } from './type'
-import app from '@renderer/main'
 import { Gender, Role } from '../enmu'
 import { SenderData } from '../interface'
+import { ObRequest, ObResponse } from './type'
 
 const logger = new Logger()
 
@@ -43,7 +43,7 @@ class Request {
     reject!: (reason?: any) => void
     promise: Promise<any>
 
-    static RequestMap: Map<string, Request> = new Map()
+    static readonly RequestMap: Map<string, Request> = new Map()
 
     constructor(
         action: string,
@@ -107,11 +107,11 @@ class Request {
                 echo: this.echo,
             } as ObRequest<any>)
         } catch (error) {
-            console.log({
+            throw new Error('创建请求JSON失败' + JSON.stringify({
                 action: this.action,
                 params: this.params,
                 echo: this.echo,
-            }, '创建请求JSON失败')
+            }))
         }
     }
 }
@@ -138,7 +138,7 @@ export class ObConnector {
         ssl: boolean,
         token?: string,
     ): Promise<boolean> {
-        await driver.reset(
+        driver.reset(
             url,
             ssl,
             token,
@@ -176,7 +176,7 @@ export class ObConnector {
     async send(
         name: string,
         args: { [key: string]: any },
-    ): Promise<ObResponse<any>> {
+    ): Promise<ObResponse<any>|undefined> {
         // 过滤掉空的参数
         if (!driver.isConnected())
             throw new Error('WebSocket未连接，无法发送消息')
@@ -241,7 +241,7 @@ export function parseCQ(cq: string) {
     // 将纯文本也处理为 CQCode 格式
     // PS：这儿不用担心方括号本身，go-cqhttp 会把它转义掉
     let reg = /^[^\]]+?\[|\].+\[|\][^[]+$|^[^[\]]+$/g
-    const textList = cq.match(reg)
+    const textList = RegExp(reg).exec(cq)
     if (textList !== null) {
         textList.forEach((item) => {
             item = item.replace(']', '').replace('[', '')
@@ -251,13 +251,13 @@ export function parseCQ(cq: string) {
     // 拆分 CQCode
     reg = /\[.+?\]/g
     cq = cq.replaceAll('\n', '\\n')
-    const list = cq.match(reg)
+    const list = RegExp(reg).exec(cq)
     // 处理为 object
     const back: { [ket: string]: any }[] = []
     reg = /\[CQ:([^,]+),(.*)\]/g
     if (list !== null) {
         list.forEach((item) => {
-            if (item.match(reg) !== null) {
+            if (RegExp(reg).exec(item) !== null) {
                 const info: { [key: string]: any } = { type: RegExp.$1 }
                 RegExp.$2.split(',').forEach((key: string) => {
                     const kv = [] as string[]

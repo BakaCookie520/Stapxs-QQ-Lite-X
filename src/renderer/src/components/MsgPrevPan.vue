@@ -8,13 +8,12 @@
     <Teleport to="body">
         <Transition name="msg-preview">
             <div v-if="data.msgs" class="msg-preview" :style="posInfo">
-                <div v-if="typeof data.msgs === 'string'" class="ss-card" ref="body">
+                <div v-if="typeof data.msgs === 'string'" ref="body" class="ss-card">
                     {{ data.msgs }}
                 </div>
-                <div v-else class="ss-card" ref="body">
+                <div v-else ref="body" class="ss-card">
                     <MsgBar
                         :msgs="data.msgs"
-                        :without-avatar="data.msgs.length === 1 ? true : false"
                         :can-interaction="false"
                         :show-time="false" />
                 </div>
@@ -24,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { Msg } from '@renderer/function/model/msg';
+import { Msg } from '@renderer/function/model/msg'
 import {
     reactive,
     useTemplateRef,
     watchEffect
-} from 'vue';
-import MsgBar from './MsgBar.vue';
+} from 'vue'
+import MsgBar from './MsgBar.vue'
 
 const { data } = defineProps<{
     data: {
@@ -44,16 +43,12 @@ const body = useTemplateRef<HTMLDivElement>('body')
 const posInfo = reactive({
     '--x': '0px',
     '--y': '0px',
-    '--width': '0px',
 })
 
 // 切换css
 watchEffect(() => {
     posInfo['--x'] = data.x + 'px'
     posInfo['--y'] = data.y + 'px'
-    if (body.value) {
-        posInfo['--width'] = body.value.offsetWidth + 'px'
-    }
 
     if (!body.value) return
     // 高度
@@ -80,6 +75,10 @@ export interface MsgPrevPan {
 .msg-preview {
     margin-left: var(--x);
     margin-top: var(--y);
+    max-width: max(30vw, 400px);
+}
+.msg-preview :deep(*) {
+    pointer-events: none !important;
 }
 .msg-preview-enter-active, .msg-preview-leave-active {
     animation: none 0.2s;

@@ -141,6 +141,7 @@
                                     '--width': currentImgInfo?.width + 'px',
                                     '--height': currentImgInfo?.height + 'px',
                                 }"
+                                alt=""
                                 @wheel="onWheel"
                                 @click.stop.prevent="onClick"
                                 @mousedown="onMouseDown"
@@ -149,8 +150,7 @@
                                 @touchstart="onImgTouchStart"
                                 @touchmove="onImgTouchMove"
                                 @touchend="onImgTouchEnd"
-                                @mouseleave="mouseMoveInfo=undefined"
-								alt="">
+                                @mouseleave="mouseMoveInfo=undefined">
                             <canvas v-show="edit" ref="canvas"
                                 :class="getImgCursorClassByTool()"
                                 :style="{

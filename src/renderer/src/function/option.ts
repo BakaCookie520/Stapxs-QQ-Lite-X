@@ -24,7 +24,6 @@ import {
 } from '@renderer/function/utils/systemUtil'
 import { i18n } from '@renderer/main'
 import { backend } from '@renderer/runtime/backend'
-import { defineAsyncComponent, markRaw } from 'vue'
 import { Logger, LogType, PopInfo, PopType } from './base'
 import { BubbleBox } from './model/box'
 import { GroupSession, Session } from './model/session'
@@ -381,24 +380,6 @@ function changeTheme(id: number) {
     }
     // 避免 css 未加载完
     setTimeout(refreshFavicon, 10)
-}
-
-/**
- * 切换聊天面板
- * @param name 文件名
- */
-function changeChatView(name: string | undefined) {
-    if (name && name != '') {
-        runtimeData.pageView.chatView = markRaw(
-            defineAsyncComponent(
-                () => import(`@renderer/pages/chat-view/${name}.vue`),
-            ),
-        )
-    } else {
-        runtimeData.pageView.chatView = markRaw(
-            defineAsyncComponent(() => import('@renderer/pages/Chat.vue')),
-        )
-    }
 }
 
 // =============== 设置基础功能 ===============

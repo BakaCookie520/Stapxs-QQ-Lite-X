@@ -6,6 +6,7 @@
             'move-close': moveClose,
         }">
         <div
+            ref="main"
             v-move="moveOptions"
             :class="{
                 'pop-box-body': true,
@@ -18,8 +19,7 @@
                     `${40 + Number(runtimeData.sysConfig.fs_adaptation)}px` : '',
                 transform: vw * 100 > 500 ? 'translate(-50%, -50%)' : '',
             }"
-            @v-move-right="closeByMove"
-            ref="main">
+            @v-move-right="closeByMove">
             <header v-if="title">
                 <div v-if="svg">
                     <font-awesome-icon :icon="['fas', svg]" />
@@ -87,8 +87,7 @@ const moveOptions: VMoveOptions<HTMLDivElement> = {
     },
     endHook: (el) => {
         if (!allowAutoClose) return
-        el.style.transform = vw.value * 100 > 500 ?
-            'translate(-50%, -50%)' : ''
+        el.style.transform = vw.value * 100 > 500 ?'translate(-50%, -50%)' : ''
     },
     rightLimit: {
         value: 50 * vw.value,

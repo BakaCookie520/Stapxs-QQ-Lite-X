@@ -7,7 +7,6 @@
 <template>
     <TransitionGroup
         :name="runtimeData.sysConfig.opt_fast_animation ? '' : 'msglist'"
-        class="message-body-container"
         :class="{
             'disable-interaction': !allowInteraction || multiselectMode,
         }"

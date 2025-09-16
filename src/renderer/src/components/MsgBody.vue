@@ -24,9 +24,9 @@
         :data-time="data.time"
         @mouseleave="hiddenUserInfo">
         <img v-if="direction === 'left'" v-hide="!showAvatar"
-            class="avatar"
             v-menu.prevent="event => $emit('showUserMenu', event, data.sender)"
             v-long-hover
+            class="avatar"
             :src="data.sender.face"
             :alt="data.sender.name"
             @v-long-hover="userInfoPan?.open(
@@ -83,11 +83,11 @@
                     </div>
                 </div>
                 <div v-menu.prevent="event => $emit('showMsgMenu', event, data)"
+                    v-move="moveOptions"
                     :class="{
                         'main': true,
                         'not-exist': !data.exist && dimNonExistentMsg
                     }"
-                    v-move="moveOptions"
                     @v-move-left.prevent="$emit('leftMove', data)"
                     @v-move-right.prevent="$emit('rightMove', data)">
                     <!-- 消息体 -->
@@ -133,9 +133,9 @@
                                 <EmojiFace :emoji="item.face" class="msg-face" />
                             </template>
                             <template v-else-if="item instanceof AtSeg">
-                                <a :data-id="item.user_id"
+                                <a v-long-hover
+                                    :data-id="item.user_id"
                                     :data-group="data.session?.id"
-                                    v-long-hover
                                     :class="{
                                         'msg-at': true,
                                         'atme': item.user_id === runtimeData.loginInfo.uin && showToMe,
@@ -157,7 +157,7 @@
                                     @{{ $t('全体成员') }}
                                 </a>
                             </template>
-                            <div v-else-if="item instanceof FileSeg" class=msg-file>
+                            <div v-else-if="item instanceof FileSeg" class="msg-file">
                                 <div>
                                     <div>
                                         <a>
@@ -213,12 +213,12 @@
                                 </video>
                             </div>
                             <template v-else-if="item instanceof ForwardSeg">
-                                <div class="msg-raw-forward"
-                                    v-long-hover
+                                <div v-long-hover
+                                    class="msg-raw-forward"
                                     @v-long-hover="msgPrevPan?.open(
                                         item.content !== undefined ?
-                                        item.content
-                                        : $t('加载消息中...'),
+                                            item.content
+                                            : $t('加载消息中...'),
                                         ($event.detail as MenuEventData).x,
                                         ($event.detail as MenuEventData).y,
                                     )"
@@ -266,8 +266,8 @@
                                 @click="scrollToMsg(item.id)"
                                 @v-long-hover="msgPrevPan?.open(
                                     data.session?.getMsgById(item.id) ?
-                                    [data.session!.getMsgById(item.id)!]
-                                    : $t('加载消息失败'),
+                                        [data.session!.getMsgById(item.id)!]
+                                        : $t('加载消息失败'),
                                     ($event.detail as MenuEventData).x,
                                     ($event.detail as MenuEventData).y,
                                 )"
@@ -413,8 +413,8 @@
                 <TransitionGroup name="emoji-like">
                     <template v-for="info, id in data.emojis" :key="'respond-' + data.uuid + '-' + id">
                         <div :class="{
-                                'me-send': info.includes(runtimeData.loginInfo.uin),
-                            }"
+                                 'me-send': info.includes(runtimeData.loginInfo.uin),
+                             }"
                             @click="$emit('emojiClick', id as string, data)">
                             <EmojiFace :emoji="Emoji.get(Number(id))" />
                             <span>{{ info.length }}</span>

@@ -16,7 +16,7 @@
         <font-awesome-icon :class="show == 'end' ? 'select' : ''" :icon="['fas', 'circle-check']" @click="changeView('end')" />
     </div>
     <div v-if="show == 'home'" class="wel-home">
-		<Icon animation />
+        <Icon animation />
         <span>WELCOME</span>
         <div>
             <span>{{ $t('Stapxs QQ Lite X') }}</span>

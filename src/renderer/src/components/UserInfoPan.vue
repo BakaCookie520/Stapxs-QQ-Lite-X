@@ -120,16 +120,16 @@
 </template>
 
 <script setup lang="ts">
-import { Role } from '@renderer/function/adapter/enmu';
-import { IUser, Member, User } from '@renderer/function/model/user';
-import { vUserRole } from '@renderer/function/utils/vcmd';
+import { Role } from '@renderer/function/adapter/enmu'
+import { IUser, Member, User } from '@renderer/function/model/user'
+import { vUserRole } from '@renderer/function/utils/vcmd'
 import {
     reactive,
     Reactive,
     ref,
     type Ref,
     watchEffect,
-} from 'vue';
+} from 'vue'
 
 const { data } = defineProps<{
     data: {

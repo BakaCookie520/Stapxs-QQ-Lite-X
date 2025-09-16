@@ -611,8 +611,6 @@ body.with-bar .msg-menu {
 }
 
 @keyframes merge-pan-bar-leave {
-    from {}
-
     to {
         width: 0;
     }
@@ -708,10 +706,6 @@ body.with-bar .msg-menu {
 
 .msg-preview > div {
     max-height: 40vh;
-}
-
-.msg-preview > div > div {
-    min-width: max(200px, 30vw);
 }
 
 .msg-preview .message {
@@ -1375,10 +1369,6 @@ body.with-bar .msg-menu {
     width: 100%;
 }
 
-/* .sub_file > div > div:hover {
-    background: var(--color-card-2);
-} */
-
 .download-bar {
     --main-size: 25px;
     height: var(--main-size) !important;
@@ -1993,7 +1983,6 @@ body.with-bar .msg-menu {
     width: 100%;
     overflow: hidden;
     height: 75vh;
-    width: 60vw;
     min-width: 360px;
     max-width: 60vh;
 }
@@ -2180,8 +2169,18 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
     display: flex;
     flex-direction: row;
     overflow-x: auto;
-    width: 160px;
+    overflow-y: hidden;
+    width: 166px;
     scroll-behavior: smooth;
+}
+
+.respond > div::-webkit-scrollbar {
+    display: none;
+}
+
+.respond > div:hover::-webkit-scrollbar {
+    display: block;
+    height: 6px;
 }
 
 .respond.open {
