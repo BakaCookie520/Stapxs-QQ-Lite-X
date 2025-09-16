@@ -14,12 +14,13 @@ import {
     EventType
 } from './adapter/interface'
 import { BanEvent, BanLiftEvent, Event, JoinEvent, LeaveEvent, MsgEvent, PokeEvent, RecallEvent, ResponseEvent } from './model/event'
+import { Session } from './model/session'
 import { newMsg, recallMsg, runtimeData } from './msg'
 
 type EventHook<T extends Event> = ((event: T) => void | Promise<void>)
 const eventHooks: Map<EventType, EventHook<any>[]> = new Map()
 
-export function eventHandle<T extends Event>(...args: [EventType, ...EventType[], EventHook<T>]): void {
+function eventHandle<T extends Event>(...args: [EventType, ...EventType[], EventHook<T>]): void {
     const handle = args.pop() as EventHook<T>
     const types = args as EventType[]
     for (const t of types) {
@@ -33,7 +34,12 @@ export function eventHandle<T extends Event>(...args: [EventType, ...EventType[]
  * 收到事件
  * @param event
  */
-export function handleEvent(eventData: EventData): void {
+export async function handleEvent(eventData: EventData): Promise<void> {
+    // 很不优雅捏，但不知道怎么解决，特殊处理下吧
+    if (eventData['session']) {
+        const session = Session.getSession(eventData['session'])
+        await session.activate()
+    }
     const event = Event.parse(eventData)
     const hooks = eventHooks.get(event.type)
     if (hooks) {
