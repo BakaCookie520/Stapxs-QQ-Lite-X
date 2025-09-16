@@ -30,8 +30,10 @@ import { backend } from '@renderer/runtime/backend'
 import {
     defineAsyncComponent,
     markRaw,
+    // eslint-disable-next-line no-restricted-imports
     reactive,
-    watchEffect
+    shallowReactive,
+    watchEffect,
 } from 'vue'
 import { Logger, LogType, PopInfo, PopType } from './base'
 import {
@@ -126,7 +128,7 @@ export function recallMsg(session: Session, msgId: string) {
     for (const [ id, msg ] of session.messageList.entries()) {
         if (!(msg instanceof Msg)) continue
         if (msg.message_id === String(msgId)) {
-            matchMsg = msg as Msg
+            matchMsg = msg
             matchMsgId = id
             break
         }
@@ -205,19 +207,19 @@ function updateSysInfo(
 // ==============================================================
 
 const baseRuntime = {
-    connectInfo: { address: undefined, token: undefined },
+    connectInfo: shallowReactive({ address: undefined, token: undefined }),
     loginInfo: {} as unknown as {nickname: string, uin: number},
-    sysConfig: {} as Record<keyof typeof optDefault, any | null>,
-    tags: {
+    sysConfig: reactive({}) as Record<keyof typeof optDefault, NonNullable<any> | null>,
+    tags: shallowReactive({
         firstLoad: false,
         openSideBar: true,
         darkMode: false,
         canCors: false,
-    },
-    watch: {
+    }),
+    watch: shallowReactive({
         backTimes: 0,
-    },
-    pageView: {
+    }),
+    pageView: shallowReactive({
         chatView: markRaw(
             defineAsyncComponent(() => import('@renderer/pages/Chat.vue')),
         ),
@@ -226,7 +228,7 @@ const baseRuntime = {
                 () => import('@renderer/components/MsgBody.vue'),
             ),
         ),
-    },
+    }),
     systemNoticesList: undefined,
     popBoxList: [],
     mergeMsgStack: [],
@@ -239,11 +241,11 @@ export const runtimeData: RunTimeDataElem = reactive(baseRuntime)
 
 // 重置 Runtime，但是保留应用设置之类已经加载好的应用内容
 export function resetRuntime(resetAll = false) {
-    runtimeData.watch = reactive(baseRuntime.watch)
+    runtimeData.watch = shallowReactive(baseRuntime.watch)
     if (resetAll) {
         runtimeData.selfInfo = undefined
-        runtimeData.systemNoticesList = reactive([])
-        runtimeData.loginInfo = reactive({} as unknown as {nickname: string, uin: number})
+        runtimeData.systemNoticesList = shallowReactive([])
+        runtimeData.loginInfo = shallowReactive({} as unknown as {nickname: string, uin: number})
     }
 }
 
