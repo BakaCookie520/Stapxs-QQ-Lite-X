@@ -434,11 +434,10 @@ export abstract class Session {
      */
     async setRead(targetMsg?: Msg): Promise<void> {
         // 避免频繁调用...昨天吃警告了.tx竟然没给我踹下去
-        if (this.newMsg === 0) return
-
-        this.newMsg = 0
         this.showNotice = false
         this.highlightInfo.length = 0
+        if (this.newMsg === 0) return
+        this.newMsg = 0
 
         if (!targetMsg) {
             for (const msg of this.messageList) {
