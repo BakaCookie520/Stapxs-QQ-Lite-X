@@ -113,39 +113,39 @@
 </template>
 
 <script setup lang="ts">
-import Spacing from 'spacingjs/src/spacing'
-import { i18n } from '@renderer/main'
 import Option from '@renderer/function/option'
+import { i18n } from '@renderer/main'
 import Umami from '@stapxs/umami-logger-typescript'
+import Spacing from 'spacingjs/src/spacing'
 import * as App from './function/utils/appUtil'
 
+import { popList as appMsgs, Logger, LogType, PopInfo } from '@renderer/function/base'
+import { runtimeData } from '@renderer/function/msg'
+import { uptime } from '@renderer/main'
 import {
-    shallowReactive,
-    useTemplateRef,
-    provide,
     markRaw,
     onMounted,
+    provide,
+    shallowReactive,
+    useTemplateRef,
 } from 'vue'
-import { Logger, popList as appMsgs, PopInfo, LogType } from '@renderer/function/base'
-import { runtimeData } from '@renderer/function/msg'
+import PopBox from './components/PopBox.vue'
+import driver from './function/driver'
 import { Notify } from './function/notify'
 import { changeSession } from './function/utils/msgUtil'
-import { getDeviceType, getVersion } from './function/utils/systemUtil'
-import { uptime } from '@renderer/main'
-import driver from './function/driver'
-import PopBox from './components/PopBox.vue'
 import { ensurePopBox } from './function/utils/popBox'
+import { getDeviceType, getVersion } from './function/utils/systemUtil'
 import { vHide } from './function/utils/vcmd'
 
-import Options from '@renderer/pages/Options.vue'
+import FriendMenu from '@renderer/components/FriendMenu.vue'
+import Boxes from '@renderer/pages/Boxes.vue'
 import Friends from '@renderer/pages/Friends.vue'
 import Messages from '@renderer/pages/Messages.vue'
-import Boxes from '@renderer/pages/Boxes.vue'
-import FriendMenu from '@renderer/components/FriendMenu.vue'
+import Options from '@renderer/pages/Options.vue'
 import GlobalSessionSearchBar from './components/GlobalSessionSearchBar.vue'
+import LoginPan from './components/LoginPan.vue'
 import Viewer from './components/Viewer.vue'
 import { backend } from './runtime/backend'
-import LoginPan from './components/LoginPan.vue'
 import win from './runtime/win'
 
 //#region == 定义变量 ===================================================
@@ -201,6 +201,8 @@ window.onbeforeunload = () => {
     runtimeData.nowAdapter?.close()
     runtimeData.nowAdapter = undefined
 }
+// 绑定 runtimeData
+window.runtimeData = runtimeData
 //#endregion
 
 //#region == 方法函数 ===================================================

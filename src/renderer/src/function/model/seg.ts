@@ -1,15 +1,16 @@
 import app from '@renderer/main'
-import { getSizeFromBytes } from '../utils/systemUtil'
-import { MsgBodyFuns } from './msg-body'
+import { toRaw } from 'vue'
+import type { AtAllSegData, AtSegData, FaceSegData, FileSegData, ForwardSegData, ImgSegData, JsonSegData, MdSegData, MfaceSegData, PokeSegData, ReplySegData, SegData, TextSegData, UnknownSegData, VideoSegData, XmlSegData } from '../adapter/interface'
 import { PopInfo, PopType } from '../base'
 import { downloadFile } from '../utils/appUtil'
-import { ForwardMsg, Msg } from './msg'
-import type { AtAllSegData, AtSegData, FaceSegData, FileSegData, ForwardSegData, ImgSegData, JsonSegData, MdSegData, MfaceSegData, PokeSegData, ReplySegData, SegData, TextSegData, UnknownSegData, VideoSegData, XmlSegData } from '../adapter/interface'
-import { Resource } from './ressource'
-import { Img } from './img'
-import { toRaw } from 'vue'
-import { ProxyUrl } from './proxyUrl'
+import { getSizeFromBytes } from '../utils/systemUtil'
 import Emoji from './emoji'
+import { Img } from './img'
+import { ForwardMsg, Msg } from './msg'
+import { MsgBodyFuns } from './msg-body'
+import { ProxyUrl } from './proxyUrl'
+import { Resource } from './ressource'
+import { autoMarkRaw } from './utils'
 
 export const segType = {}
 type SegCon<T extends Seg> = { new(...args: any[]): T; type: string };
@@ -47,6 +48,7 @@ export abstract class Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class TxtSeg extends Seg {
     static readonly type = 'text'
     text: string
@@ -78,6 +80,7 @@ export class TxtSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class MdSeg extends Seg {
     static readonly type = 'markdown'
     content: string
@@ -100,6 +103,7 @@ export class MdSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class ImgSeg extends Seg {
     static readonly type = 'image'
     _url: Resource
@@ -113,14 +117,14 @@ export class ImgSeg extends Seg {
         const { $t } = app.config.globalProperties
         if (typeof arg1 === 'string') {
             // constructor(url: string, isFace ?: boolean)
-            const url = arg1 as string
+            const url = arg1
             const isFace = arg2 as boolean | undefined
             this._url = Resource.fromUrl(url)
             this.isFace = isFace || false
             this.summary = $t('[图片]')
         }else {
             // constructor(data: ImgSegData)
-            const data = arg1 as ImgSegData
+            const data = arg1
             this._url = data.url
             this.summary = data.summary ?? $t('[图片]')
             this.isFace = data.isFace
@@ -157,6 +161,7 @@ export class ImgSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class MfaceSeg extends Seg {
     static readonly type = 'mface'
     _url: ProxyUrl
@@ -206,6 +211,7 @@ export class MfaceSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class FaceSeg extends Seg {
     static readonly type = 'face'
     text?: string
@@ -240,6 +246,7 @@ export class FaceSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class AtSeg extends Seg {
     static readonly type = 'at'
     user_id: number
@@ -254,7 +261,7 @@ export class AtSeg extends Seg {
     }
 
     plaintext(msg?: Msg): string {
-        if (!msg || !msg.session) return `@${this.user_id}`
+        if (!msg?.session) return `@${this.user_id}`
 
         const user = msg.session.getUserById(Number(this.user_id))
         if (user) return '@' + user.name
@@ -270,6 +277,7 @@ export class AtSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class AtAllSeg extends Seg {
     static readonly type = 'atall'
     constructor(_: AtAllSegData) {
@@ -289,6 +297,7 @@ export class AtAllSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class FileSeg extends Seg {
     static readonly type = 'file'
     name: string
@@ -297,7 +306,7 @@ export class FileSeg extends Seg {
     size: number
     ext: string
     download_percent?: number
-    static viewerSupport = [
+    static readonly viewerSupport = [
         'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp',
         'mp4', 'avi', 'mkv', 'flv',
         'txt', 'md',
@@ -392,6 +401,7 @@ export class FileSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class VideoSeg extends Seg {
     static readonly type = 'video'
     file: string
@@ -422,6 +432,7 @@ export class VideoSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class ForwardSeg extends Seg {
     static readonly type = 'forward'
 	id?: string
@@ -430,7 +441,7 @@ export class ForwardSeg extends Seg {
     constructor(data: ForwardSegData)
     constructor(arg1?: Msg[] | ForwardSegData) {
         if (Array.isArray(arg1)) {
-            const msgs = arg1 as Msg[]
+            const msgs = arg1
             super()
             this.content = msgs
         } else {
@@ -471,6 +482,7 @@ export class ForwardSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class ReplySeg extends Seg {
     static readonly type = 'reply'
     id: string
@@ -498,6 +510,7 @@ export class ReplySeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class PokeSeg extends Seg {
     static readonly type = 'poke'
 	constructor(_: PokeSegData) {super()}
@@ -513,6 +526,7 @@ export class PokeSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class XmlSeg extends Seg {
     static readonly type = 'xml'
     readonly data: string
@@ -541,6 +555,7 @@ export class XmlSeg extends Seg {
 }
 
 @registerSegType
+@autoMarkRaw
 export class JsonSeg extends Seg {
     static readonly type = 'json'
     readonly data: string
@@ -569,9 +584,10 @@ export class JsonSeg extends Seg {
     }
 }
 
+@autoMarkRaw
 export class UnknownSeg extends Seg {
     static readonly type = 'unknown'
-    private _type: string
+    private readonly _type: string
 	data: object
     constructor(data: UnknownSegData) {
         super()

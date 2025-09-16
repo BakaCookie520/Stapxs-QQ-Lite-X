@@ -13,10 +13,8 @@ import {
     ComputedRef,
     ShallowRef,
     computed,
-    reactive,
     shallowReactive,
     shallowRef,
-    toRaw,
 } from 'vue'
 import { Role } from '../adapter/enmu'
 import { SessionData } from '../adapter/interface'
@@ -34,13 +32,13 @@ import { EssenceMsg, Msg } from './msg'
 import { SystemNotice } from './notice'
 import { ProxyUrl } from './proxyUrl'
 import { BaseUser, IUser, Member, User } from './user'
+import { autoMarkRaw } from './utils'
 
 export type VoidReturn = void | Promise<void>
 
 /**
  * 会话基类
  * 早期写的代码，对响应式对象理解不到位
- * @TODO 改为浅层式响应对象...这不太优雅
  */
 export abstract class Session {
     // 基本信息
@@ -50,10 +48,10 @@ export abstract class Session {
     _name: Name
     protected abstract _face: ComputedRef<string>
     // 消息列表相关
-    messageList: Message[] = shallowReactive([])
+    readonly messageList: Message[] = shallowReactive([])
     imgHead: Img | undefined
     imgTail: Img | undefined
-    newMsg: number = 0
+    readonly _newMsg = shallowRef(0)
     headMsg?: Msg
     preMessage?: Message
     // 设置
@@ -61,8 +59,8 @@ export abstract class Session {
     // 额外信息
     appendInfo?: string
     // 高亮信息
-    highlightInfo: string[] = shallowReactive([])
-    showNotice: boolean = false
+    readonly highlightInfo: string[] = shallowReactive([])
+    readonly _showNotice = shallowRef(false)
     // 分组盒子
     boxes: SessionBox[] = []
 
@@ -77,15 +75,15 @@ export abstract class Session {
     /**
      * 会话列表
      */
-    static sessionList: Session[] = reactive([])
+    static readonly sessionList: Session[] = shallowReactive([])
     /**
      * 置顶列表
      */
-    static alwaysTopSessions: Set<Session> = reactive(new Set()) as unknown as Set<Session>
+    static readonly alwaysTopSessions: Set<Session> = shallowReactive(new Set()) as unknown as Set<Session>
     /**
      * 激活会话列表
      */
-    static activeSessions: Set<Session> = reactive(new Set()) as unknown as Set<Session>
+    static readonly activeSessions: Set<Session> = shallowReactive(new Set()) as unknown as Set<Session>
 
     constructor(id: number, name: string) {
         this.id = id
@@ -100,7 +98,7 @@ export abstract class Session {
      */
     activate(): Promise<void> {
         if (this.activePromise) return this.activePromise
-        this.activePromise = toRaw(this)._activate()
+        this.activePromise = this._activate()
         return this.activePromise
     }
     private async _activate() {
@@ -122,23 +120,22 @@ export abstract class Session {
      * 卸载
      */
     unactive() {
-        const self = toRaw(this)
-        self.runHook('beforeUnactiveHook')
-        self.messageList.length = 0
-        self.imgHead = undefined
-        self.imgTail = undefined
-        self.headMsg = undefined
-        self.preMessage = undefined
-        self.highlightInfo.length = 0
-        self.isActive = false
-        self.activePromise = undefined
-        self.newMsg = 0
-        self.showNotice = false
-        self.loadHistoryLock.value = undefined
-        self.lastLoadFaileFlag.value = false
-        self.canLoadMoreHistory.value = true
-        Session.activeSessions.delete(self)
-        self.runHook('afterUnactiveHook')
+        this.runHook('beforeUnactiveHook')
+        this.messageList.length = 0
+        this.imgHead = undefined
+        this.imgTail = undefined
+        this.headMsg = undefined
+        this.preMessage = undefined
+        this.highlightInfo.length = 0
+        this.isActive = false
+        this.activePromise = undefined
+        this.newMsg = 0
+        this.showNotice = false
+        this.loadHistoryLock.value = undefined
+        this.lastLoadFailFlag.value = false
+        this.canLoadMoreHistory.value = true
+        Session.activeSessions.delete(this)
+        this.runHook('afterUnactiveHook')
     }
     abstract prepareUnactive(): void
     //#endregion
@@ -192,8 +189,8 @@ export abstract class Session {
             )
         }
         const type = arg1 as 'group' | 'user' | 'temp'
-        const id = arg2 as number
-        const group_id = arg3 as number | undefined
+        const id = arg2
+        const group_id = arg3
         let session: Session | undefined
         switch (type) {
             case 'group':
@@ -223,7 +220,7 @@ export abstract class Session {
     static clear(): void {
         // 取消激活
         for (const session of Session.activeSessions)
-            toRaw(session).unactive()
+            session.unactive()
 
         Session.sessionList.length = 0
         Session.alwaysTopSessions.clear()
@@ -255,21 +252,20 @@ export abstract class Session {
         const id = runtimeData.loginInfo.uin
         const upId = this.id
         // 完整的设置 JSON
-        let topInfo = runtimeData.sysConfig.top_info as {
+        const topInfo = runtimeData.sysConfig.top_info as {
             [key: string]: number[]
-        }
-        if (topInfo === null) topInfo = {}
+        } ?? {}
         // 本人的置顶信息
         let topList = topInfo[id]
         // 操作
-        if (flag) {
+        if (flag) {             // 设置
             if (topList) {
                 if (topList.indexOf(this.id) < 0) topList.push(upId)
             } else {
                 topList = [upId]
             }
-        } else {
-            if (topList) topList.splice(topList.indexOf(upId), 1)
+        } else if (topList) {   // 移除
+            topList.splice(topList.indexOf(upId), 1)
         }
         // 刷新设置
         if (topList) {
@@ -342,9 +338,9 @@ export abstract class Session {
         this.runHook('afterNewMessageHook', msg)
     }
 
-    private loadHistoryLock: ShallowRef<number|undefined> = shallowRef(undefined)
-    private lastLoadFaileFlag: ShallowRef<boolean> = shallowRef(false)
-    private canLoadMoreHistory: ShallowRef<boolean> = shallowRef(true)
+    private readonly loadHistoryLock: ShallowRef<number|undefined> = shallowRef(undefined)
+    private readonly lastLoadFailFlag: ShallowRef<boolean> = shallowRef(false)
+    private readonly canLoadMoreHistory: ShallowRef<boolean> = shallowRef(true)
     /**
      * 加载历史
      * @returns 是否加载成功
@@ -358,7 +354,7 @@ export abstract class Session {
         const { $t } = app.config.globalProperties
         // 过滤不支持的适配器
         if (!runtimeData.nowAdapter?.getHistoryMsg) {
-            this.lastLoadFaileFlag.value = true
+            this.lastLoadFailFlag.value = true
             this.messageList.unshift(SystemNotice.info(
                 runtimeData.nowAdapter?.name + $t('不支持获取历史记录')
             ))
@@ -398,7 +394,7 @@ export abstract class Session {
         } catch (e) {
             await this.runHook('afterLoadHistoryHook', 'fail', [])
             new Logger().error(e as Error, '加载历史消息失败')
-            this.lastLoadFaileFlag.value = true
+            this.lastLoadFailFlag.value = true
             new PopInfo().add(
                 PopType.ERR,
                 app.config.globalProperties.$t('获取历史记录失败'),
@@ -412,7 +408,7 @@ export abstract class Session {
 
     get loadHistoryState(): 'loading' | 'fail' | 'end' | 'normal' {
         if (this.loadHistoryLock.value) return 'loading'
-        if (this.lastLoadFaileFlag.value) return 'fail'
+        if (this.lastLoadFailFlag.value) return 'fail'
         if (!this.canLoadMoreHistory.value) return 'end'
         return 'normal'
     }
@@ -438,7 +434,12 @@ export abstract class Session {
      */
     async setRead(targetMsg?: Msg): Promise<void> {
         // 避免频繁调用...昨天吃警告了.tx竟然没给我踹下去
-        if (!this.newMsg) return
+        if (this.newMsg === 0) return
+
+        this.newMsg = 0
+        this.showNotice = false
+        this.highlightInfo.length = 0
+
         if (!targetMsg) {
             for (const msg of this.messageList) {
                 if (msg instanceof Msg) {
@@ -451,10 +452,6 @@ export abstract class Session {
         if (!targetMsg) return
 
         await this.runHook('beforeSetReadHook')
-
-        this.newMsg = 0
-        this.showNotice = false
-        this.highlightInfo.length = 0
 
         // 向收纳盒上报消息
         for (const box of this.boxes) {
@@ -493,35 +490,35 @@ export abstract class Session {
     //#region == 钩子相关 ==============================================================
     // 我为啥要写这东西?我自己也不知道...照着nb抄着抄着就有这东西了...
     // 激活
-    static beforeActiveHook: ((session: Session) => VoidReturn)[] = []
-    beforeActiveHook: ((session: Session) => VoidReturn)[] = []
-    static afterActiveHook: ((session: Session) => VoidReturn)[] = []
-    afterActiveHook: ((session: Session) => VoidReturn)[] = []
+    static readonly beforeActiveHook: ((session: Session) => VoidReturn)[] = []
+    readonly beforeActiveHook: ((session: Session) => VoidReturn)[] = []
+    static readonly afterActiveHook: ((session: Session) => VoidReturn)[] = []
+    readonly afterActiveHook: ((session: Session) => VoidReturn)[] = []
     // 取消激活
-    static beforeUnactiveHook: ((session: Session) => VoidReturn)[] = []
-    beforeUnactiveHook: ((session: Session) => VoidReturn)[] = []
-    static afterUnactiveHook: ((session: Session) => VoidReturn)[] = []
-    afterUnactiveHook: ((session: Session) => VoidReturn)[] = []
+    static readonly beforeUnactiveHook: ((session: Session) => VoidReturn)[] = []
+    readonly beforeUnactiveHook: ((session: Session) => VoidReturn)[] = []
+    static readonly afterUnactiveHook: ((session: Session) => VoidReturn)[] = []
+    readonly afterUnactiveHook: ((session: Session) => VoidReturn)[] = []
     // 新消息
-    static beforeNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
-    beforeNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
-    static afterNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
-    afterNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
+    static readonly beforeNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
+    readonly beforeNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
+    static readonly afterNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
+    readonly afterNewMessageHook: ((session: Session, msg: Message) => VoidReturn)[] = []
     // 历史消息加载
-    static beforeLoadHistoryHook: ((session: Session) => VoidReturn)[] = []
-    beforeLoadHistoryHook: ((session: Session) => Promise<void>)[] = []
-    static afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => VoidReturn)[] = []
-    afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => VoidReturn)[] = []
+    static readonly beforeLoadHistoryHook: ((session: Session) => VoidReturn)[] = []
+    readonly beforeLoadHistoryHook: ((session: Session) => Promise<void>)[] = []
+    static readonly afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => VoidReturn)[] = []
+    readonly afterLoadHistoryHook: ((session: Session, state: 'success' | 'fail' | 'end', msgs: Message[]) => VoidReturn)[] = []
     // 删除消息钩子
-    static beforeRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
-    beforeRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
-    static afterRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
-    afterRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
+    static readonly beforeRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
+    readonly beforeRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
+    static readonly afterRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
+    readonly afterRmMessageHook: ((session: Session, msg: Msg) => VoidReturn)[] = []
     // 设置已读消息钩子
-    static beforeSetReadHook: ((session: Session) => VoidReturn)[] = []
-    beforeSetReadHook: ((session: Session) => VoidReturn)[] = []
-    static afterSetReadHook: ((session: Session) => VoidReturn)[] = []
-    afterSetReadHook: ((session: Session) => VoidReturn)[] = []
+    static readonly beforeSetReadHook: ((session: Session) => VoidReturn)[] = []
+    readonly beforeSetReadHook: ((session: Session) => VoidReturn)[] = []
+    static readonly afterSetReadHook: ((session: Session) => VoidReturn)[] = []
+    readonly afterSetReadHook: ((session: Session) => VoidReturn)[] = []
     /**
      * 执行钩子
      * @param hookList 钩子列表
@@ -561,27 +558,27 @@ export abstract class Session {
     //#region == 图片更新 ==============================================================
     private imgFromNewMsg(msg: Message): void {
         if (!(msg instanceof Msg)) return
-        const imgList = toRaw(msg.imgList)
+        const imgList = msg.imgList
         if (imgList.length === 0) return
         if (!this.imgHead || !this.imgTail) {
-            this.imgHead = toRaw(imgList.at(0))
-            this.imgTail = toRaw(imgList.at(-1))
+            this.imgHead = imgList.at(0)
+            this.imgTail = imgList.at(-1)
         }else {
-            this.imgTail.concatNext(toRaw(imgList.at(0)!))
-            this.imgTail = toRaw(imgList.at(-1))
+            this.imgTail.concatNext(imgList.at(0)!)
+            this.imgTail = imgList.at(-1)
         }
     }
     private imgFromHistory(msgs: Message[]): void {
         for (const msg of [...msgs].reverse()) {
             if (!(msg instanceof Msg)) continue
             if (msg.imgList.length === 0) continue
-            const imgList = toRaw(msg.imgList)
+            const imgList = msg.imgList
             if (!this.imgHead || !this.imgTail) {
-                this.imgHead = toRaw(imgList.at(0))
-                this.imgTail = toRaw(imgList.at(-1))
+                this.imgHead = imgList.at(0)
+                this.imgTail = imgList.at(-1)
             }else {
-                this.imgHead.concatPrev(toRaw(imgList.at(-1)!))
-                this.imgHead = toRaw(imgList.at(0))
+                this.imgHead.concatPrev(imgList.at(-1)!)
+                this.imgHead = imgList.at(0)
             }
         }
     }
@@ -594,15 +591,15 @@ export abstract class Session {
     ): void {
         if (oldData.length === 0 && newData.length !== 0) throw new Error('旧数据不能为空')
 
-        const head = toRaw(oldData.at(0)!).prev
-        const tail = toRaw(newData.at(-1)!).next
+        const head = oldData.at(0)!.prev
+        const tail = newData.at(-1)!.next
         this.removeImgList(oldData)
         if (head) {
-            head.extendNext(toRaw(newData.at(0)!))
-            if (!this.imgTail || this.imgTail === head) this.imgTail = toRaw(newData.at(-1)!)
+            head.extendNext(newData.at(0)!)
+            if (!this.imgTail || this.imgTail === head) this.imgTail = newData.at(-1)!
         }else if (tail) {
-            tail.extendPrev(toRaw(oldData.at(-1)!))
-            if (!this.imgHead || this.imgHead === tail) this.imgHead = toRaw(newData.at(0)!)
+            tail.extendPrev(oldData.at(-1)!)
+            if (!this.imgHead || this.imgHead === tail) this.imgHead = newData.at(0)!
         }
     }
     /**
@@ -612,9 +609,9 @@ export abstract class Session {
      */
     removeImgList(imgs: Img[]): void {
         for (const img of imgs) {
-            if (img === this.imgHead) this.imgHead = toRaw(img.next)
-            if (img === this.imgTail) this.imgTail = toRaw(img.prev)
-            toRaw(img).delete()
+            if (img === this.imgHead) this.imgHead = img.next
+            if (img === this.imgTail) this.imgTail = img.prev
+            img.delete()
         }
     }
     //#endregion
@@ -667,11 +664,11 @@ export abstract class Session {
     }
 
     get isActive(): boolean {
-        return toRaw(this)._isActive.value
+        return this._isActive.value
     }
 
     protected set isActive(active: boolean) {
-        toRaw(this)._isActive.value = active
+        this._isActive.value = active
     }
 
     get name(): Name {
@@ -688,13 +685,31 @@ export abstract class Session {
         if (name instanceof Name) this._name = name
         else this._name = new Name(name)
     }
+
+    get newMsg(): number {
+        return this._newMsg.value
+    }
+
+    set newMsg(num: number) {
+        if (num < 0) num = 0
+        this._newMsg.value = num
+    }
+
+    get showNotice(): boolean {
+        return this._showNotice.value
+    }
+
+    set showNotice(flag: boolean) {
+        this._showNotice.value = flag
+    }
 }
 
 // TODO: 群头衔
+@autoMarkRaw
 export class GroupSession extends Session {
     override type = 'group' as const
     override sessionClass: SessionClass
-    static sessionList: GroupSession[] = reactive([])
+    static readonly sessionList: GroupSession[] = shallowReactive([])
     memberList: Member[] = []
     me: Member | null = null
     // 设置
@@ -949,11 +964,12 @@ export class GroupSession extends Session {
     }
 }
 
+@autoMarkRaw
 export class UserSession extends Session {
     override type = 'user' as const
     override sessionClass: SessionClass
     private _remark?: Name
-    static sessionList: UserSession[] = reactive([])
+    static readonly sessionList: UserSession[] = shallowReactive([])
     baseUser: BaseUser = new BaseUser(this.id, this.name.toString(), this._remark?.toString())
     constructor(
         id: number,
@@ -1063,13 +1079,14 @@ export class UserSession extends Session {
     }
 }
 
+@autoMarkRaw
 export class TempSession extends Session {
     override type = 'temp' as const
     override sessionClass: SessionClass
     group: GroupSession|number
     member?: Member
     baseUser: BaseUser = new BaseUser(this.id, this.name.toString())
-    static sessionList: TempSession[] = reactive([])
+    static readonly sessionList: TempSession[] = shallowReactive([])
     constructor(id: number, group_id: number) {
         const group = GroupSession.getSessionById(group_id)
         super(id, `临时会话-${id}`)
@@ -1161,12 +1178,13 @@ export class TempSession extends Session {
 /**
  * 好友分组管理
  */
+@autoMarkRaw
 export class SessionClass {
     id: number
     name: string
     content: Session[] = shallowReactive([])
     open: boolean = false
-    private static AllFriendClass: SessionClass[] = reactive([])
+    private static readonly AllFriendClass: SessionClass[] = shallowReactive([])
     constructor(id: number, name: string) {
         if (SessionClass.getClass(id)) throw new Error(`分组 ID ${id} 已存在`)
         this.id = id

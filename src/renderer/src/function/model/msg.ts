@@ -6,25 +6,26 @@
  * @Description: 提供模型定义和类型声明，用于处理消息相关的数据结构。（虽然把整个项目的类型全重构了不太现实...但还是从现在开始规范些吧...）
  */
 
+import app from '@renderer/main'
+import { markRaw } from 'vue'
+import type { EssenceData, ForwardNodeData, MsgData, SegData, SenderData } from '../adapter/interface'
 import { PopInfo, PopType } from '../base'
 import { runtimeData } from '../msg'
-import app from '@renderer/main'
-import { Time, TimeoutSet } from './data'
-import { AtSeg, ForwardSeg, ReplySeg, Seg } from './seg'
-import { autoReactive } from './utils'
-import { BaseUser, ForwardSender, getSender, Member, type IUser } from './user'
-import { Message } from './message'
-import { GroupSession, Session, TempSession } from './session'
 import { delay } from '../utils/systemUtil'
-import { EssenceData, ForwardNodeData, MsgData, SegData, SenderData } from '../adapter/interface'
-import { reactive, toRaw } from 'vue'
+import { Time, TimeoutSet } from './data'
 import { Img } from './img'
+import { Message } from './message'
+import { AtSeg, ForwardSeg, ReplySeg, Seg } from './seg'
+import { GroupSession, Session, TempSession } from './session'
+import { BaseUser, ForwardSender, getSender, Member, type IUser } from './user'
+import { autoMarkRaw, autoReactive } from './utils'
 
 type IconData = { icon: string, rotate: boolean, desc: string, color: string }
 
 /**
  * 聊天消息
  */
+@autoMarkRaw
 @autoReactive
 export class Msg extends Message {
     readonly type = 'message'
@@ -73,8 +74,8 @@ export class Msg extends Message {
             // constructor(segs: Seg[], sender: user, session?: Session, senderTime?: Time)
             const segs = arg1 as Seg[]
             const sender = arg2
-            const session = arg3 as Session | undefined
-            const senderTime = arg4 ?? new Time(Date.now()) as Time
+            const session = arg3
+            const senderTime = arg4 ?? new Time(Date.now())
             super({ time: senderTime.time })
             this.message = segs
             this.sender = sender
@@ -105,7 +106,7 @@ export class Msg extends Message {
 
             this.sender = new BaseUser(data.sender.id, data.sender.nickname)
 
-            toRaw(this.session).activate().then(()=>{
+            this.session.activate().then(()=>{
                 // 获取发送者
                 this.sender = getSender(data.sender, this.session)
             })
@@ -122,7 +123,7 @@ export class Msg extends Message {
     }
 
     static parseSegs(data: SegData[]): Seg[] {
-        return data.map(item => Seg.parse(item)).filter(seg => seg !== undefined) as Seg[]
+        return data.map(item => Seg.parse(item)).filter(seg => seg !== undefined)
     }
 
     /**
@@ -270,12 +271,12 @@ export class SelfMsg extends Msg {
     }
 
     static create(segs: Seg[], session: Session): SelfMsg {
-        return reactive(new this(segs, session)) as unknown as SelfMsg
+        return markRaw(new this(segs, session)) as unknown as SelfMsg
     }
 
     static createMerge(messages: Msg[], session: Session): SelfMsg {
         const segs = [new ForwardSeg(messages)]
-        return reactive(new this(segs, session)) as unknown as SelfMsg
+        return markRaw(new this(segs, session)) as unknown as SelfMsg
     }
 
     /**
@@ -421,7 +422,7 @@ export class SelfPreMsg extends Msg {
      * @returns
      */
     static create(segs: Seg[]): SelfPreMsg {
-        return new this(segs)
+        return markRaw(new this(segs))
     }
 
     /**
@@ -431,13 +432,14 @@ export class SelfPreMsg extends Msg {
      */
     static createMerge(messages: Msg[]): SelfPreMsg {
         const segs = [new ForwardSeg(messages)]
-        return new this(segs.map(seg => { seg.id = '0'; return seg }))
+        return markRaw(new this(segs.map(seg => { seg.id = '0'; return seg })))
     }
 }
 
 /**
  * 精华消息
  */
+@autoMarkRaw
 export class EssenceMsg extends Msg {
     operatorTime: Time
     operator: BaseUser | Member
@@ -446,7 +448,7 @@ export class EssenceMsg extends Msg {
         const segs = Msg.parseSegs(data.content)
         const sender = getSender(data.sender, session)
         super(segs, sender, session, new Time(data.sender_time))
-        this.operator = getSender(data.operator, session) as BaseUser | Member
+        this.operator = getSender(data.operator, session)
         this.operatorTime = new Time(data.operator_time)
     }
 }
@@ -454,6 +456,7 @@ export class EssenceMsg extends Msg {
 /**
  * 合并转发消息
  */
+@autoMarkRaw
 export class ForwardMsg extends Msg {
     declare sender: ForwardSender
     constructor(data: ForwardNodeData) {

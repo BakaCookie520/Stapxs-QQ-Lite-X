@@ -6,17 +6,29 @@
  * @Description: 仅仅是些平平无奇的工具啦~
  */
 
-import { reactive } from 'vue'
+import {
+    markRaw,
+    shallowReactive,
+} from 'vue'
 import { getTimeConfig, getTrueLang } from '../utils/systemUtil'
 
-export function autoReactive<T extends { new(...args: any[]): any }>(con: T): T {
+export function autoReactive<T extends new(...args: any[]) => any>(con: T): T {
     return class extends con {
         constructor(...args: any[]) {
             super(...args)
-            const reactiveProxy = reactive(this)
+            const reactiveProxy = shallowReactive(this)
 
             if (reactiveProxy.init) reactiveProxy.init()
             return reactiveProxy
+        }
+    } as T
+}
+
+export function autoMarkRaw<T extends new(...args: any[]) => any>(con: T): T {
+    return class extends con {
+        constructor(...args: any[]) {
+            super(...args)
+            return markRaw(this)
         }
     } as T
 }

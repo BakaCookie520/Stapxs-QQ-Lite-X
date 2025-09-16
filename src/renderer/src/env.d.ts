@@ -17,6 +17,7 @@ declare interface Window {
         lng: number
     }) => void
     __TAURI_INTERNALS__: any
+    runtimeData: any
 }
 
 // po 文件，按字符串处理
