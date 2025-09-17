@@ -1589,6 +1589,9 @@ body.with-bar .msg-menu {
     height: 40px;
     width: 40px;
     margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .base-face > div > .emoji-face {
@@ -2275,7 +2278,6 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
         height: 330px;
     }
 
-    .base-face,
     .face-stickers {
         height: calc(330px - 120px);
     }
