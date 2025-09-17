@@ -293,18 +293,22 @@ export const vOverflowHide: Directive<HTMLElement, undefined> = {
  */
 export const vHide: Directive<HTMLElement, boolean> = {
     mounted(el: HTMLElement, binding: DirectiveBinding<boolean>) {
-        if (binding.value)
+        if (binding.value){
             el.style.opacity = '0'
-
-        else
+            el.style.pointerEvents = 'none'
+        }else{
             el.style.opacity = ''
+            el.style.pointerEvents = ''
+        }
     },
     updated(el: HTMLElement, binding: DirectiveBinding<boolean>) {
-        if (binding.value)
+        if (binding.value){
             el.style.opacity = '0'
-
-        else
+            el.style.pointerEvents = 'none'
+        }else{
             el.style.opacity = ''
+            el.style.pointerEvents = ''
+        }
     }
 }
 
