@@ -45,7 +45,7 @@
             <div class="space" />
             <div class="more">
                 <font-awesome-icon v-if="chat.isActive"
-                    :icon="['fas', 'ellipsis-vertical']" @click="switchChatInfoPan" />
+                    :icon="['fas', 'ellipsis-vertical']" @click="openChatInfoPan" />
                 <font-awesome-icon v-else
                     :icon="['fas', 'spinner']" class="loading" />
             </div>
@@ -430,20 +430,15 @@
                     <div><font-awesome-icon :icon="['fas', 'trash-can']" /></div>
                     <a>{{ $t('移出群聊') }}</a>
                 </div>
-                <div v-if="menuDisplay.menuSelectedUser instanceof Member" v-show="menuDisplay.config"
-                    @click="switchChatInfoPan();
+                <!-- TODO <div v-if="menuDisplay.menuSelectedUser instanceof Member" v-show="menuDisplay.config"
+                    @click="openChatInfoPan();
                             infoRef?.openMoreConfig(menuDisplay.menuSelectedUser);
                             closeUserMenu();">
                     <div><font-awesome-icon :icon="['fas', 'cog']" /></div>
                     <a>{{ $t('成员设置') }}</a>
-                </div>
+                </div> -->
             </div>
         </Menu>
-        <!-- 群 / 好友信息弹窗 -->
-        <Transition>
-            <Info v-if="tags.openChatInfo" ref="infoRef" :chat="chat"
-                @close="switchChatInfoPan" />
-        </Transition>
         <!-- 图片发送器 -->
         <Transition>
             <div v-show="imgCache.length > 0" class="img-sender">
@@ -509,7 +504,7 @@ import {
     sendMsgRaw,
     singleForward,
 } from '@renderer/function/utils/msgUtil'
-import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
+import { closePopBox, ensurePopBox, popBox, textPopBox } from '@renderer/function/utils/popBox'
 import {
     copyToClipboard,
     delay,
@@ -594,7 +589,6 @@ const msgPrevPanFunc: MsgPrevPan = {
 const tagsDefault = {
     showBottomButton: false,
     showMoreDetail: false,
-    openChatInfo: false,
     isJinLoading: false,
     onAtFind: false,
     search: {
@@ -1127,11 +1121,15 @@ function closeUserMenu() {
 /**
  * 打开好友/群组信息页面
  */
-function switchChatInfoPan() {
-    if (!chat.isActive) return undefined
-    tags.openChatInfo = !tags.openChatInfo
+function openChatInfoPan() {
     // 加载一些需要显示的消息，有部分判断是用来防止反复加载已存在内容的
-    if (!tags.openChatInfo) return
+
+    popBox({
+        template: Info,
+        title: chat.type === 'group' ? $t('群信息') : $t('好友信息'),
+        svg: chat.type === 'group' ? 'users' : 'user',
+        templateValue: { chat: chat },
+    })
 
     // // 加载基础信息
     // TODO:
@@ -1788,10 +1786,7 @@ const chatMoveOptions: VMoveOptions<HTMLDivElement> = {
 function getTargetWin(): HTMLDivElement | undefined {
     const pan = chatPan.value
     if (!pan) return
-    if(tags.openChatInfo) {
-        // 聊天信息面板返回
-        return pan.getElementsByClassName('chat-info-pan')[0] as HTMLDivElement
-    } else if(mergePan.value?.isMergeOpen()) {
+    if(mergePan.value?.isMergeOpen()) {
         // 合并转发面板返回
         return pan.getElementsByClassName('merge-pan')[0] as HTMLDivElement
     } else {
@@ -1803,10 +1798,7 @@ function getTargetWin(): HTMLDivElement | undefined {
  * 退出一层窗口
  */
 function exitWin() {
-    if(tags.openChatInfo) {
-        // 会话信息栏
-        switchChatInfoPan()
-    } else if(mergePan.value?.isMergeOpen()) {
+    if(mergePan.value?.isMergeOpen()) {
         // 合并转发栏
         mergePan.value?.closeMergeMsg()
         setTimeout(() => {

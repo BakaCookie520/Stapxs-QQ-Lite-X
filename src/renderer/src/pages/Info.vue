@@ -7,216 +7,207 @@
 
 <template>
     <div class="chat-info-pan">
-        <div class="ss-card chat-info">
-            <header>
-                <span v-if="chat.type === 'group'">{{ $t('群资料') }}</span>
-                <span v-if="chat.type === 'user'">{{ $t('好友') }}</span>
-                <font-awesome-icon :icon="['fas', 'xmark']" @click="closeChatInfoPan" />
-            </header>
-            <div :class="'chat-info-base ' + chat.type">
+        <div :class="'chat-info-base ' + chat.type">
+            <div>
+                <img :src="chat.face">
                 <div>
-                    <img :src="chat.face">
-                    <div>
-                        <a>{{ chat.showName }}</a>
-                        <span>{{ chat.id }}</span>
-                    </div>
-                    <div style="display: flex;align-items: center;justify-content: center;cursor: pointer;"
-                        @click="copyText(chat.id)">
-                        <font-awesome-icon :icon="['fas', 'copy']" />
-                    </div>
+                    <a>{{ chat.showName }}</a>
+                    <span>{{ chat.id }}</span>
                 </div>
-                <div v-if="chat.type === 'group'"
-                    v-show="false">
-                    <!-- <header>
-                        <span>{{ $t('介绍') }}</span>
-                    </header>
-                    <span v-html=" chat.info.group_info.gIntro === undefined || chat.info.group_info.gIntro === '' ?
-                        $t('群主很懒，还没有群介绍哦～') : chat.info.group_info.gIntro" />
-                    <div class="tags">
-                        <div v-for="item in chat.info.group_info.tags" :key="item.md">
-                            {{ item.tag }}
-                        </div>
-                    </div> -->
-                </div>
-                <div v-else-if="chat instanceof UserSession && userInfo">
-                    <header>
-                        <span>QID</span>
-                    </header>
-                    <span>{{ userInfo.qid }}</span>
-                    <header>
-                        <span>{{ $t('等级') }}</span>
-                    </header>
-                    <span>{{ userInfo.level }}</span>
-                    <header v-if="userInfo.regTime">
-                        <span>{{ $t('注册时间') }}</span>
-                    </header>
-                    <span>{{ userInfo.regTime.format('year', 'year') }}</span>
-                    <header>
-                        <span>{{ $t('签名') }}</span>
-                    </header>
-                    <span>{{ userInfo.longNick ? userInfo.longNick : $t("这个人很懒什么都没有写～") }}</span>
-                    <header>
-                        <span>{{ $t('其他信息') }}</span>
-                    </header>
-                    <div class="outher">
-                        <span v-if="userInfo.birthday_year">{{ $t('生日') }}:
-                            <span>
-                                {{ Intl.DateTimeFormat(trueLang, {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
-                                }).format(new Date(
-                                    `${userInfo.birthday_year}-${
-                                        userInfo.birthday_month}-${
-                                        userInfo.birthday_day}`,
-                                )) }}
-                            </span>
-                        </span>
-                        <span v-if="userInfo.country">{{ $t('地区') }}:
-                            <span>
-                                {{
-                                    `${userInfo.country}-
-                                    ${userInfo.province}-
-                                    ${userInfo.city}`
-                                }}
-                            </span>
-                        </span>
-                    </div>
-                    <!-- <template v-if="!chat.show.temp">
-                        <header>
-                            <span>{{ $t('设置') }}</span>
-                        </header>
-                        <OptInfo
-                            :type="'number'"
-                            :chat="chat" />
-                    </template> -->
+                <div style="display: flex;align-items: center;justify-content: center;cursor: pointer;"
+                    @click="copyText(chat.id)">
+                    <font-awesome-icon :icon="['fas', 'copy']" />
                 </div>
             </div>
-            <BcTab v-if="chat instanceof GroupSession"
-                class="chat-info-tab">
-                <div :name="$t('成员')">
-                    <div class="chat-info-tab-member">
-                        <div class="search-view">
-                            <input
-                                v-search="searchInfo as any"
-                                :placeholder="$t('搜索 ……')">
+            <div v-if="chat.type === 'group'"
+                v-show="false">
+                <!-- <header>
+                    <span>{{ $t('介绍') }}</span>
+                </header>
+                <span v-html=" chat.info.group_info.gIntro === undefined || chat.info.group_info.gIntro === '' ?
+                    $t('群主很懒，还没有群介绍哦～') : chat.info.group_info.gIntro" />
+                <div class="tags">
+                    <div v-for="item in chat.info.group_info.tags" :key="item.md">
+                        {{ item.tag }}
+                    </div>
+                </div> -->
+            </div>
+            <div v-else-if="chat instanceof UserSession && userInfo">
+                <header>
+                    <span>QID</span>
+                </header>
+                <span>{{ userInfo.qid }}</span>
+                <header>
+                    <span>{{ $t('等级') }}</span>
+                </header>
+                <span>{{ userInfo.level }}</span>
+                <header v-if="userInfo.regTime">
+                    <span>{{ $t('注册时间') }}</span>
+                </header>
+                <span>{{ userInfo.regTime.format('year', 'year') }}</span>
+                <header>
+                    <span>{{ $t('签名') }}</span>
+                </header>
+                <span>{{ userInfo.longNick ? userInfo.longNick : $t("这个人很懒什么都没有写～") }}</span>
+                <header>
+                    <span>{{ $t('其他信息') }}</span>
+                </header>
+                <div class="outher">
+                    <span v-if="userInfo.birthday_year">{{ $t('生日') }}:
+                        <span>
+                            {{ Intl.DateTimeFormat(trueLang, {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                            }).format(new Date(
+                                `${userInfo.birthday_year}-${
+                                    userInfo.birthday_month}-${
+                                    userInfo.birthday_day}`,
+                            )) }}
+                        </span>
+                    </span>
+                    <span v-if="userInfo.country">{{ $t('地区') }}:
+                        <span>
+                            {{
+                                `${userInfo.country}-
+                                ${userInfo.province}-
+                                ${userInfo.city}`
+                            }}
+                        </span>
+                    </span>
+                </div>
+                <!-- <template v-if="!chat.show.temp">
+                    <header>
+                        <span>{{ $t('设置') }}</span>
+                    </header>
+                    <OptInfo
+                        :type="'number'"
+                        :chat="chat" />
+                </template> -->
+            </div>
+        </div>
+        <BcTab v-if="chat instanceof GroupSession"
+            class="chat-info-tab">
+            <div :name="$t('成员')">
+                <div class="chat-info-tab-member">
+                    <div class="search-view">
+                        <input
+                            v-search="searchInfo!"
+                            :placeholder="$t('搜索 ……')">
+                    </div>
+                    <div v-for="member in searchInfo!.isSearch ? searchInfo!.query : chat.memberList"
+                        :key="'chatinfomlist-' + member.user_id" class="edit">
+                        <img alt="nk" loading="lazy"
+                            :src="member.face">
+                        <div>
+                            <a @click="startChat(member)">{{ member.name }}</a>
+                            <font-awesome-icon v-if="member.role === 'owner'" :icon="['fas', 'crown']" />
+                            <font-awesome-icon v-if="member.role === 'admin'" :icon="['fas', 'star']" />
                         </div>
-                        <div v-for="member in searchInfo!.isSearch ? searchInfo!.query : chat.memberList"
-                            :key="'chatinfomlist-' + member.user_id" class="edit">
-                            <img alt="nk" loading="lazy"
-                                :src="member.face">
-                            <div>
-                                <a @click="startChat(member)">{{ member.name }}</a>
-                                <font-awesome-icon v-if="member.role === 'owner'" :icon="['fas', 'crown']" />
-                                <font-awesome-icon v-if="member.role === 'admin'" :icon="['fas', 'star']" />
-                            </div>
-                            <!-- 在手机端戳 id 就能触发 -->
-                            <span @click="clickMember(member)">{{ member.user_id }}</span>
-                            <font-awesome-icon v-if="canEditMember(member.role)" :icon="['fas', 'wrench']" @click="clickMember(member)" />
-                            <font-awesome-icon v-else :icon="['fas', 'copy']" @click="clickMember(member)" />
+                        <!-- 在手机端戳 id 就能触发 -->
+                        <span @click="clickMember(member)">{{ member.user_id }}</span>
+                        <font-awesome-icon v-if="canEditMember(member.role)" :icon="['fas', 'wrench']" @click="clickMember(member)" />
+                        <font-awesome-icon v-else :icon="['fas', 'copy']" @click="clickMember(member)" />
+                    </div>
+                </div>
+            </div>
+            <div :name="$t('公告')">
+                <div class="bulletins">
+                    <BulletinBody
+                        v-for="(item, index) in anns"
+                        :key="'bulletins-' + index"
+                        :data="item"
+                        :index="index" />
+                </div>
+            </div>
+            <div :name="$t('文件')">
+                <div
+                    class="group-files">
+                    <template v-if="fileInfo">
+                        <div v-for="item in fileInfo"
+                            :key="'file-' + item.id">
+                            <FileBody :item="markRaw(item)" />
                         </div>
+                    </template>
+                    <div v-else class="loading" style="opacity: 0.9;">
+                        <font-awesome-icon :icon="['fas', 'spinner']" />
+                        {{ $t('加载中') }}
                     </div>
                 </div>
-                <div :name="$t('公告')">
-                    <div class="bulletins">
-                        <!-- {{ anns }} -->
-                        <BulletinBody
-                            v-for="(item, index) in anns"
-                            :key="'bulletins-' + index"
-                            :data="item as Ann"
-                            :index="index" />
-                    </div>
+            </div>
+            <div :name="$t('设置')">
+                <div style="padding: 0 20px">
+                    <OptInfo :type="'group'" :chat="chat"
+                        @update_member_card="updateMemberCard" />
                 </div>
-                <div :name="$t('文件')">
-                    <div
-                        class="group-files">
-                        <template v-if="fileInfo">
-                            <div v-for="item in fileInfo"
-                                :key="'file-' + item.id">
-                                <FileBody :item="markRaw(item)" />
-                            </div>
-                        </template>
-                        <div v-else class="loading" style="opacity: 0.9;">
-                            <font-awesome-icon :icon="['fas', 'spinner']" />
-                            {{ $t('加载中') }}
-                        </div>
-                    </div>
-                </div>
-                <div :name="$t('设置')">
-                    <div style="padding: 0 20px">
-                        <OptInfo :type="'group'" :chat="chat"
-                            @update_member_card="updateMemberCard" />
-                    </div>
-                </div>
-            </BcTab>
-            <div v-if="configMember && chat instanceof GroupSession" class="ss-card user-config show">
+            </div>
+        </BcTab>
+        <div v-if="configMember && chat instanceof GroupSession" class="ss-card user-config show">
+            <div>
+                <img alt="nk" :src="configMember.face">
                 <div>
-                    <img alt="nk" :src="configMember.face">
+                    <a>{{ configMember.name }}</a>
+                    <span>{{ configMember.user_id }}</span>
+                </div>
+                <font-awesome-icon
+                    style="margin-right: 20px;"
+                    :icon="['fas', 'copy']"
+                    @click="copyText(configMember.user_id)" />
+                <font-awesome-icon :icon="['fas', 'angle-down']" @click="configMember = undefined" />
+            </div>
+            <div>
+                <header>{{ $t('成员信息') }}</header>
+                <div class="opt-item">
+                    <font-awesome-icon :icon="['fas', 'clipboard-list']" />
                     <div>
-                        <a>{{ configMember.name }}</a>
-                        <span>{{ configMember.user_id }}</span>
+                        <span>{{ $t('成员昵称') }}</span>
+                        <span>{{
+                            $t('啊吧啊吧……')
+                        }}</span>
                     </div>
-                    <font-awesome-icon
-                        style="margin-right: 20px;"
-                        :icon="['fas', 'copy']"
-                        @click="copyText(configMember.user_id)" />
-                    <font-awesome-icon :icon="['fas', 'angle-down']" @click="configMember = undefined" />
+                    <input v-model.trim="configCard"
+                        style="width: 50%"
+                        class="ss-input"
+                        type="text"
+                        @change="updateMemberCard(configMember as Member, configCard)">
                 </div>
-                <div>
-                    <header>{{ $t('成员信息') }}</header>
+                <div v-if="chat.getMe().role === 'owner'" class="opt-item">
+                    <font-awesome-icon :icon="['fas', 'clipboard-list']" />
+                    <div>
+                        <span>{{ $t('成员头衔') }}</span>
+                        <span>{{
+                            $t('猪咪猪咪')
+                        }}</span>
+                    </div>
+                    <input v-model.trim="configTitle"
+                        style="width: 50%"
+                        class="ss-input"
+                        type="text"
+                        @change="updateMemberTitle(configMember as Member, configTitle)">
+                </div>
+                <template v-if="canEditMember(configMember.role)">
+                    <header>{{ $t('操作') }}</header>
                     <div class="opt-item">
                         <font-awesome-icon :icon="['fas', 'clipboard-list']" />
                         <div>
-                            <span>{{ $t('成员昵称') }}</span>
+                            <span>{{ $t('禁言成员') }}</span>
                             <span>{{
-                                $t('啊吧啊吧……')
+                                $t('要让小猫咪不许说话几分钟呢？')
                             }}</span>
                         </div>
-                        <input v-model.trim="configCard"
+                        <input v-model.number="configBanMin"
                             style="width: 50%"
                             class="ss-input"
                             type="text"
-                            @change="updateMemberCard(configMember as Member, configCard)">
+                            @change="banMember(configMember as Member, configBanMin)">
                     </div>
-                    <div v-if="chat.getMe().role === 'owner'" class="opt-item">
-                        <font-awesome-icon :icon="['fas', 'clipboard-list']" />
-                        <div>
-                            <span>{{ $t('成员头衔') }}</span>
-                            <span>{{
-                                $t('猪咪猪咪')
-                            }}</span>
-                        </div>
-                        <input v-model.trim="configTitle"
-                            style="width: 50%"
-                            class="ss-input"
-                            type="text"
-                            @change="updateMemberTitle(configMember as Member, configTitle)">
-                    </div>
-                    <template v-if="canEditMember(configMember.role)">
-                        <header>{{ $t('操作') }}</header>
-                        <div class="opt-item">
-                            <font-awesome-icon :icon="['fas', 'clipboard-list']" />
-                            <div>
-                                <span>{{ $t('禁言成员') }}</span>
-                                <span>{{
-                                    $t('要让小猫咪不许说话几分钟呢？')
-                                }}</span>
-                            </div>
-                            <input v-model.number="configBanMin"
-                                style="width: 50%"
-                                class="ss-input"
-                                type="text"
-                                @change="banMember(configMember as Member, configBanMin)">
-                        </div>
-                        <button class="ss-button"
-                            @click="removeUser(configMember as Member)">
-                            {{ $t('移出群聊') }}
-                        </button>
-                    </template>
-                </div>
+                    <button class="ss-button"
+                        @click="removeUser(configMember as Member)">
+                        {{ $t('移出群聊') }}
+                    </button>
+                </template>
             </div>
         </div>
-        <div class="card-info-pan-bg" />
     </div>
 </template>
 

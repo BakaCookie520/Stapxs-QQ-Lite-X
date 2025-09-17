@@ -781,56 +781,16 @@ body.with-bar .msg-menu {
 
 .chat-info-pan {
     pointer-events: all;
-    position: absolute;
-    height: 100%;
-    width: 100%;
-}
-
-.card-info-pan-bg {
-    height: 100%;
-    opacity: 0.7;
-    width: 100%;
-}
-
-.chat-info {
-    overflow: hidden;
-    margin: 50vh 0 0 50%;
-    box-shadow: 0 0 10px var(--color-shader);
-    transform: translate(-50%, -50%);
+    min-width: 50vw;
+    height: 60vh;
+    display: flex;
     flex-direction: column;
-    position: absolute;
-    min-width: 400px;
-    max-height: 80%;
-    display: flex;
-    width: 50%;
-    z-index: 1;
-}
-
-.chat-info header {
-    letter-spacing: 0;
-}
-
-.chat-info > header {
-    margin-bottom: 5px;
-    display: flex;
-}
-
-.chat-info > header > span {
-    white-space: nowrap;
-    font-size: 1rem;
-    flex: 1;
-}
-
-.chat-info > header > svg {
-    color: var(--color-font);
-    cursor: pointer;
-    height: 1.5rem;
 }
 
 .chat-info-base {
     background: var(--color-card-1);
     border-radius: 7px;
-    margin: 0 10px;
+    margin: 10px;
     padding: 20px;
 }
 
@@ -938,6 +898,14 @@ body.with-bar .msg-menu {
 
 .chat-info-base > div:last-child > div.outher > span > span {
     color: var(--color-font-1);
+}
+
+.chat-info-pan .tab-bar {
+    display: flex;
+}
+
+.chat-info-pan .tab-body {
+    overflow-y: scroll;
 }
 
 .chat-info-tab-member {
@@ -2229,10 +2197,6 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
         min-width: unset;
         margin: 20px;
         bottom: 75px;
-    }
-
-    .chat-info-pan {
-        height: calc(100% + 75px);
     }
 
     /* AT 信息悬浮面板 */
