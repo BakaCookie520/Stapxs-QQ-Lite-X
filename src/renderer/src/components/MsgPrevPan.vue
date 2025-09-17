@@ -13,6 +13,7 @@
                 </div>
                 <div v-else ref="body" class="ss-card">
                     <MsgBar
+                        :show-avatar="true"
                         :msgs="data.msgs"
                         :can-interaction="false"
                         :show-time="false" />
@@ -23,13 +24,13 @@
 </template>
 
 <script setup lang="ts">
-import { Msg } from '@renderer/function/model/msg'
+import { Msg } from '@renderer/function/model/msg';
 import {
     shallowReactive,
     useTemplateRef,
     watchEffect
-} from 'vue'
-import MsgBar from './MsgBar.vue'
+} from 'vue';
+import MsgBar from './MsgBar.vue';
 
 const { data } = defineProps<{
     data: {
