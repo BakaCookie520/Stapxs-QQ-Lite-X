@@ -148,7 +148,8 @@
                             class="search-view"
                             v-search="fileSearchInfo!"
                             :placeholder="$t('搜索 ……')">
-                        <div v-if="(fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo)?.length > 0">
+                        <div v-if="(fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo)?.length > 0"
+                            class="file-list">
                             <div v-for="item in fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo"
                                 :key="'file-' + item.id">
                                 <FileBody :item="markRaw(item)" />

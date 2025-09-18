@@ -1281,7 +1281,7 @@ body.with-bar .msg-menu {
     overflow-x: hidden;
 }
 
-.group-files > div > div > div {
+.file-list > div > div {
     transition: background 0.3s;
     align-items: center;
     border-radius: 7px;
@@ -1291,34 +1291,34 @@ body.with-bar .msg-menu {
     margin: 5px;
 }
 
-.group-files > div > div > div.folder {
+.file-list > div > div.folder {
     cursor: pointer;
 }
 
-.group-files > div > div > div.folder.open {
+.file-list > div > div.folder.open {
     background: var(--color-card-1);
 }
 
-.group-files > div > div > div:hover {
+.file-list > div > div:hover {
     background: var(--color-card-1);
 }
 
-.group-files > div > div > div > svg {
+.file-list > div > div > svg {
     color: var(--color-font);
     margin: 0 15px 0 10px;
     height: 1.2rem;
 }
 
-.group-files > div > div > div > div.main {
+.file-list > div > div > div.main {
     margin-right: 20px;
     flex: 1;
 }
 
-.group-files > div > div > div > div.main span {
+.file-list > div > div > div.main span {
     overflow-wrap: anywhere;
 }
 
-.group-files > div > div > div > div.download {
+.file-list > div > div > div.download {
     background: var(--color-card-2);
     border-radius: 100%;
     cursor: pointer;
@@ -1326,28 +1326,28 @@ body.with-bar .msg-menu {
     width: 1.9rem;
 }
 
-.group-files > div > div > div > div.download > svg {
+.file-list > div > div > div.download > svg {
     color: var(--color-font);
     height: 0.8rem;
     margin: 10px;
 }
 
-.group-files > div > div > div > div > div > span {
+.file-list > div > div > div > div > span {
     color: var(--color-font-1);
     font-size: 0.8rem;
 }
 
-.group-files > div > div > div > div > div > span:first-child {
+.file-list > div > div > div > div > span:first-child {
     color: var(--color-main);
 }
 
-.group-files > div > div > div > div > div > span::after {
+.file-list > div > div > div > div > span::after {
     color: var(--color-font-1);
     content: '\2022';
     margin-left: 5px;
 }
 
-.group-files > div > div > div > div > div > span:last-child::after {
+.file-list > div > div > div > div > span:last-child::after {
     content: '';
 }
 

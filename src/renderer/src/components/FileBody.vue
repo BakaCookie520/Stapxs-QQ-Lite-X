@@ -52,9 +52,7 @@
         </template>
         <div v-if="item instanceof GroupFileFolder"
             v-show="item.isOpen.value"
-            :class="{
-                'group-files': true,
-            }">
+            class="file-list">
             <template v-if="folderItems !== undefined">
                 <div v-for="sub_item in folderItems"
                     :key="'sub_file-' + sub_item.id">
