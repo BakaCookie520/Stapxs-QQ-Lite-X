@@ -39,6 +39,8 @@ jobs:
             identifier: mac-arm64
           - os: ubuntu-latest
             identifier: linux-x64
+          - os: windows-11-arm
+            identifier: win-arm
     needs: init
 
     steps:
@@ -64,7 +66,12 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libarchive-tools
 
       - name: 构建 stapxs-qq-lite-x
+        if: matrix.os != 'windows-11-arm'
         run: yarn build:electron --publish=never
+
+      - name: 构建 stapxs-qq-lite-x(win arm)
+        if: matrix.os == 'windows-11-arm'
+        run: yarn build:electron --publish=never --arm64
 
       - name: 上传 Pacman 包
         if: matrix.os == 'ubuntu-latest'
@@ -108,19 +115,33 @@ jobs:
             name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}-arm64
             path: dist_electron/linux-arm64-unpacked
 
-      - name: 上传 exe 包
+      - name: 上传 exe 包(x64)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}.exe
+            name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}-x86.exe
             path: dist_electron/*.exe
 
       - name: 上传 unpack 包(win)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-            name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}
+            name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}-x86
             path: dist_electron/win-unpacked
+
+      - name: 上传 exe 包(arm)
+        if: matrix.os == 'windows-11-arm'
+        uses: actions/upload-artifact@v4
+        with:
+            name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}-arm.exe
+            path: dist_electron/*.exe
+
+      - name: 上传 unpack 包(arm)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+            name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}-arm
+            path: dist_electron/win-arm64-unpacked
 
       - name: 上传 dmg 包(amd64)
         if: matrix.os == 'macos-latest'
