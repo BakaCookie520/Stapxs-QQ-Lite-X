@@ -19,6 +19,7 @@ import './assets/css/view.css'
 import { runtimeData } from './function/msg'
 import Option from './function/option'
 import { getPortableFileLang, getVersion } from './function/utils/systemUtil'
+import { useLocalStorage } from './function/utils/vuse'
 import { backend } from './runtime/backend'
 import win from './runtime/win'
 
@@ -47,6 +48,18 @@ app.component('FontAwesomeIcon', FontAwesomeIcon)
 export default app
 export const uptime = new Date().getTime()
 
+const _nowTimes = useLocalStorage('times', 0)
+const timesEnd = useLocalStorage('last-times', 0)
+if (uptime > timesEnd.value) {
+    _nowTimes.value += 1
+    const dailyFlag = useLocalStorage('daily-flag', '')
+    timesEnd.value = uptime + 24 * 60 * 60 * 1000
+    dailyFlag.value = ''
+}
+
+export const nowTimes = _nowTimes.value
+
+// 奇奇怪怪的日志
 const strList = ['VERSION', 'WELCOME', 'HELLO']
 const colorList = [
     '50534f',

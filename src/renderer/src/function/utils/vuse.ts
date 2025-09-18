@@ -6,7 +6,18 @@
  * @Description: 封装的一些vue组合函数
  */
 
-import { computed, ComputedRef, onMounted, onUnmounted, shallowRef, watch } from 'vue'
+import {
+    computed,
+    ComputedRef,
+    onMounted,
+    onUnmounted,
+    // eslint-disable-next-line no-restricted-imports
+    ref,
+    Ref,
+    shallowRef,
+    ShallowRef,
+    watch,
+} from 'vue'
 import { MenuEventData } from '../elements/information'
 import { pastTimeFormat } from './systemUtil'
 
@@ -266,4 +277,54 @@ export function useKeyboard(...args: [string, ...string[], () => boolean | undef
             }
         }
     })
+}
+
+/**
+ * 使用 localStorage
+ * @param key 保存的键值
+ * @param defaultValue 默认值
+ * @returns
+ */
+export function useLocalStorage<T>(key: string, defaultValue: T): Ref<T> {
+    const parser = (data: string) => {
+        return JSON.parse(data).value as T
+    }
+    const serializer = (data: T) => {
+        return JSON.stringify({ value: data })
+    }
+    const storageData = localStorage.getItem(key)
+    const data = ref<T>(storageData ? parser(storageData) : defaultValue)
+    watch(data, (newValue) => {
+        localStorage.setItem(key, serializer(newValue))
+    }, { deep: true })
+    return data as Ref<T>
+}
+
+const dailyFlag = useLocalStorage('daily-flag', '')
+
+/**
+ * 每日标记，一个每天重置一次的每日标记
+ * @param flag
+ */
+export function useDailyFlag(flag: string): ShallowRef<boolean> {
+    const value = shallowRef(dailyFlag.value.includes(`$#${flag}`))
+    watch(value, (newValue) => {
+        if (newValue === false) throw new Error('不能将每日标记设为 false')
+        dailyFlag.value += `$#${flag}`
+    })
+    return value
+}
+
+/**
+ * 对 useDailyFlag 的封装，自动做执行
+ * @see useDailyFlag
+ * @param flag
+ * @param callback
+ */
+export function useDailyDo(flag: string, callback: () => void | Promise<void>) {
+    const flagRef = useDailyFlag(flag)
+    if (!flagRef.value) {
+        callback()
+        flagRef.value = true
+    }
 }

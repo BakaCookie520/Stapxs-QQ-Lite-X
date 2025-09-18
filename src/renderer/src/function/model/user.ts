@@ -8,14 +8,14 @@
  *               增加用户相关模型，而非仅局限于发送者
  */
 
-import app from '@renderer/main'
+import { ForwardSenderData, MemberData, SenderData, UserData } from '@renderer/function/adapter/interface'
+import app, { nowTimes } from '@renderer/main'
+import { computed } from 'vue'
+import { Gender, Role } from '../adapter/enmu'
 import { runtimeData } from '../msg'
 import { Name, Time } from './data'
-import { GroupSession, Session, TempSession, UserSession } from './session'
-import { computed } from 'vue'
-import { ForwardSenderData, MemberData, SenderData, UserData } from '@renderer/function/adapter/interface'
-import { Gender, Role } from '../adapter/enmu'
 import { ProxyUrl } from './proxyUrl'
+import { GroupSession, Session, TempSession, UserSession } from './session'
 
 export interface IUser {
     user_id: number
@@ -167,8 +167,8 @@ export class Member implements IUser {
         return name
     }
 
-    private _face = computed(()=>{
-        return ProxyUrl.proxy('https://q1.qlogo.cn/g?b=qq&s=0&nk=' + this.user_id)
+    private readonly _face = computed(()=>{
+        return ProxyUrl.proxy(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${this.user_id}&d=${nowTimes}`)
     })
 
     get face(): string {
@@ -315,8 +315,8 @@ export class User implements IUser {
         return name
     }
 
-    private _face = computed(()=>{
-        return ProxyUrl.proxy('https://q1.qlogo.cn/g?b=qq&s=0&nk=' + this.user_id)
+    private readonly _face = computed(()=>{
+        return ProxyUrl.proxy(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${this.user_id}&d=${nowTimes}`)
     })
 
     get face(): string {
@@ -473,8 +473,8 @@ export class BaseUser implements IUser {
         return canBeAdmined(this.role, other)
     }
 
-    private _face = computed(()=>{
-        return ProxyUrl.proxy('https://q1.qlogo.cn/g?b=qq&s=0&nk=' + this.user_id)
+    private readonly _face = computed(()=>{
+        return ProxyUrl.proxy(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${this.user_id}&d=${nowTimes}`)
     })
 
     get face(): string {

@@ -8,7 +8,7 @@
  *               用于会话，而非单纯的消息来源
  */
 
-import app from '@renderer/main'
+import app, { nowTimes } from '@renderer/main'
 import {
     ComputedRef,
     ShallowRef,
@@ -802,7 +802,7 @@ export class GroupSession extends Session {
     }
 
     override _face = computed(() => {
-        return ProxyUrl.proxy('https://p.qlogo.cn/gh/' + this.id + '/' + this.id + '/0')
+        return ProxyUrl.proxy(`https://p.qlogo.cn/gh/${this.id}/${this.id}/0?d=${nowTimes}`)
     })
 
     static override getSessionById(id: number): GroupSession | undefined {
@@ -1006,7 +1006,7 @@ export class UserSession extends Session {
     }
 
     override _face = computed(() => {
-        return ProxyUrl.proxy('https://q1.qlogo.cn/g?b=qq&s=0&nk=' + this.id)
+        return ProxyUrl.proxy(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${this.id}&d=${nowTimes}`)
     })
 
     override get showName(): string {
@@ -1126,7 +1126,7 @@ export class TempSession extends Session {
     }
 
     override _face = computed(() => {
-        return ProxyUrl.proxy('https://q1.qlogo.cn/g?b=qq&s=0&nk=' + this.id)
+        return ProxyUrl.proxy(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${this.id}&d=${nowTimes}`)
     })
 
     override get showName(): string {

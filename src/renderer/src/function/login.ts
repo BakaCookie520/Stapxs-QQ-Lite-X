@@ -79,7 +79,10 @@ async function tryLogin(originUrl: string, token_: string): Promise<true | strin
     // 上报协议端类型
     if (runtimeData.sysConfig.open_ga_bot) {
         const implInfo = await runtimeData.nowAdapter.getImplInfo()
-        sendStatEvent('connect', { method: implInfo?.name ?? '（未知）' })
+        const implName = implInfo?.name ?? '（未知）'
+        useDailyDo(`impl-tag-${implName}`, ()=>{
+            sendStatEvent('connect', { method: implName })
+        })
     }
 
 
@@ -178,6 +181,7 @@ async function preCheck(
 import WhyNeedToken from '@renderer/components/WhyNeedToken.vue'
 import { popBox } from './utils/popBox'
 import { dns } from './utils/systemUtil'
+import { useDailyDo } from './utils/vuse'
 
 /**
  * 判断传入的 host 是否为公网 IP。

@@ -114,14 +114,13 @@
 
 <script setup lang="ts">
 import Option from '@renderer/function/option'
-import { i18n } from '@renderer/main'
 import Umami from '@stapxs/umami-logger-typescript'
 import Spacing from 'spacingjs/src/spacing'
 import * as App from './function/utils/appUtil'
 
 import { popList as appMsgs, Logger, LogType, PopInfo } from '@renderer/function/base'
 import { runtimeData } from '@renderer/function/msg'
-import { uptime } from '@renderer/main'
+import { i18n, uptime } from '@renderer/main'
 import {
     markRaw,
     onMounted,
@@ -145,6 +144,7 @@ import Options from '@renderer/pages/Options.vue'
 import GlobalSessionSearchBar from './components/GlobalSessionSearchBar.vue'
 import LoginPan from './components/LoginPan.vue'
 import Viewer from './components/Viewer.vue'
+import { useDailyDo } from './function/utils/vuse'
 import { backend } from './runtime/backend'
 import win from './runtime/win'
 
@@ -295,8 +295,10 @@ async function init() {
     } else if (dev) {
         logger.system('开发者，由于 Stapxs QQ Lite X 运行在调试模式下，分析组件并未初始化 …… 系统将无法捕获开发者阁下的访问状态，请悉知。')
     }
-    App.sendStatEvent('cilent', {
-        tag: import.meta.env.VITE_APP_CLIENT_TAG + ',' + getVersion()
+    useDailyDo(`client-tag-${import.meta.env.VITE_APP_CLIENT_TAG}`, ()=>{
+        App.sendStatEvent('cilent', {
+            tag: import.meta.env.VITE_APP_CLIENT_TAG + ',' + getVersion()
+        })
     })
     //#endregion
 
