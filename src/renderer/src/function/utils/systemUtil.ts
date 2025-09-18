@@ -1,11 +1,13 @@
 import app, { i18n } from '@renderer/main'
 
 import l10nConfig from '@renderer/assets/l10n/_l10nconfig.json'
+import LoginPan from '@renderer/components/LoginPan.vue'
 import { backend } from '@renderer/runtime/backend'
 import PO from 'pofile'
 import packageInfo from '../../../../../package.json'
 import { Logger, PopInfo, PopType } from '../base'
 import { DnsElem } from '../elements/information'
+import { popBox } from './popBox'
 
 /**
  * 异步延迟
@@ -558,4 +560,14 @@ function getDnsType(type: number): 'A' | 'AAAA' | 'CNAME' | 'SRV' | 'TXT' | 'OTH
         case 33: return 'SRV'
         default: return 'OTHER'
     }
+}
+
+/**
+ * 打开登陆框
+ */
+export function openLoginPan() {
+    popBox({
+        template: LoginPan,
+        allowAutoClose: false,
+    })
 }
