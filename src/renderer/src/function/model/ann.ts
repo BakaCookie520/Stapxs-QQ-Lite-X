@@ -6,18 +6,17 @@
  * @Description: 群公告模型
  */
 
-import app from '@renderer/main'
-import { GroupSession } from './session'
-import { Member } from './user'
-import { Time } from './data'
 import { GroupAnnouncementData } from '../adapter/interface'
+import { Time } from './data'
 import { Img } from './img'
+import { GroupSession } from './session'
+import { BaseUser, IUser } from './user'
 
 export class Ann {
     content: string
     imgId?: string
     time: Time
-    sender: Member | number
+    sender: IUser
     session: GroupSession
     read?: boolean
     readNum?: number
@@ -27,12 +26,10 @@ export class Ann {
         this.content = data.content
         this.imgId = data.img_id
         this.time = new Time(data.time)
-        this.sender = data.sender
         this.read = data.is_read
         this.readNum = data.read_num
         this.session = session
-        const sender = this.session.getUserById(data.sender)
-        if (sender) this.sender = sender
+        this.sender = this.session.getUserById(data.sender) ?? new BaseUser(data.sender)
         if (this.getImg()) this.imgData = new Img(this.getImg()!)
     }
 
@@ -41,17 +38,9 @@ export class Ann {
         return `https://p.qlogo.cn/gdynamic/${this.imgId}/0/`
     }
 
-    getSenderFace(): string {
-        if (this.sender instanceof Member) {
-            return this.sender.face
-        } else {
-            return `https://q1.qlogo.cn/g?b=qq&s=0&nk=${this.sender}`
-        }
-    }
-
-    getSenderName(): string {
-        const { $t } = app.config.globalProperties
-        if (this.sender instanceof Member) return this.sender.name
-        return $t('已退群( {userId} )', { userId: Number(this.sender) })
+    match(search: string): boolean {
+        if (this.sender.match(search)) return true
+        if (this.content.includes(search)) return true
+        return false
     }
 }

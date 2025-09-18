@@ -24,6 +24,7 @@
                 @click="textClick"
                 v-html="parseText(data.content)" />
             <img v-if="data.getImg()"
+                :alt="'[' + $t('图片') + ']'"
                 :src="data.getImg()"
                 :class="{
                     img: true,
@@ -33,8 +34,9 @@
         </div>
         <span v-show="needShow && !showAll">{{ $t('点击展开') }}</span>
         <div class="info">
-            <img :src="data.getSenderFace()">
-            <a>{{ data.getSenderName() }}</a>
+            <img :src="data.sender.face"
+                :alt="data.sender.name" />
+            <a>{{ data.sender.name }}</a>
             <div />
             <span v-if="data.read !== undefined">{{
                 $t('{readNum} 人已读 | {isRead}', {
@@ -47,13 +49,13 @@
 </template>
 
 <script lang="ts">
-    import xss from 'xss'
-    import { defineComponent } from 'vue'
-    import { runtimeData } from '@renderer/function/msg'
-    import { openLink } from '@renderer/function/utils/appUtil'
-    import { getTrueLang } from '@renderer/function/utils/systemUtil'
     import { Ann } from '@renderer/function/model/ann'
-    import { Img } from '@renderer/function/model/img'
+import { Img } from '@renderer/function/model/img'
+import { runtimeData } from '@renderer/function/msg'
+import { openLink } from '@renderer/function/utils/appUtil'
+import { getTrueLang } from '@renderer/function/utils/systemUtil'
+import { defineComponent } from 'vue'
+import xss from 'xss'
 
     export default defineComponent({
         name: 'BulletinBody',

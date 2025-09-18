@@ -7,13 +7,13 @@
  */
 
 import app from '@renderer/main'
-import { PopInfo, PopType } from '../base'
-import { downloadFile } from '../utils/appUtil'
-import { Time } from './data'
-import { getSizeFromBytes } from '../utils/systemUtil'
 import { shallowRef, ShallowRef } from 'vue'
-import { runtimeData } from '../msg'
 import { GroupFileData, GroupFolderData } from '../adapter/interface'
+import { PopInfo, PopType } from '../base'
+import { runtimeData } from '../msg'
+import { downloadFile } from '../utils/appUtil'
+import { getSizeFromBytes } from '../utils/systemUtil'
+import { Name, Time } from './data'
 import { GroupSession } from './session'
 
 export class GroupFile {
@@ -21,11 +21,11 @@ export class GroupFile {
 
     group: GroupSession
     id: string
-    name: string
+    _name: Name
     size: number
     downloadTimes: number
     deadTime?: number
-    createrName: string
+    _createrName: Name
     createTime?: Time
     url?: string
 
@@ -33,12 +33,12 @@ export class GroupFile {
 
     constructor(data: GroupFileData, group: GroupSession) {
         this.id = data.file_id
-        this.name = data.file_name
+        this._name = new Name(data.file_name)
         this.size = data.size
         this.downloadTimes = data.download_times
         if(data.dead_time) this.deadTime = data.dead_time
-        if (data.uploader_id) this.createrName = getSenderName(data.uploader_id, group)
-        else if (data.uploader_name) this.createrName = data.uploader_name
+        if (data.uploader_id) this._createrName = new Name(getSenderName(data.uploader_id, group))
+        else if (data.uploader_name) this._createrName = new Name(data.uploader_name)
         else throw new Error('文件上传者信息错误')
         if(data.upload_time) this.createTime = new Time(data.upload_time)
         this.group = group
@@ -100,13 +100,38 @@ export class GroupFile {
         return true
     }
 
+    match(search: string): boolean {
+        search = search.trim().toLowerCase()
+        if (this._name.matchStr(search)) return true
+        if (this._createrName.matchStr(search)) return true
+        return false
+    }
+
     get deadTimeFormat(): string | undefined {
-        if (!this.deadTime) return
+        if (!this.deadTime) return undefined
         return (this.deadTime - Date.now() / 86400 - 1).toFixed(0)
     }
 
     get formatSize(): string {
         return getSizeFromBytes(this.size)
+    }
+
+    get name(): string {
+        return this._name.toString()
+    }
+
+    set name(name: string | Name) {
+        if (typeof name === 'string') this._name = new Name(name)
+        else this._name = name
+    }
+
+    get createrName(): string {
+        return this._createrName.toString()
+    }
+
+    set createrName(name: string | Name) {
+        if (typeof name === 'string') this._createrName = new Name(name)
+        else this._createrName = name
     }
 }
 
@@ -115,20 +140,20 @@ export class GroupFileFolder {
 
     group: GroupSession
     id: string
-    name: string
+    _name: Name
     count: number
     createTime?: Time
-    createrName: string
+    _createrName: Name
 
     items: ShallowRef<(GroupFile | GroupFileFolder)[] | undefined> = shallowRef(undefined)
     isOpen: ShallowRef<boolean> = shallowRef(false)
     constructor(data: GroupFolderData, group: GroupSession) {
         this.id = data.folder_id
-        this.name = data.folder_name
+        this._name = new Name(data.folder_name)
         this.count = data.count
         if(data.create_time) this.createTime = new Time(data.create_time)
-        if (data.creater_id) this.createrName = getSenderName(data.creater_id, group)
-        else if (data.creater_name) this.createrName = data.creater_name
+        if (data.creater_id) this._createrName = new Name(getSenderName(data.creater_id, group))
+        else if (data.creater_name) this._createrName = new Name(data.creater_name)
         else throw new Error('文件夹创建者信息错误')
         this.group = group
     }
@@ -162,6 +187,38 @@ export class GroupFileFolder {
         this.items.value = out
 
         return true
+    }
+
+    match(search: string): boolean {
+        search = search.trim().toLowerCase()
+        if (this._name.matchStr(search)) return true
+        if (this._createrName.matchStr(search)) return true
+
+        if (this.items.value) {
+            for (const item of this.items.value) {
+                if (item.match(search)) return true
+            }
+        }
+
+        return false
+    }
+
+    get name(): string {
+        return this._name.toString()
+    }
+
+    set name(name: string | Name) {
+        if (typeof name === 'string') this._name = new Name(name)
+        else this._name = name
+    }
+
+    get createrName(): string {
+        return this._createrName.toString()
+    }
+
+    set createrName(name: string | Name) {
+        if (typeof name === 'string') this._createrName = new Name(name)
+        else this._createrName = name
     }
 }
 

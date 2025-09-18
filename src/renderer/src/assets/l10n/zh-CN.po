@@ -1434,9 +1434,6 @@ msgstr ""
 msgid "未知错误"
 msgstr ""
 
-msgid "已退群( {userId} )"
-msgstr ""
-
 msgid "转发消息跳转群组"
 msgstr ""
 
@@ -2038,4 +2035,13 @@ msgid "回应了"
 msgstr ""
 
 msgid "的"
+msgstr ""
+
+msgid "空空如也"
+msgstr ""
+
+msgid "群信息"
+msgstr ""
+
+msgid "好友信息"
 msgstr ""

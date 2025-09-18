@@ -821,6 +821,7 @@ body.with-bar .msg-menu {
     border-radius: 7px;
     height: 40px;
     width: 40px;
+    object-fit: cover;
 }
 
 .chat-info-base > div:first-child > div:nth-child(2) {
@@ -905,14 +906,49 @@ body.with-bar .msg-menu {
 }
 
 .chat-info-pan .tab-body {
-    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    flex: 1;
+}
+
+.chat-info-pan .tab-body > div {
+    height: 100%;
+}
+
+.tab-body > div > div > div.loading,
+.tab-body > div > div > div.null {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    font-size: 2rem;
+    overflow: hidden;
+}
+
+.tab-body > div > div > div.loading > svg,
+.tab-body > div > div > div.null > svg {
+    color: var(--color-main);
+    font-size: 5rem;
+    margin-bottom: 1rem;
 }
 
 .chat-info-tab-member {
     padding: 0 20px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
 }
 
 .chat-info-tab-member > div {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.chat-info-tab-member > div > div {
     transition: background 0.3s;
     align-items: center;
     border-radius: 7px;
@@ -921,25 +957,25 @@ body.with-bar .msg-menu {
     padding: 10px;
 }
 
-.chat-info-tab-member > div:hover {
+.chat-info-tab-member > div > div:hover {
     background: var(--color-card-1);
 }
 
-.chat-info-tab-member > div > img {
+.chat-info-tab-member > div > div > img {
     border-radius: 100%;
     margin-right: 10px;
     height: 30px;
     width: 30px;
 }
 
-.chat-info-tab-member > div > div {
+.chat-info-tab-member > div > div > div {
     overflow: hidden;
     align-items: center;
     display: flex;
     flex: 1;
 }
 
-.chat-info-tab-member > div > div > a {
+.chat-info-tab-member > div > div > div > a {
     color: var(--color-font);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -947,24 +983,24 @@ body.with-bar .msg-menu {
     overflow: hidden;
 }
 
-.chat-info-tab-member > div > div > svg {
+.chat-info-tab-member > div > div > div > svg {
     color: var(--color-main);
     margin-left: 5px;
     height: 0.8rem;
 }
 
-.chat-info-tab-member > div > span {
+.chat-info-tab-member > div > div > span {
     color: var(--color-font-2);
     transition: all .2s;
     opacity: 1;
 }
 
-.chat-info-tab-member > div.edit:hover > span {
+.chat-info-tab-member > div > div.edit:hover > span {
     transform: translateX(-10px);
     opacity: 0;
 }
 
-.chat-info-tab-member > div > svg {
+.chat-info-tab-member > div > div > svg {
     color: var(--color-font-2);
     transition: all .2s;
     margin-right: -25px;
@@ -973,11 +1009,11 @@ body.with-bar .msg-menu {
     opacity: 0;
 }
 
-.chat-info-tab-member > div > svg:hover {
+.chat-info-tab-member > div > div > svg:hover {
     color: var(--color-main);
 }
 
-.chat-info-tab-member > div.edit:hover > svg {
+.chat-info-tab-member > div > div.edit:hover > svg {
     margin-right: 5px;
     display: block;
     opacity: 1;
@@ -1002,10 +1038,6 @@ body.with-bar .msg-menu {
 .chat-info-tab .tab-bar {
     --bc-tab-margin: 10px;
     padding-left: 0;
-}
-
-.chat-info-tab .tab-body {
-    overflow-y: scroll;
 }
 
 .user-config {
@@ -1099,23 +1131,30 @@ body.with-bar .msg-menu {
 
 .bulletins {
     padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .bulletins > div {
+    overflow-y: scroll;
+}
+
+.bulletins > div > div {
     transition: background 0.3s;
     border-radius: 7px;
     padding: 10px 20px;
 }
 
-.bulletins > div:hover {
+.bulletins > div > div:hover {
     background: var(--color-card-1);
 }
 
-.bulletins > div.base {
+.bulletins > div > div.base {
     cursor: pointer;
 }
 
-.bulletins > div.base > span {
+.bulletins > div > div.base > span {
     background: var(--color-card-1);
     margin-top: 10px;
     border-radius: 7px;
@@ -1125,43 +1164,43 @@ body.with-bar .msg-menu {
     padding: 5px;
 }
 
-.bulletins > div.base > header {
+.bulletins > div > div.base > header {
     align-items: center;
     display: flex;
 }
 
-.bulletins > div.base > header > svg {
+.bulletins > div > div.base > header > svg {
     color: var(--color-main);
     margin-right: 10px;
     margin-top: 2px;
     height: 1.1rem;
 }
 
-.bulletins > div.base > header > span {
+.bulletins > div > div.base > header > span {
     color: var(--color-main);
     font-weight: bold;
     font-size: 1rem;
 }
 
-.bulletins > div.base > header > span:last-child {
+.bulletins > div > div.base > header > span:last-child {
     color: var(--color-font-2);
     font-size: 0.8rem;
     font-weight: normal;
 }
 
-.bulletins > div.base > div.body {
+.bulletins > div > div.base > div.body {
     text-overflow: ellipsis;
     overflow: hidden;
     max-height: 6rem;
     display: flex;
 }
 
-.bulletins > div.base > div.body.all {
+.bulletins > div > div.base > div.body.all {
     max-height: unset;
     flex-flow: column;
 }
 
-.bulletins > div.base > div.body > .img {
+.bulletins > div > div.base > div.body > .img {
     height: 6rem;
     width: 6rem;
     object-fit: cover;
@@ -1169,17 +1208,17 @@ body.with-bar .msg-menu {
     border-radius: 7px;
 }
 
-.bulletins > div.base > div.body > .img.all {
+.bulletins > div > div.base > div.body > .img.all {
     margin-top: 1rem;
-    width: unset;
+    width: 100%;
     height: unset;
 }
 
-.bulletins > div.base > div.body > span {
+.bulletins > div > div.base > div.body > span {
     white-space: pre-line;
 }
 
-.bulletins > div.base > div.body > span > a {
+.bulletins > div > div.base > div.body > span > a {
     color: var(--color-main) !important;
     font-weight: bold;
     text-decoration: underline;
@@ -1187,14 +1226,14 @@ body.with-bar .msg-menu {
     opacity: 0.8;
 }
 
-.bulletins > div.base > div.body > span > a:before {
+.bulletins > div > div.base > div.body > span > a:before {
     text-align: center;
     content: '🔗';
     color: transparent;
     text-shadow: 0 0 0 var(--color-font-1);
 }
 
-.bulletins > div.base > div.info {
+.bulletins > div > div.base > div.info {
     background: var(--color-card-1);
     transition: background 0.3s;
     align-items: center;
@@ -1204,37 +1243,45 @@ body.with-bar .msg-menu {
     display: flex;
 }
 
-.bulletins > div.base:hover > div.info {
+.bulletins > div > div.base:hover > div.info {
     background: var(--color-card-2);
 }
 
-.bulletins > div.base > div.info > img {
+.bulletins > div > div.base > div.info > img {
     outline: 2px solid var(--color-main);
     border: 2px solid var(--color-card);
     border-radius: 100%;
     width: 20px;
 }
 
-.bulletins > div.base > div.info > a {
+.bulletins > div > div.base > div.info > a {
     color: var(--color-main);
     margin-left: 10px;
     font-size: 0.9rem;
 }
 
-.bulletins > div.base > div.info > div {
+.bulletins > div > div.base > div.info > div {
     flex: 1;
 }
 
-.bulletins > div.base > div.info > span {
+.bulletins > div > div.base > div.info > span {
     color: var(--color-font-2);
     font-size: 0.8rem;
 }
 
 .group-files {
-    padding: 0 10px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-.group-files > div > div {
+.group-files > div {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.group-files > div > div > div {
     transition: background 0.3s;
     align-items: center;
     border-radius: 7px;
@@ -1244,34 +1291,34 @@ body.with-bar .msg-menu {
     margin: 5px;
 }
 
-.group-files > div > div.folder {
+.group-files > div > div > div.folder {
     cursor: pointer;
 }
 
-.group-files > div > div.folder.open {
+.group-files > div > div > div.folder.open {
     background: var(--color-card-1);
 }
 
-.group-files > div > div:hover {
+.group-files > div > div > div:hover {
     background: var(--color-card-1);
 }
 
-.group-files > div > div > svg {
+.group-files > div > div > div > svg {
     color: var(--color-font);
     margin: 0 15px 0 10px;
     height: 1.2rem;
 }
 
-.group-files > div > div > div.main {
+.group-files > div > div > div > div.main {
     margin-right: 20px;
     flex: 1;
 }
 
-.group-files > div > div > div.main span {
+.group-files > div > div > div > div.main span {
     overflow-wrap: anywhere;
 }
 
-.group-files > div > div > div.download {
+.group-files > div > div > div > div.download {
     background: var(--color-card-2);
     border-radius: 100%;
     cursor: pointer;
@@ -1279,28 +1326,28 @@ body.with-bar .msg-menu {
     width: 1.9rem;
 }
 
-.group-files > div > div > div.download > svg {
+.group-files > div > div > div > div.download > svg {
     color: var(--color-font);
     height: 0.8rem;
     margin: 10px;
 }
 
-.group-files > div > div > div > div > span {
+.group-files > div > div > div > div > div > span {
     color: var(--color-font-1);
     font-size: 0.8rem;
 }
 
-.group-files > div > div > div > div > span:first-child {
+.group-files > div > div > div > div > div > span:first-child {
     color: var(--color-main);
 }
 
-.group-files > div > div > div > div > span::after {
+.group-files > div > div > div > div > div > span::after {
     color: var(--color-font-1);
     content: '\2022';
     margin-left: 5px;
 }
 
-.group-files > div > div > div > div > span:last-child::after {
+.group-files > div > div > div > div > div > span:last-child::after {
     content: '';
 }
 

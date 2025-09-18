@@ -90,43 +90,73 @@
             class="chat-info-tab">
             <div :name="$t('成员')">
                 <div class="chat-info-tab-member">
-                    <div class="search-view">
-                        <input
-                            v-search="searchInfo!"
-                            :placeholder="$t('搜索 ……')">
-                    </div>
-                    <div v-for="member in searchInfo!.isSearch ? searchInfo!.query : chat.memberList"
-                        :key="'chatinfomlist-' + member.user_id" class="edit">
-                        <img alt="nk" loading="lazy"
-                            :src="member.face">
-                        <div>
-                            <a @click="startChat(member)">{{ member.name }}</a>
-                            <font-awesome-icon v-if="member.role === 'owner'" :icon="['fas', 'crown']" />
-                            <font-awesome-icon v-if="member.role === 'admin'" :icon="['fas', 'star']" />
+                    <input
+                        class="search-view"
+                        v-search="userSearchInfo!"
+                        :placeholder="$t('搜索 ……')">
+                    <div v-if="(userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList).length > 0">
+                        <div v-for="member in userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList"
+                            :key="'chatinfomlist-' + member.user_id" class="edit">
+                            <img alt="nk" loading="lazy"
+                                :src="member.face">
+                            <div>
+                                <a @click="startChat(member)">{{ member.name }}</a>
+                                <font-awesome-icon v-if="member.role === 'owner'" :icon="['fas', 'crown']" />
+                                <font-awesome-icon v-if="member.role === 'admin'" :icon="['fas', 'star']" />
+                            </div>
+                            <!-- 在手机端戳 id 就能触发 -->
+                            <span @click="clickMember(member)">{{ member.user_id }}</span>
+                            <font-awesome-icon v-if="canEditMember(member.role)" :icon="['fas', 'wrench']" @click="clickMember(member)" />
+                            <font-awesome-icon v-else :icon="['fas', 'copy']" @click="clickMember(member)" />
                         </div>
-                        <!-- 在手机端戳 id 就能触发 -->
-                        <span @click="clickMember(member)">{{ member.user_id }}</span>
-                        <font-awesome-icon v-if="canEditMember(member.role)" :icon="['fas', 'wrench']" @click="clickMember(member)" />
-                        <font-awesome-icon v-else :icon="['fas', 'copy']" @click="clickMember(member)" />
+                    </div>
+                    <div v-else class="null">
+                        <font-awesome-icon :icon="['fas', 'inbox']" />
+                        {{ $t('空空如也') }}
                     </div>
                 </div>
             </div>
             <div :name="$t('公告')">
                 <div class="bulletins">
-                    <BulletinBody
-                        v-for="(item, index) in anns"
-                        :key="'bulletins-' + index"
-                        :data="item"
-                        :index="index" />
+                    <template v-if="anns">
+                        <input
+                            class="search-view"
+                            v-search="annSearchInfo!"
+                            :placeholder="$t('搜索 ……')">
+                        <div v-if="(annSearchInfo!.isSearch ? annSearchInfo!.query : anns).length > 0">
+                            <BulletinBody
+                                v-for="(item, index) in annSearchInfo!.isSearch ? annSearchInfo!.query : anns"
+                                :key="'bulletins-' + index"
+                                :data="item"
+                                :index="index" />
+                        </div>
+                        <div v-else class="null">
+                            <font-awesome-icon :icon="['fas', 'inbox']" />
+                            {{ $t('空空如也') }}
+                        </div>
+                    </template>
+                    <div v-else class="loading" style="opacity: 0.9;">
+                        <font-awesome-icon :icon="['fas', 'spinner']" />
+                        {{ $t('加载中') }}
+                    </div>
                 </div>
             </div>
             <div :name="$t('文件')">
-                <div
-                    class="group-files">
+                <div class="group-files">
                     <template v-if="fileInfo">
-                        <div v-for="item in fileInfo"
-                            :key="'file-' + item.id">
-                            <FileBody :item="markRaw(item)" />
+                        <input
+                            class="search-view"
+                            v-search="fileSearchInfo!"
+                            :placeholder="$t('搜索 ……')">
+                        <div v-if="(fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo)?.length > 0">
+                            <div v-for="item in fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo"
+                                :key="'file-' + item.id">
+                                <FileBody :item="markRaw(item)" />
+                            </div>
+                        </div>
+                        <div v-else class="null">
+                            <font-awesome-icon :icon="['fas', 'inbox']" />
+                            {{ $t('空空如也') }}
                         </div>
                     </template>
                     <div v-else class="loading" style="opacity: 0.9;">
@@ -234,7 +264,8 @@ import {
     nextTick,
     shallowReactive,
     shallowRef,
-    ShallowRef
+    ShallowRef,
+    watchEffect,
 } from 'vue'
 
 const { chat } = defineProps<{
@@ -253,11 +284,29 @@ const fileInfo: ShallowRef<(GroupFileFolder | GroupFile)[] | undefined> = (
     chat instanceof GroupSession ? chat.useFile() : shallowRef(undefined)
 )
 
-const searchInfo =  chat instanceof GroupSession ? shallowReactive({
+const userSearchInfo =  chat instanceof GroupSession ? shallowReactive({
     originList: chat.memberList,
     query: shallowReactive([] as Member[]),
     isSearch: false,
 }) : undefined
+
+const annSearchInfo =  chat instanceof GroupSession ? shallowReactive({
+    originList: [] as Ann[],
+    query: shallowReactive([] as Ann[]),
+    isSearch: false,
+}) : undefined
+
+const fileSearchInfo =  chat instanceof GroupSession ? shallowReactive({
+    originList: [] as (GroupFileFolder | GroupFile)[],
+    query: shallowReactive([] as (GroupFileFolder | GroupFile)[]),
+    isSearch: false,
+}) : undefined
+
+watchEffect(() => {
+    if (!(chat instanceof GroupSession)) return
+    fileSearchInfo!.originList = fileInfo.value ?? []
+    annSearchInfo!.originList = anns.value ?? []
+})
 
 const configMember = shallowRef<Member | undefined>(undefined)
 const configTitle = shallowRef<string>('')
@@ -414,16 +463,12 @@ defineExpose({
 
 <style scoped>
     .search-view {
-        background: transparent !important;
-        margin-top: -10px;
-    }
-    .search-view > input {
+        width: calc(100% - 20px);
         background: var(--color-card-1);
         border-radius: 7px;
-        margin: 0 -10px;
+        margin-bottom: 10px;
         padding: 0 10px;
-        height: 35px;
-        width: 100%;
+        min-height: 35px;
         border: 0;
     }
 </style>
