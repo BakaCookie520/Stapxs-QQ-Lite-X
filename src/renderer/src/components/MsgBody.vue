@@ -98,7 +98,7 @@
                     <template v-else-if="isSuperFaceMsg()">
                         <div class="msg-img face alone"
                             style="--width: 35vh">
-                            <Lottie :animation-link="(data.message[0] as FaceSeg).face!.superValue!"
+                            <Lottie :animation-link="(data.message[0] as FaceSeg).face!.superValue"
                                     :title="(data.message[0] as FaceSeg).face!.description"/>
                         </div>
                     </template>
@@ -977,7 +977,7 @@ defineExpose({
                 const seg = this.data.message.at(0)
                 if (!(seg instanceof FaceSeg)) return false
                 if (!seg.face) return false
-                return seg.face.superValue !== ''
+                return seg.face.hasSuper
             },
 
             async showPock() {
