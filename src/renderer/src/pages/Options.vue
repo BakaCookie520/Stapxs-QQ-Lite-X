@@ -4,14 +4,15 @@
  * @Date: 2022/09/26
  * @Version: 1.0
 -->
- <!-- eslint-disable max-len -->
+<!-- eslint-disable max-len -->
 
 <template>
     <div class="opt-main">
         <div>
             <BcTab class="opt-tab">
                 <div :name="$t('账号')">
-                    <OptAccount :config="config" />
+                    <OptAccount :config="config"
+                        @close-pop-box="emit('closePopBox')" />
                 </div>
                 <div :name="$t('界面')">
                     <OptView />
@@ -91,4 +92,8 @@ import { getVersion } from '@renderer/function/utils/systemUtil'
 import AboutPan from '@renderer/popboxes/AboutPan.vue'
 
 const config = runtimeData.sysConfig
+
+const emit = defineEmits<{
+    'closePopBox': []
+}>()
 </script>
