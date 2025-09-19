@@ -1,6 +1,7 @@
 body {
     transform: 10s;
 }
+
 body.margin {
     margin: 10px;
     border-radius: 7px;
@@ -10,6 +11,7 @@ body.margin {
     height: calc(100% - 20px);
     border: 1px solid #00000059;
 }
+
 body.with-bar #base-app {
     padding-top: 0;
     height: 100%;
@@ -18,24 +20,30 @@ body.with-bar #base-app {
 .exp-header {
     margin-left: 10px !important;
 }
-.friend-list {
+
+.side-bar-list {
     background: var(--color-bg);
 }
+
 .main-body > ul {
     background: var(--color-bg);
     padding-left: 5px;
 }
+
 .friend-view > div:last-child {
     background: var(--color-card);
 }
+
 .friend-view > div:last-child > div {
     background: var(--color-card-1);
 }
-.friend-list > div:first-child {
+
+.side-bar-list > div:first-child {
     margin-left: 5px;
     margin-right: 25px;
 }
-.friend-list > div:last-child {
+
+.side-bar-list > div:last-child {
     margin-left: -10px;
 }
 
@@ -47,9 +55,11 @@ body.with-bar #base-app {
     box-shadow: unset;
     height: 35px;
 }
+
 .top-bar > div.controller > div {
     padding: 7px;
 }
+
 .top-bar > div.controller > div > svg {
     height: 14px;
 }
@@ -63,6 +73,7 @@ body.with-bar .chat-pan {
     left: 275px;
     box-shadow: -5px 0 4px -5px var(--color-shader);
 }
+
 .chat-pan > div.bg {
     backdrop-filter: blur(0px);
     margin-top: -25px;
@@ -79,6 +90,7 @@ body.with-bar .chat-pan {
     padding-top: 15px;
     height: calc(100% - 15px);
 }
+
 body.margin .opt-main > div:last-child {
     padding-top: 25px;
     height: calc(100% - 25px);
@@ -88,6 +100,7 @@ body.margin .opt-main > div:last-child {
     margin-top: 10px;
     overflow-y: scroll;
 }
+
 body.margin .opt-main > div:first-child {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -98,37 +111,44 @@ body.margin .opt-main > div:first-child {
         height: calc(100% - 105px) !important;
         left: 70px !important;
     }
+
     body.with-bar .chat-pan.open {
         left: 90px !important;
     }
-    .friend-list {
+
+    .side-bar-list {
         background-color: var(--color-bg) !important;
         justify-items: center;
         width: 60px !important;
     }
-    .friend-list > div:nth-child(2) {
+
+    .side-bar-list > div:nth-child(2) {
         margin: unset;
         width: unset;
         padding-left: 6px !important;
     }
-    .friend-list > div:first-child > div.small > span {
+
+    .side-bar-list > div:first-child > div.small > span {
         display: flex !important;
     }
-    .friend-list > div:first-child > div.small > div {
+
+    .side-bar-list > div:first-child > div.small > div {
         display: none;
     }
-    .friend-list > div:first-child > div.small {
+
+    .side-bar-list > div:first-child > div.small {
         margin: unset;
         height: unset;
     }
+
     .box-body,
-    .friend-body {
+    .side-bar-button {
         padding: 4px !important;
         margin: 4px 2px !important;
     }
 
     .box-body > div:nth-child(1) > div.new,
-    .friend-body > div.new {
+    .side-bar-button > div.new {
         width: 10px !important;
         height: 10px !important;
         right: 5px !important;
@@ -148,26 +168,29 @@ body.margin .opt-main > div:first-child {
         left: 60px !important;
     }
 
-    .friend-list > div:nth-child(2) {
+    .side-bar-list > div:nth-child(2) {
         margin: unset;
         width: unset;
         padding-left: 6px !important;
     }
-    .friend-list > div:first-child > div.small > div {
+
+    .side-bar-list > div:first-child > div.small > div {
         display: none;
     }
-    .friend-list > div:first-child > div.small {
+
+    .side-bar-list > div:first-child > div.small {
         margin: unset;
         height: unset;
     }
+
     .box-body,
-    .friend-body {
+    .side-bar-button {
         padding: 4px !important;
         margin: 4px 2px !important;
     }
 
     .box-body > div:nth-child(1) > div.new,
-    .friend-body > div.new {
+    .side-bar-button > div.new {
         width: 10px !important;
         height: 10px !important;
         right: 5px !important;

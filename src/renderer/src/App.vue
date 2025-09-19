@@ -1,10 +1,5 @@
 <template>
-    <!-- <div v-if="dev" :class="'dev-bar' + (backend.platform == 'win32' ? ' win' : '')">
-        Stapxs QQ Lite Development Mode
-        {{ backend.platform ? ' / platform: ' + backend.platform : '' }}
-        {{ ' / client: ' + backend.type }}
-        {{ ' / fps: ' + fps.value }}
-    </div> -->
+    <!-- 顶栏 -->
     <div v-if="win.withBar"
         :class="'top-bar' + ((backend.platform == 'win32' && dev) ? ' win' : '')"
         name="appbar"
@@ -23,61 +18,28 @@
             </div>
         </div>
     </div>
+    <!-- 拖拽区域 -->
     <div v-if="backend.platform == 'darwin'" class="controller mac-controller"
         data-tauri-drag-region="true" />
     <div id="base-app">
         <div class="main-body">
-            <ul :style="get('fs_adaptation') > 0 ? `padding-bottom: ${get('fs_adaptation')}px;` : ''">
-                <li id="bar-home" :class="{
-                    'active': pageInfo.page === 'Home',
-                    'hiden-home': driver.isConnected(),
-                }"
-                    @click="changeTab('Home', false)">
-                    <font-awesome-icon :icon="['fas', 'home']" />
-                    <span>{{ $t('主页') }}</span>
-                </li>
-                <li id="bar-msg" :class="{'active': pageInfo.page === 'Messages'}"
-                    @click="changeTab('Messages', true)">
-                    <font-awesome-icon :icon="['fas', 'envelope']" />
-                    <span>{{ $t('信息') }}</span>
-                </li>
-                <li id="bar-friends" :class="{'active': pageInfo.page === 'Friends'}"
-                    @click="changeTab('Friends', true)">
-                    <font-awesome-icon :icon="['fas', 'user']" />
-                    <span>{{ $t('列表') }}</span>
-                </li>
-                <li id="bar-box" :class="{'active': pageInfo.page == 'Boxes'}"
-                    @click="changeTab('Boxes', true)">
-                    <font-awesome-icon :icon="['fas', 'fa-box']" />
-                    <span>{{ $t('收纳盒') }}</span>
-                </li>
-                <div class="side-bar-space" />
-                <li :class="pageInfo.page == 'Options' ? 'active' : ''" @click="changeTab('Options', false)">
-                    <font-awesome-icon :icon="['fas', 'gear']" />
-                    <span>{{ $t('设置') }}</span>
-                </li>
-            </ul>
-            <div :style="get('fs_adaptation') > 0 ? `height: calc(100% - ${75 + Number(get('fs_adaptation'))}px);` : ''">
-                <div v-if="pageInfo.page == 'Home'" :name="$t('主页')">
-                    <div class="home-body">
-                        <LoginPan />
-                    </div>
-                </div>
-                <div v-else-if="pageInfo.page == 'Messages'" id="messageTab">
-                    <Messages @user-click="changeSession" />
-                </div>
-                <div v-else-if="pageInfo.page == 'Friends'">
-                    <Friends @user-click="changeSession" />
-                </div>
-                <div v-else-if="pageInfo.page == 'Boxes'">
-                    <Boxes @user-click="changeSession" />
-                </div>
-                <div class="opt-main-tab" style="opacity: 0">
-                    <Options :show="pageInfo.page == 'Options'" :class="pageInfo.page == 'Options' ? 'active' : ''"
-                        :config="runtimeData.sysConfig" />
+            <SideBar />
+            <div class="main-box">
+                <!-- 主对话框 -->
+                <div class="ss-card choice-chat">
+                    <template v-if="true">
+                        <font-awesome-icon :icon="['fas', 'inbox']" />
+                        <span>{{ $t('选择联系人开始聊天') }}</span>
+                    </template>
+                    <template v-else>
+                        <font-awesome-icon :icon="['fas', 'angles-right']" />
+                        <span>(っ≧ω≦)っ</span>
+                        <span>{{ $t('别划了别划了被看见了啦') }}</span>
+                    </template>
                 </div>
             </div>
         </div>
+
         <component
             :is="runtimeData.pageView.chatView"
             v-if="driver.isConnected() && runtimeData.nowChat"
@@ -85,16 +47,18 @@
             ref="chat"
             :chat="markRaw(runtimeData.nowChat)"
             @user-click="changeSession" />
+
         <!-- 通知列表 -->
         <TransitionGroup class="app-msg" name="appmsg" tag="div">
-            <div v-for="msg in appMsgs" :key="'appmsg-' + msg.id">
+            <div v-for="msg in popList" :key="'appmsg-' + msg.id">
                 <div><font-awesome-icon :icon="['fas', msg.svg]" /></div>
                 <a>{{ msg.text }}</a>
-                <div v-if="!msg.autoClose" @click="popInfo.remove(msg.id)">
+                <div v-if="!msg.autoClose" @click="new PopInfo().remove(msg.id)">
                     <font-awesome-icon :icon="['fas', 'xmark']" />
                 </div>
             </div>
         </TransitionGroup>
+
         <!-- 弹窗列表 -->
         <div
             v-hide="runtimeData.popBoxList.length === 0"
@@ -104,9 +68,12 @@
                 <PopBox :props="pop" />
             </template>
         </TransitionGroup>
+
         <!-- 全局搜索栏 -->
         <GlobalSessionSearchBar />
         <Viewer ref="viewer" />
+
+        <!-- 菜单 -->
         <FriendMenu ref="friendMenu" />
         <div id="mobile-css" />
     </div>
@@ -118,7 +85,7 @@ import Umami from '@stapxs/umami-logger-typescript'
 import Spacing from 'spacingjs/src/spacing'
 import * as App from './function/utils/appUtil'
 
-import { popList as appMsgs, Logger, LogType, PopInfo } from '@renderer/function/base'
+import { Logger, LogType, PopInfo, popList } from '@renderer/function/base'
 import { runtimeData } from '@renderer/function/msg'
 import { i18n, uptime } from '@renderer/main'
 import {
@@ -126,32 +93,27 @@ import {
     onMounted,
     provide,
     shallowReactive,
-    useTemplateRef,
+    useTemplateRef
 } from 'vue'
-import PopBox from './components/PopBox.vue'
 import driver from './function/driver'
 import { Notify } from './function/notify'
 import { changeSession } from './function/utils/msgUtil'
 import { ensurePopBox } from './function/utils/popBox'
-import { getDeviceType, getVersion } from './function/utils/systemUtil'
-import { vHide } from './function/utils/vcmd'
+import { getDeviceType, getVersion, openLoginPan } from './function/utils/systemUtil'
 
-import FriendMenu from '@renderer/components/FriendMenu.vue'
-import Boxes from '@renderer/pages/Boxes.vue'
-import Friends from '@renderer/pages/Friends.vue'
-import Messages from '@renderer/pages/Messages.vue'
-import Options from '@renderer/pages/Options.vue'
+import FriendMenu from './components/FriendMenu.vue'
 import GlobalSessionSearchBar from './components/GlobalSessionSearchBar.vue'
-import LoginPan from './components/LoginPan.vue'
+import PopBox from './components/PopBox.vue'
 import Viewer from './components/Viewer.vue'
+import { vHide } from './function/utils/vcmd'
 import { useDailyDo } from './function/utils/vuse'
+import SideBar from './pages/SideBar.vue'
 import { backend } from './runtime/backend'
 import win from './runtime/win'
 
 //#region == 定义变量 ===================================================
 type PageType = 'Home' | 'Options' | 'Friends' | 'Messages' | 'Boxes'
 const dev = import.meta.env.DEV
-const popInfo = new PopInfo()
 const logger = new Logger()
 const pageInfo = shallowReactive<{
     page: PageType
@@ -166,7 +128,6 @@ const fps = shallowReactive({
     value: 0,
 })
 const $t = i18n.global.t
-const get = Option.get
 //#endregion
 
 //#region == 更新标题 ===================================================
@@ -303,9 +264,10 @@ async function init() {
     //#endregion
 
     //#region == 公告弹窗 ======================================
-    App.checkUpdate() // 检查更新
-    App.checkOpenTimes() // 检查打开次数
-    App.checkNotice() // 检查公告
+    openLoginPan()          // 打开登录面板
+    App.checkUpdate()       // 检查更新
+    App.checkOpenTimes()    // 检查打开次数
+    App.checkNotice()       // 检查公告
     //#endregion
 
     if (new Date().getMonth() == 3 && new Date().getDate() == 1)

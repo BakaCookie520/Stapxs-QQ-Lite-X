@@ -12,89 +12,53 @@
 -->
 
 <template>
-    <div class="friend-view">
-        <div id="message-list"
-            class="session-body-container friend-list"
-            :class="{
-                open: runtimeData.tags.openSideBar,
-            }">
+    <div>
+        <div style="margin-top: 15px;" />
+        <header v-show="sideBarState === 'open'" class="side-bar-header">
             <div>
-                <div class="base only">
-                    <span>{{ $t('消息') }}</span>
-                    <div style="flex: 1" />
-                    <font-awesome-icon :icon="['fas', 'compress-arrows-alt']"
-                        @click="foldAllBox" />
-                    <font-awesome-icon :icon="['fas', 'trash-can']" @click="cleanList" />
-                </div>
-                <div class="small">
-                    <span>{{ $t('消息') }}</span>
-                    <div @click="openLeftBar">
-                        <font-awesome-icon :icon="['fas', 'bars-staggered']" />
-                    </div>
-                </div>
+                <span>{{ $t('消息') }}</span>
+                <div style="flex: 1" />
+                <font-awesome-icon :icon="['fas', 'compress-arrows-alt']"
+                    @click="foldAllBox" />
+                <font-awesome-icon :icon="['fas', 'trash-can']" @click="cleanList" />
             </div>
-            <TransitionGroup
-                id="message-list-body"
-                name="onmsg"
-                tag="div"
-                :class="runtimeData.tags.openSideBar ? ' open' : ''"
-                style="overflow-x: hidden">
-                <!-- 系统信息 -->
-                <!-- <FriendBody v-if="!showGroupAssist &&
-                                runtimeData.systemNoticesList &&
-                                Object.keys(runtimeData.systemNoticesList).length > 0"
-                    key="inMessage--10000"
-                    :select="chat.show.id === -10000"
-                    :data="{
-                        user_id: -10000,
-                        always_top: true,
-                        nickname: $t('系统通知'),
-                        remark: $t('系统通知'),
-                    }"
-                    @click="systemNoticeClick" /> -->
-                <!--- 群组消息 -->
-                <!-- 群收纳盒 -->
+        </header>
+        <TransitionGroup
+            id="message-list-body"
+            name="onmsg"
+            tag="div"
+            is="div"
+            class="session-body-container side-bar-list">
+            <!-- 群收纳盒 -->
+            <BoxBody
+                v-if="runtimeData.sysConfig.bubble_sort_user"
+                key="inMessage-bubble-box"
+                v-menu.prevent="event => menu?.open('message', BubbleBox.instance, event)"
+                :data="markRaw(BubbleBox.instance)"
+                from="message"
+                @user-click="
+                    (session)=>userClick(session, BubbleBox.instance)" />
+            <!-- 其他消息 -->
+            <template v-for="item in showSessionList">
+                <FriendBody
+                    v-if="item instanceof Session"
+                    :key="'inMessage-' + item.id"
+                    v-menu.prevent="event => menu?.open('message', item, event)"
+                    :data="item"
+                    from="message"
+                    @click="userClick(item)" />
                 <BoxBody
-                    v-if="runtimeData.sysConfig.bubble_sort_user"
-                    key="inMessage-bubble-box"
-                    v-menu.prevent="event => menu?.open('message', BubbleBox.instance, event)"
-                    :data="markRaw(BubbleBox.instance)"
+                    v-else-if="item instanceof SessionBox"
+                    :key="'inMessage-box-' + item.id"
+                    ref="sessionBoxes"
+                    v-menu.prevent="event => menu?.open('message', item, event)"
+                    :data="item"
                     from="message"
                     @user-click="
-                        (session)=>userClick(session, BubbleBox.instance)" />
-                <!-- 其他消息 -->
-                <template v-for="item in showSessionList">
-                    <FriendBody
-                        v-if="item instanceof Session"
-                        :key="'inMessage-' + item.id"
-                        v-menu.prevent="event => menu?.open('message', item, event)"
-                        :data="item"
-                        from="message"
-                        @click="userClick(item)" />
-                    <BoxBody
-                        v-else-if="item instanceof SessionBox"
-                        :key="'inMessage-box-' + item.id"
-                        ref="sessionBoxes"
-                        v-menu.prevent="event => menu?.open('message', item, event)"
-                        :data="item"
-                        from="message"
-                        @user-click="
-                            (session)=>userClick(session, item)
-                        " />
-                </template>
-            </TransitionGroup>
-        </div>
-        <div :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
-            <div v-if="!driver.isConnected() || !runtimeData.nowChat" class="ss-card">
-                <font-awesome-icon :icon="['fas', 'inbox']" />
-                <span>{{ $t('选择联系人开始聊天') }}</span>
-            </div>
-            <div v-else class="ss-card">
-                <font-awesome-icon :icon="['fas', 'angles-right']" />
-                <span>(っ≧ω≦)っ</span>
-                <span>{{ $t('别划了别划了被看见了啦') }}</span>
-            </div>
-        </div>
+                        (session)=>userClick(session, item)
+                    " />
+            </template>
+        </TransitionGroup>
     </div>
 </template>
 
@@ -121,7 +85,6 @@ import {
     faTrashCan,
 } from '@fortawesome/free-solid-svg-icons'
 import BoxBody from '@renderer/components/BoxBody.vue'
-import driver from '@renderer/function/driver'
 import { BubbleBox, SessionBox } from '@renderer/function/model/box'
 import { Message } from '@renderer/function/model/message'
 import { Session } from '@renderer/function/model/session'
@@ -130,6 +93,10 @@ import { vMenu } from '@renderer/function/utils/vcmd'
 
 const emit = defineEmits<{
     userClick: [session: Session, fromBox?: SessionBox]
+}>()
+
+const { sideBarState } = defineProps<{
+    sideBarState: 'fold' | 'open'
 }>()
 
 const showSessionList = shallowRef<(Session | SessionBox)[]>([])

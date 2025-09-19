@@ -296,6 +296,7 @@
 
 .opt-page > div > header {
     letter-spacing: 0;
+    padding: 0 0 10px 0 !important;
 }
 
 .opt-page > div > div.tip {

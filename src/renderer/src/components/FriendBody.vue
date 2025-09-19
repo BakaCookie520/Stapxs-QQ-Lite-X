@@ -9,7 +9,7 @@
 
 <template>
     <div :id="'user-' + data.id"
-        class="friend-body"
+        class="side-bar-button"
         :class="{
             'active': active,
             'onmenu': onmenu,
@@ -64,13 +64,13 @@
 </template>
 
 <script setup lang="ts">
-import FriendMenu from './FriendMenu.vue'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { runtimeData } from '@renderer/function/msg'
-import { inject, computed } from 'vue'
+import { computed, inject } from 'vue'
+import FriendMenu from './FriendMenu.vue'
 
-import { vOverflowHide } from '@renderer/function/utils/vcmd'
 import { BubbleBox, SessionBox } from '@renderer/function/model/box'
+import { vOverflowHide } from '@renderer/function/utils/vcmd'
 import BoxTag from './BoxTag.vue'
 
 const {

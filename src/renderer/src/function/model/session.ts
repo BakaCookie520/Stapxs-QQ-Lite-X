@@ -1182,7 +1182,7 @@ export class SessionClass {
     id: number
     name: string
     content: Session[] = shallowReactive([])
-    open: boolean = false
+    _open = shallowRef<boolean>(false)
     private static readonly AllFriendClass: SessionClass[] = shallowReactive([])
     constructor(id: number, name: string) {
         if (SessionClass.getClass(id)) throw new Error(`分组 ID ${id} 已存在`)
@@ -1226,6 +1226,14 @@ export class SessionClass {
 
     static clear(): void {
         SessionClass.AllFriendClass.length = 0
+    }
+
+    get open(): boolean {
+        return this._open.value
+    }
+
+    set open(flag: boolean) {
+        this._open.value = flag
     }
 }
 
