@@ -1065,7 +1065,7 @@ body.with-bar #base-app {
 
 .pop-box-body.full.window {
     height: calc(100vh - 80px);
-    margin: 20px 20px 0 20px;
+    margin: 30px 20px 0 20px;
 }
 
 .pop-box-body.full.window iframe {

@@ -2045,3 +2045,12 @@ msgstr ""
 
 msgid "好友信息"
 msgstr ""
+
+msgid "访客数据_pageviews"
+msgstr "浏览量"
+
+msgid "访客数据_visitors"
+msgstr "访问次数"
+
+msgid "访客数据_visits"
+msgstr "访客"
