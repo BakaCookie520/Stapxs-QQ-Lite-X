@@ -23,7 +23,7 @@
                     :key="index"
                     :class="{'select': mainListSelected === item.value}"
                     @click="getData(item.value)">
-                    <span>{{ item.label }}</span>
+                    <span>{{ item.label }}<span v-if="item.subLabel">{{ item.subLabel }}</span></span>
                     <a>{{ item.count ? formatNumber(Number(item.count)) : '' }}</a>
                 </div>
             </div>
@@ -138,7 +138,7 @@ import { CanvasRenderer } from 'echarts/renderers'
                     'connect': '连接',
                     'use_theme_color': '切换主题色',
                     'use_language': '切换语言',
-                    'click_statistics': '跳转到仓库',
+                    'click_statistics': '触发按钮',
                     'use_chatview': '切换聊天面板样式',
                     'cilent': '上报客户端',
                     'show_qed': '触发彩蛋'
@@ -260,7 +260,7 @@ import { CanvasRenderer } from 'echarts/renderers'
                         // 转换为饼图需要的格式
                         let pieData = eventData.map((item: any) => ({
                             value: item.total,
-                            name: item.value
+                            name: (item.value != '' && item.value != null) ? item.value : this.$t('（未知）')
                         }))
                         // 只取前 9 项，其他归为“其他”，如果恰巧有 10 项也不处理防止第 10 项变成“其他”
                         if (pieData.length > 10) {
@@ -729,5 +729,30 @@ import { CanvasRenderer } from 'echarts/renderers'
 .website-metric > div > div > div span {
     font-size: 0.8rem;
     color: var(--color-font-2);
+}
+
+@media (max-width: 500px) {
+    .umami-info-pan {
+        flex-direction: column !important;
+    }
+    .type-list {
+        flex-direction: row !important;
+        padding-top: 40px !important;
+        justify-content: space-evenly;
+    }
+    .type-list > svg:first-child {
+        display: none !important;
+    }
+    .detail-list {
+        max-height: 30%;
+        width: 100% !important;
+    }
+    .view-pan {
+        height: calc(70% - 140px);
+    }
+    .overview-time-select {
+        right: 20px !important;
+        width: 100px !important;
+    }
 }
 </style>
