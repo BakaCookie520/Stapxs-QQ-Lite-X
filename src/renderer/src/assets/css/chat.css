@@ -16,26 +16,16 @@ input {
     flex-direction: column;
     pointer-events: none;
     transition: all 0.3s;
-    position: absolute;
     overflow: hidden;
     display: flex;
     height: 100%;
-    left: 371px;
+    width: 100%;
     z-index: 2;
-    right: 0;
-    top: 0;
 }
 
 body.with-bar .chat-pan {
     height: calc(100% - 40px);
     top: 40px;
-}
-
-.chat-pan.full {
-    height: 100%;
-    z-index: 20;
-    bottom: 0;
-    left: 0;
 }
 
 .chat-pan > div {
@@ -2221,29 +2211,9 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
 }
 
 @media (max-width: 700px) {
-
-    /* 消息面板 */
-    .chat-pan {
-        height: calc(100% - 75px - var(--safe-area-bottom));
-        left: 80px !important;
-    }
-
     body.with-bar .chat-pan {
         height: calc(100% - 115px);
         top: 40px;
-    }
-
-    .chat-pan.open {
-        transform: translateX(220px);
-    }
-
-    /* 群信息面板 */
-    .chat-info {
-        width: calc(100% - 80px);
-        transform: unset;
-        min-width: unset;
-        margin: 20px;
-        bottom: 75px;
     }
 
     /* AT 信息悬浮面板 */
@@ -2335,18 +2305,5 @@ div.tiny-session-body > div:nth-child(3) > div > svg {
         transform: unset;
         box-shadow: none;
         margin: 0;
-    }
-
-    /* 聊天面板（二级侧栏） */
-    .chat-pan {
-        left: 0 !important;
-    }
-
-    .chat-pan.open {
-        transform: translateX(100%);
-    }
-
-    .chat-pan > div.info > svg {
-        display: block;
     }
 }

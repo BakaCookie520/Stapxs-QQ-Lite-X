@@ -35,8 +35,7 @@
                     :key="'class-' + class_.id">
                     <div class="list exp-body" :class="{'open': class_.open}">
                         <header :title="class_.name"
-                            :class="'exp-header' +
-                                (runtimeData.tags.openSideBar ? ' open' : '')"
+                            class="exp-header"
                             @click="class_.open = !class_.open">
                             <div />
                             <span>{{ class_.name }}</span>
@@ -86,17 +85,13 @@ import FriendBody from '@renderer/components/FriendBody.vue'
 import FriendMenu from '@renderer/components/FriendMenu.vue'
 
 import { Session, SessionClass } from '@renderer/function/model/session'
-import { runtimeData } from '@renderer/function/msg'
 import { reloadUsers } from '@renderer/function/utils/appUtil'
+import { changeSession } from '@renderer/function/utils/msgUtil'
 import { vAutoFocus, vMenu, vSearch } from '@renderer/function/utils/vcmd'
 import {
     inject,
     shallowReactive
 } from 'vue'
-
-const emit = defineEmits<{
-    userClick: [session: Session],
-}>()
 
 const { sideBarState } = defineProps<{
     sideBarState: 'fold' | 'open'
@@ -111,16 +106,8 @@ const menu: undefined | InstanceType<typeof FriendMenu> = inject('friendMenu')
  */
 function userClick(session: Session) {
     // 重置搜索信息
-    isSearch.value = false
-    searchList.value = []
-    searchInfo.value = ''
-    // 更新聊天框
-    emit('userClick', session)
-    // 切换标签卡
-    const barMsg = document.getElementById('bar-msg')
-    if (barMsg !== null) {
-        barMsg.click()
-    }
+    searchInfo.isSearch = false
+    changeSession(session)
 }
 
 const searchInfo = shallowReactive({

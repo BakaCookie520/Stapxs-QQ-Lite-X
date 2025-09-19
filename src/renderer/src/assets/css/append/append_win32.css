@@ -73,10 +73,6 @@ body.with-bar .chat-pan {
         padding-top: 20px;
     }
 
-    body.with-bar .chat-pan.open {
-        left: 80px !important;
-    }
-
     .chat-info {
         width: calc(100% - 70px);
         margin: calc(50vh - 20px) 0 0 20px !important;

@@ -36,8 +36,7 @@
                 v-menu.prevent="event => menu?.open('message', BubbleBox.instance, event)"
                 :data="markRaw(BubbleBox.instance)"
                 from="message"
-                @user-click="
-                    (session)=>userClick(session, BubbleBox.instance)" />
+                @user-click="session => changeSession(session, BubbleBox.instance)" />
             <!-- 其他消息 -->
             <template v-for="item in showSessionList">
                 <FriendBody
@@ -46,7 +45,7 @@
                     v-menu.prevent="event => menu?.open('message', item, event)"
                     :data="item"
                     from="message"
-                    @click="userClick(item)" />
+                    @click="changeSession(item)" />
                 <BoxBody
                     v-else-if="item instanceof SessionBox"
                     :key="'inMessage-box-' + item.id"
@@ -54,9 +53,7 @@
                     v-menu.prevent="event => menu?.open('message', item, event)"
                     :data="item"
                     from="message"
-                    @user-click="
-                        (session)=>userClick(session, item)
-                    " />
+                    @user-click="(session)=>changeSession(session, item)" />
             </template>
         </TransitionGroup>
     </div>
@@ -73,9 +70,8 @@ import {
     markRaw,
     onMounted,
     shallowRef,
-    toRaw,
     useTemplateRef,
-    watch,
+    watch
 } from 'vue'
 
 import {
@@ -88,12 +84,8 @@ import BoxBody from '@renderer/components/BoxBody.vue'
 import { BubbleBox, SessionBox } from '@renderer/function/model/box'
 import { Message } from '@renderer/function/model/message'
 import { Session } from '@renderer/function/model/session'
-import { Notify } from '@renderer/function/notify'
+import { changeSession } from '@renderer/function/utils/msgUtil'
 import { vMenu } from '@renderer/function/utils/vcmd'
-
-const emit = defineEmits<{
-    userClick: [session: Session, fromBox?: SessionBox]
-}>()
 
 const { sideBarState } = defineProps<{
     sideBarState: 'fold' | 'open'
@@ -180,23 +172,6 @@ function refreshSessionList() {
     }
     showSessionList.value = [...alwaysTop.sort(sort), ...mainList.sort(sort)]
 }
-/**
- * 会话点击事件
- * @param data 会话对象
- */
-function userClick(data: Session, fromBox?: SessionBox) {
-    if (runtimeData.tags.openSideBar) {
-        openLeftBar()
-    }
-
-    // 清除新消息标记
-    data.setRead()
-    // 关闭该会话所有通知
-    new Notify().closeAll((data.id).toString())
-
-    // 更新聊天框
-    emit('userClick', data, fromBox)
-}
 
 /**
  * 折叠全部收纳盒
@@ -227,20 +202,13 @@ function foldAllBox(){
 // }
 
 /**
- * 侧边栏操作
- */
-function openLeftBar() {
-    runtimeData.tags.openSideBar = !runtimeData.tags.openSideBar
-}
-
-/**
  * 清空消息列表
  */
 function cleanList() {
     // 卸载非置顶会话
     for (const item of Session.activeSessions) {
         if (item.id === runtimeData.nowChat?.id) continue
-        toRaw(item).unactive()
+        item.unactive()
     }
 }
 </script>

@@ -212,7 +212,6 @@ const baseRuntime = {
     sysConfig: reactive({}) as Record<keyof typeof optDefault, NonNullable<any> | null>,
     tags: shallowReactive({
         firstLoad: false,
-        openSideBar: true,
         darkMode: false,
         canCors: false,
     }),

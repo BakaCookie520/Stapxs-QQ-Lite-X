@@ -18,7 +18,14 @@
         }"
         :style="{'--box-color': data.color}"
         @click="data.length ? _open = !_open : undefined">
-        <div class="side-bar-button">
+        <div class="side-bar-button"
+            :class="{
+                'box-body': true,
+                'open': open,
+                'active': active,
+                'onmenu': !active && (onmenu || _open),
+                'unmounted': from === 'message' && !data.isActive
+            }">
             <div :class="{'new': showNotice}" />
             <font-awesome-icon :icon="['fas', data.icon]" />
             <div>

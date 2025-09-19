@@ -25,28 +25,26 @@
         <div class="main-body">
             <SideBar />
             <div class="main-box">
-                <!-- 主对话框 -->
-                <div class="ss-card choice-chat">
-                    <template v-if="true">
-                        <font-awesome-icon :icon="['fas', 'inbox']" />
-                        <span>{{ $t('选择联系人开始聊天') }}</span>
-                    </template>
-                    <template v-else>
-                        <font-awesome-icon :icon="['fas', 'angles-right']" />
-                        <span>(っ≧ω≦)っ</span>
-                        <span>{{ $t('别划了别划了被看见了啦') }}</span>
-                    </template>
+                <Chat
+                    v-if="driver.isConnected() && runtimeData.nowChat"
+                    :chat="runtimeData.nowChat"
+                    ref="chat" />
+                <!-- 背景 -->
+                <div class="main-box-bg">
+                    <div class="ss-card choice-chat">
+                        <template v-if="runtimeData.nowChat">
+                            <font-awesome-icon :icon="['fas', 'angles-right']" />
+                            <span>(っ≧ω≦)っ</span>
+                            <span>{{ $t('别划了别划了被看见了啦') }}</span>
+                        </template>
+                        <template v-else>
+                            <font-awesome-icon :icon="['fas', 'inbox']" />
+                            <span>{{ $t('选择联系人开始聊天') }}</span>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <component
-            :is="runtimeData.pageView.chatView"
-            v-if="driver.isConnected() && runtimeData.nowChat"
-            v-show="pageInfo.showChat"
-            ref="chat"
-            :chat="markRaw(runtimeData.nowChat)"
-            @user-click="changeSession" />
 
         <!-- 通知列表 -->
         <TransitionGroup class="app-msg" name="appmsg" tag="div">
@@ -89,7 +87,6 @@ import { Logger, LogType, PopInfo, popList } from '@renderer/function/base'
 import { runtimeData } from '@renderer/function/msg'
 import { i18n, uptime } from '@renderer/main'
 import {
-    markRaw,
     onMounted,
     provide,
     shallowReactive,
@@ -97,7 +94,6 @@ import {
 } from 'vue'
 import driver from './function/driver'
 import { Notify } from './function/notify'
-import { changeSession } from './function/utils/msgUtil'
 import { ensurePopBox } from './function/utils/popBox'
 import { getDeviceType, getVersion, openLoginPan } from './function/utils/systemUtil'
 
@@ -107,6 +103,7 @@ import PopBox from './components/PopBox.vue'
 import Viewer from './components/Viewer.vue'
 import { vHide } from './function/utils/vcmd'
 import { useDailyDo } from './function/utils/vuse'
+import Chat from './pages/Chat.vue'
 import SideBar from './pages/SideBar.vue'
 import { backend } from './runtime/backend'
 import win from './runtime/win'
@@ -221,7 +218,7 @@ async function init() {
     //#region == popstate监听 ==================================
     if(backend.platform == 'web' && (getDeviceType() === 'Android' || getDeviceType() === 'iOS')) {
         window.addEventListener('popstate', () => {
-            if(!driver.isConnected() || runtimeData.tags.openSideBar) {
+            if(!driver.isConnected()) {
                 // 离开提醒
                 ensurePopBox(
                     $t('离开 Stapxs QQ Lite X？'),

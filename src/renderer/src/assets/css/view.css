@@ -231,7 +231,7 @@ body.with-bar #base-app {
 }
 
 .side-bar.fold {
-    min-width: unset;
+    min-width: 60px;
     width: 60px;
 }
 
@@ -344,23 +344,30 @@ body.with-bar #base-app {
     background-color: var(--color-bg);
     flex: 1;
     display: flex;
+}
+
+.main-box-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.main-box > .choice-chat {
+.main-box-bg > .choice-chat {
     background: var(--color-card-1);
     text-align: center;
     padding: 40px;
 }
 
-.main-box > .choice-chat > svg {
+.main-box-bg > .choice-chat > svg {
     color: var(--color-main);
     width: 50px;
     height: 50px;
 }
 
-.main-box > .choice-chat > span {
+.main-box-bg > .choice-chat > span {
     font-size: .9rem;
     margin-top: 10px;
     display: block;
@@ -623,7 +630,7 @@ body.with-bar #base-app {
     border-radius: 7px;
     transform: translate(0, 0);
     transition:
-        background 0.2s,
+        background-color 0.2s,
         color 0.2s,
         transform 0.2s;
 }
@@ -647,6 +654,7 @@ body.with-bar #base-app {
 .box-body > div:nth-child(2) {
     height: 0px;
     transition: height 0.3s ease-in;
+    display: flex;
 }
 
 .box-body.open > div:nth-child(2) {
@@ -663,11 +671,6 @@ body.with-bar #base-app {
 .side-bar-button.active {
     background: var(--color-main);
     color: var(--color-font-r);
-}
-
-.box-body.active > div:nth-child(1) > svg {
-    /* TODO: 配色方案改hsl，调整亮度 */
-    color: var(--color-main);
 }
 
 .box-body.onmenu,
@@ -724,7 +727,6 @@ body.with-bar #base-app {
     margin-left: -13px;
 }
 
-.box-body.active > div:nth-child(1) > div:nth-child(1),
 .side-bar-button.active > div:nth-child(1) {
     background: var(--color-font);
 }
@@ -732,10 +734,6 @@ body.with-bar #base-app {
 .side-bar-button > div:nth-child(1).new {
     transform: scaleY(0.5);
     margin-left: 3px;
-}
-
-.box-body.active > div:nth-child(1) > div:nth-child(1).new {
-    background: var(--color-font-r);
 }
 
 .side-bar-button > div p {
@@ -822,13 +820,8 @@ body.with-bar #base-app {
     color: var(--color-font-2);
 }
 
-.box-body.active > div:nth-child(1) a,
 .side-bar-button.active > a {
     color: var(--color-font-1-r);
-}
-
-.box-body > div:nth-child(2) {
-    display: flex;
 }
 
 .box-body > div:nth-child(1) > svg {
@@ -1950,12 +1943,16 @@ body.with-bar #base-app {
         padding: 10px;
     }
 
+    .side-bar-button.active {
+        background-color: var(--color-main) !important;
+    }
+
     .side-bar-button.active:hover {
-        background: var(--color-card-2) !important;
+        background-color: var(--color-main) !important;
     }
 
     .side-bar-button > div:nth-child(1) {
-        transform: scaleY(1) !important;
+        transform: scaleY(1);
         position: absolute;
         display: none !important;
     }
@@ -1989,31 +1986,6 @@ body.with-bar #base-app {
 }
 
 @media (max-width: 700px) {
-
-    /* 侧栏及主布局自适应 */
-    .main-body {
-        flex-direction: column-reverse;
-    }
-
-    .main-body > div {
-        height: calc(100% - 75px);
-    }
-
-    .main-body > ul {
-        padding-top: 0 !important;
-        justify-content: center;
-        height: 75px !important;
-        align-items: center;
-        flex-direction: row;
-        min-width: 100% !important;
-        z-index: 20;
-    }
-
-    .main-body > ul > li {
-        margin-top: 0;
-        margin-bottom: 0 !important;
-    }
-
     .group-assist-message-list {
         margin-right: -100%;
     }
@@ -2070,48 +2042,6 @@ body.with-bar #base-app {
 
     .pop-box-leave-to.move-close > div.pop-box-body {
         transform: translateX(100vw) !important;
-    }
-
-    /* 二级侧栏 */
-    .side-bar-list {
-        width: 100% !important;
-    }
-
-    .side-bar-list .small {
-        display: flex !important;
-    }
-
-    .side-bar-button > div {
-        display: block !important;
-    }
-
-    .friend-view > div:last-child {
-        display: none !important;
-    }
-
-    .side-bar-list > div:last-child > div:not(.list),
-    .side-bar-list > div:last-child > div.list > div > div {
-        padding: 10px;
-        margin: 10px;
-    }
-
-    .side-bar-list > div:first-child > div.small > span {
-        display: flex !important;
-        margin-right: 0;
-    }
-
-    .side-bar-list > div:first-child > div.small > div.reload,
-    .side-bar-list > div:first-child > div.small > label {
-        display: flex !important;
-    }
-
-    .side-bar-list > div:first-child > div.small > div:last-child {
-        margin-left: 10px;
-    }
-
-    .side-bar-list-space {
-        overflow: hidden;
-        width: 0;
     }
 
     .group-assist-message-list {

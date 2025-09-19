@@ -112,10 +112,6 @@ body.margin .opt-main > div:first-child {
         left: 70px !important;
     }
 
-    body.with-bar .chat-pan.open {
-        left: 90px !important;
-    }
-
     .side-bar-list {
         background-color: var(--color-bg) !important;
         justify-items: center;

@@ -962,10 +962,6 @@ body {
         width: fit-content !important;
     }
 
-    .chat-pan {
-        left: 0 !important;
-    }
-
     .chat-info {
         width: calc(100% - 30px);
         height: calc(100% - 125px);

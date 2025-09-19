@@ -29,14 +29,14 @@
                 <BoxBody
                     :data="BubbleBox.instance"
                     from="friend"
-                    @user-click="session=>userClick(session, BubbleBox.instance)" />
+                    @user-click="session=>changeSession(session, BubbleBox.instance)" />
                 <BoxBody
                     v-for="box in SessionBox.sessionBoxes"
                     :key="box.id"
                     v-menu.prevent="event => menu?.open('friend', box, event)"
                     :data="box"
                     from="friend"
-                    @user-click="session=>userClick(session, box)" />
+                    @user-click="session=>changeSession(session, box)" />
             </template>
             <!-- 搜索用的 -->
             <template v-else>
@@ -55,8 +55,7 @@ import BoxBody from '@renderer/components/BoxBody.vue'
 import FriendMenu from '@renderer/components/FriendMenu.vue'
 
 import { BubbleBox, SessionBox } from '@renderer/function/model/box'
-import { Session } from '@renderer/function/model/session'
-import { runtimeData } from '@renderer/function/msg'
+import { changeSession } from '@renderer/function/utils/msgUtil'
 import { popBox } from '@renderer/function/utils/popBox'
 import { vAutoFocus, vMenu, vSearch } from '@renderer/function/utils/vcmd'
 import { i18n } from '@renderer/main'
@@ -68,10 +67,6 @@ import {
 } from 'vue'
 
 const $t = i18n.global.t
-
-const emit = defineEmits<{
-    userClick: [session: Session, fromBox?: SessionBox],
-}>()
 
 const { sideBarState } = defineProps<{
     sideBarState: 'fold' | 'open'
@@ -110,33 +105,6 @@ function newBox() {
         ],
     })
 }
-
-/**
- * 联系人被点击事件
- * @param session 联系人信息
- * @param event 点击事件
- */
-function userClick(session: Session, fromBox: SessionBox) {
-    if (runtimeData.tags.openSideBar) {
-        openLeftBar()
-    }
-    // 更新聊天框
-    emit('userClick', session, fromBox)
-    // 切换标签卡
-    const barMsg = document.getElementById('bar-msg')
-    if (barMsg !== null) {
-        barMsg.click()
-    }
-}
-
-function buttonClick() {
-    newBox()
-}
-
-defineExpose({
-    buttonClick,
-    searchInfo
-})
 </script>
 
 <style scoped>

@@ -28,15 +28,6 @@ body {
         padding-top: 30px !important;
     }
 
-    .chat-pan {
-        left: 0 !important;
-    }
-
-    .chat-pan.open {
-        left: 300px !important;
-        transform: unset !important;
-    }
-
     .chat-info {
         width: calc(100% - 70px);
         height: calc(100% - 165px);
@@ -45,14 +36,6 @@ body {
 
     .chat-pan > div.info {
         margin-top: 35px;
-    }
-
-    .chat-pan.open > div.info > svg {
-        display: none;
-    }
-
-    .chat-pan.open {
-        transform: translateX(100%);
     }
 
     .opt-main > div:last-child {
@@ -65,10 +48,6 @@ body {
 }
 
 @media (max-width: 500px) {
-    .chat-pan.open {
-        transform: translateX(100%) !important;
-    }
-
     .chat-info {
         width: calc(100% - 30px);
         height: calc(100% - 125px);

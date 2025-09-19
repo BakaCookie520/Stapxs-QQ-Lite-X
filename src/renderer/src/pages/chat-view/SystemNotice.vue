@@ -11,7 +11,6 @@
         :class="{
             'chat-pan': true,
             'sys-not-pan': true,
-            'open': runtimeData.tags.openSideBar,
         }">
         <div>
             <font-awesome-icon :icon="['fas', 'angle-left']" @click="exit" />
@@ -97,8 +96,8 @@
     import { defineComponent } from 'vue'
 
     import { runtimeData } from '@renderer/function/msg'
-    import { getTrueLang } from '@renderer/function/utils/systemUtil'
-    import { backend } from '@renderer/runtime/backend'
+import { getTrueLang } from '@renderer/function/utils/systemUtil'
+import { backend } from '@renderer/runtime/backend'
 
     export default defineComponent({
         name: 'ChatSystemNotice',
