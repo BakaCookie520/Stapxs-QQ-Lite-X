@@ -23,7 +23,7 @@ export interface RunTimeDataElem {
         sw?: boolean
         darkMode: boolean
     }
-    inch: number
+    cm: number
     watch: {
         // PS: 一些给监听器捕捉用的数据
         backTimes: number

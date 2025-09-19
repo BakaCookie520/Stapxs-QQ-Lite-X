@@ -570,16 +570,16 @@ const moveOptions: VMoveOptions<HTMLDivElement> = {
         target.style.transition = 'all 0.3'
     },
     leftLimit: {
-        value: runtimeData.inch * 0.75,
+        value: runtimeData.cm,
         type: 'px'
     },
     rightLimit: {
-        value: runtimeData.inch * 0.75,
+        value: runtimeData.cm,
         type: 'px'
     },
     moveCondition: {
         minMove: {
-            value: runtimeData.inch * 0.5,
+            value: runtimeData.cm,
             type: 'px'
         }
     }

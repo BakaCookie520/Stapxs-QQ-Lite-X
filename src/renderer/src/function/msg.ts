@@ -23,7 +23,7 @@ import {
     reloadUsers,
 } from '@renderer/function/utils/appUtil'
 import {
-    getInch,
+    getCm,
     randomNum,
 } from '@renderer/function/utils/systemUtil'
 import { backend } from '@renderer/runtime/backend'
@@ -232,7 +232,7 @@ const baseRuntime = {
     systemNoticesList: undefined,
     popBoxList: [],
     mergeMsgStack: [],
-    inch: getInch(),
+    cm: getCm(),
     nowChat: undefined,
     nowBox: undefined,
 }

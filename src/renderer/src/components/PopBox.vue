@@ -95,10 +95,10 @@ const moveOptions: VMoveOptions<HTMLDivElement> = {
     },
     speedCondition: {
         minMove: {
-            value: 0.5 * runtimeData.inch,
+            value: runtimeData.cm,
             type: 'px',
         },
-        minSpeed: 5 * runtimeData.inch,
+        minSpeed: 5 * runtimeData.cm,
     },
     moveCondition: {
         minMove: {

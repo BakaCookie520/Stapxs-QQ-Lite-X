@@ -1,11 +1,13 @@
 import app, { i18n } from '@renderer/main'
 
 import l10nConfig from '@renderer/assets/l10n/_l10nconfig.json'
+import LoginPan from '@renderer/components/LoginPan.vue'
 import { backend } from '@renderer/runtime/backend'
 import PO from 'pofile'
 import packageInfo from '../../../../../package.json'
 import { Logger, PopInfo, PopType } from '../base'
 import { DnsElem } from '../elements/information'
+import { popBox } from './popBox'
 
 /**
  * 异步延迟
@@ -418,11 +420,11 @@ export function pastTimeFormat(time: number): string {
 }
 
 /**
- * 获得一英尺的像素点数
+ * 获得1cm的像素点数
  */
-export function getInch(): number {
+export function getCm(): number {
     const div = document.createElement('div')
-    div.style.width = '1in'
+    div.style.width = '1cm'
     div.style.visibility = 'hidden'
     document.body.appendChild(div)
     const dpi = div.offsetWidth
@@ -558,4 +560,14 @@ function getDnsType(type: number): 'A' | 'AAAA' | 'CNAME' | 'SRV' | 'TXT' | 'OTH
         case 33: return 'SRV'
         default: return 'OTHER'
     }
+}
+
+/**
+ * 打开登陆框
+ */
+export function openLoginPan() {
+    popBox({
+        template: LoginPan,
+        allowAutoClose: false,
+    })
 }
