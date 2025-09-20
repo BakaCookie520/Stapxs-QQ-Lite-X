@@ -362,13 +362,13 @@ body.with-bar #base-app {
 
 .change-side-bar-right-enter-from,
 .change-side-bar-left-leave-to {
-    transform: translateX(50%);
+    transform: translateX(10%);
     opacity: 0;
 }
 
 .change-side-bar-right-leave-to,
 .change-side-bar-left-enter-from {
-    transform: translateX(-50%);
+    transform: translateX(-10%);
     opacity: 0;
 }
 
@@ -617,6 +617,10 @@ body.with-bar #base-app {
     display: flex;
     overflow-y: scroll;
     width: 100%;
+}
+
+.side-bar.fold .side-bar-list::-webkit-scrollbar {
+    display: none;
 }
 
 .side-bar-list > div {
