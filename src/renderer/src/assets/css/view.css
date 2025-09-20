@@ -1939,9 +1939,8 @@ body.with-bar #base-app {
         background: var(--color-card-2) !important;
     }
 
-    .box-body > div.session-body-container > div.box-content,
-    .box-body > div.session-body-container {
-        background: transparent;
+    .box-body > div.session-body-container > div.box-content {
+        margin-top: 2px;
     }
 
     .box-body.active {
@@ -1953,7 +1952,7 @@ body.with-bar #base-app {
     }
 
     .box-body > div.session-body-container > div.box-content {
-        height: calc(var(--content-num) * (49px + 2px) + 6px);
+        height: calc(var(--content-num) * (49px + 2px) + 2px);
     }
 
     .box-body > div:nth-child(2) {
@@ -1997,14 +1996,6 @@ body.with-bar #base-app {
         width: 15px;
         right: -3px;
         top: 4px;
-    }
-
-    .box-body > div.session-body-container > div.box-content > div > div.side-bar-button:hover {
-        background-color: transparent !important;
-    }
-
-    .box-body > div.session-body-container > div.box-content > div > div.side-bar-button.active {
-        background-color: #00000036 !important;
     }
 }
 
