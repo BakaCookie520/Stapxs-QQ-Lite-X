@@ -5,7 +5,8 @@
  * @Version: 1.0
 -->
 <template>
-    <div class="side-bar"
+    <div v-move="moveOptions"
+        class="side-bar"
         ref="side-bar"
         :style="{
             paddingBottom: get('fs_adaptation') > 0 ? `${get('fs_adaptation')}px` : '',
@@ -15,6 +16,8 @@
             hide: runtimeData.sysConfig.auto_hide_side_bar === 'hide',
             show: isHover,
         }"
+        @v-move-left="nextSideBar()"
+        @v-move-right="prevSideBar()"
         @mouseenter="hoverStart"
         @mouseleave="hoverEnd">
 
@@ -33,21 +36,21 @@
             <div
                 class="icon"
                 :title="$t('消息')"
-                @click="changeSideBar(messageSideBar)"
+                @click="clickChangeSideBar(messageSideBar)"
                 :class="{'active': sideBarInfo.type === 'Message'}">
                 <font-awesome-icon :icon="['fas', 'envelope']" />
             </div>
             <div
                 class="icon"
                 :title="$t('联系人')"
-                @click="changeSideBar(friendSideBar)"
+                @click="clickChangeSideBar(friendSideBar)"
                 :class="{'active': sideBarInfo.type === 'Friend'}">
                 <font-awesome-icon :icon="['fas', 'user']" />
             </div>
             <div
                 class="icon"
                 :title="$t('收纳盒')"
-                @click="changeSideBar(boxSideBar)"
+                @click="clickChangeSideBar(boxSideBar)"
                 :class="{'active': sideBarInfo.type === 'Box'}">
                 <font-awesome-icon :icon="['fas', 'box']" />
             </div>
@@ -80,6 +83,7 @@ import { mousemoveMask } from '@renderer/function/input'
 import { runtimeData } from '@renderer/function/msg'
 import option, { get } from '@renderer/function/option'
 import { popBox } from '@renderer/function/utils/popBox'
+import { VMoveOptions, vMove } from '@renderer/function/utils/vcmd'
 import { useEventListener, useKeyboard, useLocalStorage } from '@renderer/function/utils/vuse'
 import app from '@renderer/main'
 import { computed, shallowRef, useTemplateRef } from 'vue'
@@ -89,6 +93,30 @@ import Messages from './Messages.vue'
 import Options from './Options.vue'
 
 const $t = app.config.globalProperties.$t
+
+const moveOptions: VMoveOptions<HTMLDivElement> = {
+    leftLimit: {
+        value: 999,
+        type: 'px'
+    },
+    rightLimit: {
+        value: 999,
+        type: 'px'
+    },
+    speedCondition: {
+        minMove: {
+            value: 0.5 * runtimeData.inch,
+            type: 'px',
+        },
+        minSpeed: 5 * runtimeData.inch,
+    },
+    moveCondition: {
+        minMove: {
+            value: 33,
+            type: '%',
+        }
+    },
+}
 
 type SideBarType = 'Message' | 'Friend' | 'Box'
 
@@ -113,6 +141,7 @@ const boxSideBar: SideBarInfo = {
     template: Boxes,
     id: 2,
 }
+const sideBars = [messageSideBar, friendSideBar, boxSideBar]
 
 const sideBarInfo = shallowRef<SideBarInfo>(messageSideBar)
 const fold = useLocalStorage('side_bar_fold_state', false)
@@ -137,13 +166,29 @@ const foldState = computed<'open' | 'fold'>(() => {
     throw new Error('解析侧边栏折叠状态失败')
 })
 
-function changeSideBar(bar: SideBarInfo) {
+function nextSideBar() {
+    const id = (sideBarInfo.value.id + 1) % sideBars.length
+    changeSideBarDirection.value = 'right'
+    setSideBar(sideBars[id])
+}
+
+function prevSideBar() {
+    const id = (sideBarInfo.value.id - 1 + sideBars.length) % sideBars.length
+    changeSideBarDirection.value = 'left'
+    setSideBar(sideBars[id])
+}
+
+function clickChangeSideBar(bar: SideBarInfo) {
     if (sideBarInfo.value.type === bar.type) return
     if (bar.id > sideBarInfo.value.id)
         changeSideBarDirection.value = 'right'
     else
         changeSideBarDirection.value = 'left'
 
+    setSideBar(bar)
+}
+
+function setSideBar(bar: SideBarInfo) {
     sideBarInfo.value = bar
 }
 
