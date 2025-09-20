@@ -3,13 +3,10 @@ body {
         Verdana, Tahoma, sans-serif !important;
 }
 
-.main-body > ul {
-    height: calc(100% - 25px);
-    padding-top: 25px;
-}
-
 .opt-main > div:last-child {
-    padding: 10px 10px 0 10px;
+    padding: 33px 10px 0 10px;
+    height: calc(100% - 15px) !important;
+    padding-top: 30px !important;
 }
 
 .side-bar-list {
@@ -17,15 +14,9 @@ body {
 }
 
 @media (max-width: 700px) {
-
     /* macOS 下忽略 500 档位，因为需要避开红绿灯按钮 */
     .pop-box-body {
         width: fit-content !important;
-    }
-
-    .opt-main > div:last-child {
-        height: calc(100% - 15px) !important;
-        padding-top: 30px !important;
     }
 
     .chat-info {
@@ -36,14 +27,6 @@ body {
 
     .chat-pan > div.info {
         margin-top: 35px;
-    }
-
-    .opt-main > div:last-child {
-        padding: 33px 10px 0 10px;
-    }
-
-    .side-bar-list > div:first-child > div.small {
-        margin-left: 12px;
     }
 }
 
