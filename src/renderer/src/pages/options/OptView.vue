@@ -149,6 +149,44 @@
                         px</span>
                 </div>
             </div>
+            <div class="opt-item">
+                <div :class="checkDefault('auto_hide_side_bar')" />
+                <font-awesome-icon :icon="['fas', 'barcode']" />
+                <div>
+                    <span>{{ $t('自动隐藏侧边栏') }}</span>
+                    <span>{{ $t('emm...这里该写些什么东西好呢？不知道，摆（') }}</span>
+                </div>
+                <select v-model="runtimeData.sysConfig.auto_hide_side_bar"
+                    name="auto_hide_side_bar" title="auto_hide_side_bar" @change="save">
+                    <option value="none">
+                        {{ $t('禁用（默认）') }}
+                    </option>
+                    <option value="fold">
+                        {{ $t('折叠') }}
+                    </option>
+                    <option value="hide">
+                        {{ $t('隐藏') }}
+                    </option>
+                </select>
+            </div>
+            <div class="opt-item">
+                <div :class="checkDefault('side_bar_width')" />
+                <font-awesome-icon :icon="['fas', 'arrows-left-right']" />
+                <div>
+                    <span>{{ $t('侧边栏宽度') }}</span>
+                    <span>{{ $t('难以通过拖拽侧边栏调整时，可以用这个') }}</span>
+                </div>
+                <div class="ss-range">
+                    <input v-model="runtimeData.sysConfig.side_bar_width"
+                        :style="`background-size: ${(runtimeData.sysConfig.side_bar_width - 250) / 7.5}% 100%;`"
+                        min="250"
+                        max="1000"
+                        type="range" name="side_bar_width" @input="save">
+                    <span :style="`color: var(--color-font${ runtimeData.sysConfig.side_bar_width > 625 ? '-r' : ''})`">
+                        {{ runtimeData.sysConfig.side_bar_width }}
+                        px</span>
+                </div>
+            </div>
         </div>
         <div class="ss-card">
             <header>{{ $t('页面') }}</header>

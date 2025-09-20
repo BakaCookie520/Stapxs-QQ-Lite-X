@@ -237,7 +237,7 @@ export function useViewportUnits(): { vw: ShallowRef<number>, vh: ShallowRef<num
  * @param keys 按键
  * @param callback 回调，返回true则阻断事件传播
  */
-export function useKeyboard(...args: [string, ...string[], () => boolean | undefined]) {
+export function useKeyboard(...args: [string, ...string[], () => boolean | undefined | void]) {
     if (args.length > 2) {
         const cb = args.at(-1) as () => boolean | undefined
         for (const key of args.slice(0, -1)) {

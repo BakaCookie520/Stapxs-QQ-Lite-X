@@ -1,6 +1,6 @@
 <template>
     <div
-        v-esc="closeSelf"
+        v-esc="autoClose"
         :class="{
             'pop-box': true,
             'move-close': moveClose,

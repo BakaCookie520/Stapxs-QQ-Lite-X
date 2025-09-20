@@ -48,7 +48,7 @@ app.component('FontAwesomeIcon', FontAwesomeIcon)
 export default app
 export const uptime = new Date().getTime()
 
-const _nowTimes = useLocalStorage('times', 0)
+const _nowTimes = useLocalStorage('now-times', 0)
 const timesEnd = useLocalStorage('last-times', 0)
 if (uptime > timesEnd.value) {
     _nowTimes.value += 1

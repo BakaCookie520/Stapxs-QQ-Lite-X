@@ -8,6 +8,7 @@
 
 import {
     Directive,
+    DirectiveBinding,
     shallowReactive,
     shallowRef,
     watch,
@@ -188,46 +189,60 @@ export interface SearchBinding<T extends { match(query: string): boolean }> {
  * 生成一个 Search 指令
  */
 function createVSearch<T extends { match(query: string): boolean }>(): Directive<HTMLInputElement, SearchBinding<T>> {
+    const main = (el: HTMLInputElement, data: SearchBinding<T>) => {
+        const controller = new AbortController()
+        const queryTxt = shallowRef('')
+
+        el.addEventListener('input', () => {
+            queryTxt.value = el.value.trim()
+        }, { signal: controller.signal })
+
+        const stopWatchEffect = watchEffect(() => {
+            data.forceUpdate
+            if (!queryTxt.value) {
+                data.isSearch = false
+                data.query = []
+            } else {
+                data.isSearch = true
+                data.query = shallowReactive(Array.from(data.originList)
+                    .filter(item => item.match(queryTxt.value)))
+            }
+        })
+        const stopWatch = watch(() => data.isSearch, (isSearch) => {
+            if (!isSearch) {
+                data.query = []
+            }
+        })
+        ;(el as any)._vSearchController = controller
+        ;(el as any)._vSearchStopWatch = { stopWatch, stopWatchEffect }
+        ;(el as any)._vSearchCurrentData = data
+    }
+
+    const stop = (el: HTMLInputElement) => {
+        const controller = (el as any)._vSearchController
+        const stopWatch = (el as any)._vSearchStopWatch
+        if (controller) {
+            controller.abort()
+            delete (el as any)._vSearchController
+        }
+        if (stopWatch) {
+            (stopWatch.stopWatch as WatchHandle).stop()
+            ;(stopWatch.stopWatchEffect as WatchHandle).stop()
+            delete (el as any)._vSearchStopWatch
+        }
+    }
     return {
         mounted(el, binding: DirectiveBinding<SearchBinding<T>>) {
-            const controller = new AbortController()
-            const queryTxt = shallowRef('')
-
-            el.addEventListener('input', () => {
-                queryTxt.value = el.value.trim()
-            }, { signal: controller.signal })
-
-            const stopWatchEffect = watchEffect(() => {
-                binding.value.forceUpdate
-                if (!queryTxt.value) {
-                    binding.value.isSearch = false
-                    binding.value.query = []
-                } else {
-                    binding.value.isSearch = true
-                    binding.value.query = shallowReactive(Array.from(binding.value.originList)
-                        .filter(item => item.match(queryTxt.value)))
-                }
-            })
-            const stopWatch = watch(() => binding.value.isSearch, (isSearch) => {
-                if (!isSearch) {
-                    binding.value.query = []
-                }
-            })
-            ;(el as any)._vSearchController = controller
-            ;(el as any)._vStopWatch = { stopWatch, stopWatchEffect }
+            main(el, binding.value)
+        },
+        updated(el, binding: DirectiveBinding<SearchBinding<T>>) {
+            if ((el as any)._vSearchCurrentData === binding.value) return
+            stop(el)
+            el.value = ''
+            main(el, binding.value)
         },
         unmounted(el) {
-            const controller = (el as any)._vSearchController
-            const stopWatch = (el as any)._vStopWatch
-            if (controller) {
-                controller.abort()
-                delete (el as any)._vSearchController
-            }
-            if (stopWatch) {
-                (stopWatch.stopWatch as WatchHandle).stop()
-                ;(stopWatch.stopWatchEffect as WatchHandle).stop()
-                delete (el as any)._vStopWatch
-            }
+            stop(el)
         }
     }
 }

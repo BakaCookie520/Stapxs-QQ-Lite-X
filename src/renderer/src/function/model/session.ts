@@ -20,6 +20,7 @@ import { Role } from '../adapter/enmu'
 import { SessionData } from '../adapter/interface'
 import { Logger, PopInfo, PopType } from '../base'
 import { runtimeData } from '../msg'
+import { Notify } from '../notify'
 import option from '../option'
 import { queueWait } from '../utils/systemUtil'
 import { Ann } from './ann'
@@ -436,6 +437,8 @@ export abstract class Session {
         // 避免频繁调用...昨天吃警告了.tx竟然没给我踹下去
         this.showNotice = false
         this.highlightInfo.length = 0
+        // 关闭该会话所有通知
+        new Notify().closeAll((this.id).toString())
         if (this.newMsg === 0) return
         this.newMsg = 0
 
@@ -1182,7 +1185,7 @@ export class SessionClass {
     id: number
     name: string
     content: Session[] = shallowReactive([])
-    open: boolean = false
+    _open = shallowRef<boolean>(false)
     private static readonly AllFriendClass: SessionClass[] = shallowReactive([])
     constructor(id: number, name: string) {
         if (SessionClass.getClass(id)) throw new Error(`分组 ID ${id} 已存在`)
@@ -1226,6 +1229,14 @@ export class SessionClass {
 
     static clear(): void {
         SessionClass.AllFriendClass.length = 0
+    }
+
+    get open(): boolean {
+        return this._open.value
+    }
+
+    set open(flag: boolean) {
+        this._open.value = flag
     }
 }
 

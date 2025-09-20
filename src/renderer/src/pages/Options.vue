@@ -4,15 +4,15 @@
  * @Date: 2022/09/26
  * @Version: 1.0
 -->
- <!-- eslint-disable max-len -->
+<!-- eslint-disable max-len -->
 
 <template>
     <div class="opt-main">
-        <AboutPan show-u-i />
         <div>
-            <BcTab v-show="show" :title="$t('设置')" class="opt-tab">
+            <BcTab class="opt-tab">
                 <div :name="$t('账号')">
-                    <OptAccount :config="config" />
+                    <OptAccount :config="config"
+                        @close-pop-box="emit('closePopBox')" />
                 </div>
                 <div :name="$t('界面')">
                     <OptView />
@@ -23,7 +23,7 @@
                 <div :name="$t('高级')">
                     <OptDev />
                 </div>
-                <div v-if="showAbout" :name="$t('关于')">
+                <div :name="$t('关于')">
                     <AboutPan class="opt-about" show-u-i />
                 </div>
             </BcTab>
@@ -79,68 +79,21 @@
     </div>
 </template>
 
-<script lang="ts">
-    import { defineComponent } from 'vue'
+<script setup lang="ts">
+import BcTab from 'vue3-bcui/packages/bc-tab'
+import OptAccount from './options/OptAccount.vue'
+import OptDev from './options/OptDev.vue'
+import OptFunction from './options/OptFunction.vue'
+import OptView from './options/OptView.vue'
 
-    import BcTab from 'vue3-bcui/packages/bc-tab'
-    import OptAccount from './options/OptAccount.vue'
-    import OptView from './options/OptView.vue'
-    import OptDev from './options/OptDev.vue'
-    import OptFunction from './options/OptFunction.vue'
-
-    import { openLink } from '@renderer/function/utils/appUtil'
-    import AboutPan from '@renderer/popboxes/AboutPan.vue'
+import { runtimeData } from '@renderer/function/msg'
+import { openLink } from '@renderer/function/utils/appUtil'
 import { getVersion } from '@renderer/function/utils/systemUtil'
+import AboutPan from '@renderer/popboxes/AboutPan.vue'
 
-    export default defineComponent({
-        name: 'ViewOption',
-        components: {
-            BcTab,
-            OptAccount,
-            OptView,
-            OptDev,
-            OptFunction,
-            AboutPan,
-        },
-        props: {
-            show: Boolean,
-            config: {
-                type: Object,
-                default: () => ({} as
-                    { [key: string]: string | number | boolean }),
-            },
-        },
-        data() {
-            return {
-                openLink,
-                getVersion,
-                showAbout: true,
-            }
-        },
-        mounted() {
-            // 监听窗口大小变化
-            window.addEventListener('resize', () => {
-                this.$nextTick(() => {
-                    const width = window.innerWidth
-                    if (width < 700) {
-                        this.showAbout = true
-                    } else {
-                        this.showAbout = false
-                    }
-                })
-            })
-            this.$watch('show', (val) => {
-                if (val) {
-                    this.$nextTick(() => {
-                        const width = window.innerWidth
-                        if (width < 700) {
-                            this.showAbout = true
-                        } else {
-                            this.showAbout = false
-                        }
-                    })
-                }
-            })
-        },
-    })
+const config = runtimeData.sysConfig
+
+const emit = defineEmits<{
+    'closePopBox': []
+}>()
 </script>

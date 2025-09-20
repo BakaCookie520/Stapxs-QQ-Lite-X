@@ -11,9 +11,10 @@
  */
 
 import app from '@renderer/main'
+import { backend } from '@renderer/runtime/backend'
 import { Logger, PopInfo, PopType } from './base'
 import { runtimeData } from './msg'
-import { backend } from '@renderer/runtime/backend'
+import { openLoginPan } from './utils/systemUtil'
 
 const logger = new Logger()
 
@@ -403,6 +404,8 @@ class Driver {
             this.onErrHook?.(err)
             runtimeData.nowAdapter = undefined
             new PopInfo().add(PopType.ERR, '连接中断')
+            // 打开登陆弹窗
+            openLoginPan()
         })
     }
 

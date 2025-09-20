@@ -18,16 +18,23 @@
         }"
         :style="{'--box-color': data.color}"
         @click="data.length ? _open = !_open : undefined">
-        <div>
+        <div class="side-bar-button"
+            :class="{
+                'box-body': true,
+                'open': open,
+                'active': active,
+                'onmenu': !active && (onmenu || _open),
+                'unmounted': from === 'message' && !data.isActive
+            }">
             <div :class="{'new': showNotice}" />
             <font-awesome-icon :icon="['fas', data.icon]" />
             <div>
                 <div>
                     <p>{{ data.showName }}</p>
                     <div style="flex: 1" />
-                    <a v-if="data.preMessage?.time" class="time">{{
-                        data.preMessage?.time.format('hour')
-                    }}</a>
+                    <a v-if="data.preMessage?.time" class="time">
+                        {{data.preMessage?.time.format('hour')}}
+                    </a>
                 </div>
                 <div>
                     <template v-if="from === 'message'">

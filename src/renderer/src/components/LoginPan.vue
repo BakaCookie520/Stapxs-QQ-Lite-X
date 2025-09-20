@@ -1,5 +1,5 @@
 <template>
-    <div class="login-pan-card ss-card">
+    <div class="login-pan-card">
         <Icon animation />
         <p>{{ $t('连接到 协议端') }}</p>
         <form @submit.prevent @submit="connect">
@@ -66,9 +66,9 @@ import { runtimeData } from '@renderer/function/msg'
 import Option from '@renderer/function/option'
 import { noticePopBox, popBox } from '@renderer/function/utils/popBox'
 import { i18n } from '@renderer/main'
-import { shallowReactive, shallowRef, computed } from 'vue'
-import Icon from './Icon.vue'
 import HowToConnect from '@renderer/popboxes/HowToConnect.vue'
+import { computed, shallowReactive, shallowRef } from 'vue'
+import Icon from './Icon.vue'
 const loginInfo = shallowReactive({
     savePassword: false,
     quickLoginSelect: '',
@@ -84,6 +84,10 @@ const isLogging = computed(
     }
 )
 
+const emit = defineEmits<{
+    'closePopBox': []
+}>()
+
 const $t = i18n.global.t
 
 // 加载密码保存和自动连接
@@ -97,7 +101,7 @@ if (
 }
 
 // 自动登陆
-if (runtimeData.sysConfig.auto_connect == true)
+if (runtimeData.sysConfig.auto_connect)
     connect()
 
 /**
@@ -116,6 +120,9 @@ async function connect() {
         Option.save('address', loginInfo.address)
         if (Option.get('save_password'))
             Option.save('save_password', loginInfo.token)
+
+        // 关闭弹窗
+        emit('closePopBox')
     }
 
     runLoginFunc.value = true

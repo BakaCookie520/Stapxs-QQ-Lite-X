@@ -5,16 +5,17 @@
 export function wheelMask(process: (event: WheelEvent) => boolean, removeHook: ()=>void): Promise<void> {
     // 中断回调
     const mask = document.createElement('div')
-    let resove!: () => void
+    let r!: () => void
     const promise = new Promise<void>((resolve) => {
-        resove = resolve
+        r = resolve
     })
     const remove = () => {
         document.body.removeChild(mask)
         removeHook()
-        resove()
+        r()
     }
     let wheelTimeOut = setTimeout(remove, 100) as unknown as number
+    mask.id = 'mask'
     mask.style.position = 'fixed'
     mask.style.top = '0'
     mask.style.left = '0'
@@ -29,6 +30,40 @@ export function wheelMask(process: (event: WheelEvent) => boolean, removeHook: (
         clearTimeout(wheelTimeOut)
         wheelTimeOut = setTimeout(remove, 100) as unknown as number
     }, { passive: false })
+    document.body.appendChild(mask)
+    return promise
+}
+
+export function mousemoveMask(process: (event: MouseEvent) => void, removeHook: ()=>void): Promise<void> {
+    // 中断回调
+    const mask = document.createElement('div')
+    let r!: () => void
+    const promise = new Promise<void>((resolve) => {
+        r = resolve
+    })
+    const remove = () => {
+        document.body.removeChild(mask)
+        removeHook()
+        r()
+    }
+    mask.id = 'mask'
+    mask.style.position = 'fixed'
+    mask.style.top = '0'
+    mask.style.left = '0'
+    mask.style.width = '100vw'
+    mask.style.height = '100vh'
+    mask.style.zIndex = '9999'
+    mask.style.backgroundColor = 'rgba(0, 0, 0, 0)'
+    const mousemoveFun = (event: MouseEvent) => {
+        event.preventDefault()
+        if (!process(event)) return
+    }
+    const mouseupFun = (event: MouseEvent) => {
+        event.preventDefault()
+        remove()
+    }
+    mask.addEventListener('mousemove', mousemoveFun, { passive: false })
+    mask.addEventListener('mouseup', mouseupFun, { passive: false })
     document.body.appendChild(mask)
     return promise
 }

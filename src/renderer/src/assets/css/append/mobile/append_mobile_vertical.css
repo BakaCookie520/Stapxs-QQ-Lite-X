@@ -15,39 +15,48 @@
 }
 
 /* 联系人列表 */
-.friend-list .small {
+.side-bar-list .small {
     display: none !important;
 }
-.friend-list .base {
+
+.side-bar-list .base {
     display: flex !important;
 }
-.friend-list .base > span {
+
+.side-bar-list .base > span {
     font-size: 1.5rem;
 }
-.friend-list .base > svg {
+
+.side-bar-list .base > svg {
     height: 1.3rem !important;
 }
-.friend-list > div:first-child {
+
+.side-bar-list > div:first-child {
     padding-top: 0;
 }
-.friend-list > div:first-child label {
+
+.side-bar-list > div:first-child label {
     height: calc(1rem + 25px);
     margin-top: 10px;
     display: flex;
 }
-.friend-list > div:first-child label > input {
+
+.side-bar-list > div:first-child label > input {
     font-size: 1rem;
 }
-.friend-body > div:nth-child(1) {
+
+.side-bar-button > div:nth-child(1) {
     transform: scaleY(0) !important;
     height: unset !important;
     width: 6px !important;
     border-radius: 6px !important;
     position: unset !important;
 }
-.friend-body > div:nth-child(1).new {
+
+.side-bar-button > div:nth-child(1).new {
     transform: scaleY(0.5) !important;
 }
+
 .exp-header:not(.open) {
     display: flex !important;
 }
@@ -58,12 +67,14 @@
     overflow: hidden;
     transform: translateX(20px);
 }
-.chat-info>header>span {
+
+.chat-info > header > span {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 20px;
 }
-.chat-info>header>svg {
+
+.chat-info > header > svg {
     width: 2.2rem;
     height: 2.2rem;
     transform: translateX(calc(-50% + 0.5px));

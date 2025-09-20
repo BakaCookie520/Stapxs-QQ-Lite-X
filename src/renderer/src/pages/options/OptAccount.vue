@@ -11,7 +11,7 @@
     <div class="opt-page">
         <template v-if="selfInfo">
             <div class="ss-card account-info">
-                <img :src="selfInfo.face">
+                <img :src="selfInfo.face" :alt="'[' + $t('头像') +']'">
                 <div>
                     <div>
                         <span>{{ runtimeData.loginInfo.nickname }}</span>
@@ -76,24 +76,29 @@
 </template>
 
 <script setup lang="ts">
+import { AdapterInterface } from '@renderer/function/adapter/interface'
+import { PopInfo, PopType } from '@renderer/function/base'
+import { User } from '@renderer/function/model/user'
+import { resetRuntime, runtimeData } from '@renderer/function/msg'
+import { remove } from '@renderer/function/option'
+import { openLoginPan } from '@renderer/function/utils/systemUtil'
+import { i18n } from '@renderer/main'
 import {
     computed,
     markRaw,
     shallowRef,
     watch,
 } from 'vue'
-import { remove } from '@renderer/function/option'
-import { resetRuntime, runtimeData } from '@renderer/function/msg'
-import { PopInfo, PopType } from '@renderer/function/base'
-import { i18n } from '@renderer/main'
-import { AdapterInterface } from '@renderer/function/adapter/interface'
-import { User } from '@renderer/function/model/user'
 
 const nowAdapter = computed(() => runtimeData.nowAdapter as AdapterInterface)
 const implBar = computed(()=>{
     return markRaw(runtimeData.nowAdapter?.optInfo?.() ?? {})
 })
 const selfInfo = computed(() => runtimeData.selfInfo)
+
+const emit = defineEmits<{
+    'closePopBox': []
+}>()
 
 const selfNick = shallowRef<string>('')
 const selfSign = shallowRef<string>('')
@@ -124,10 +129,14 @@ function exitConnect() {
     remove('auto_connect')
     runtimeData.nowAdapter?.close()
     resetRuntime(true)
+    goLogin()
 }
 
 function goLogin() {
-    document.getElementById('bar-home')?.click()
+    // 打开登陆弹窗
+    openLoginPan()
+    // 关闭自己
+    emit('closePopBox')
 }
 
 /**

@@ -61,6 +61,8 @@ export const optDefault = {
     use_super_face: true,
     hide_self_avatar: true,
     self_msg_direction: 'right',
+    side_bar_width: 400,
+    auto_hide_side_bar: 'none',
     // Function
     close_notice: false,
     bubble_sort_user: true,

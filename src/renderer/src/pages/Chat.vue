@@ -16,13 +16,11 @@
         v-move="chatMoveOptions"
         :class="{
             'chat-pan': true,
-            'open': runtimeData.tags.openSideBar,
         }"
         :style="`background-image: url(${runtimeData.sysConfig.chat_background});`"
         @v-move-right.prevent="exitWin()">
         <!-- 聊天基本信息 -->
         <div class="info">
-            <font-awesome-icon :icon="['fas', 'bars-staggered']" @click="openLeftBar" />
             <img :src="chat.face" :alt="chat.showName">
             <div class="info">
                 <p>
@@ -305,7 +303,7 @@
                             v-model="msgWhileSend"
                             type="text"
                             autocomplete="off"
-                            :disabled="runtimeData.tags.openSideBar || getMeBan() !== undefined"
+                            :disabled="getMeBan() !== undefined"
                             :placeholder="
                                 getMeBan()
                                     ? $t('已被禁言至：{time}', {
@@ -319,7 +317,6 @@
                             ref="main-input"
                             v-model="msgWhileSend"
                             type="text"
-                            :disabled="runtimeData.tags.openSideBar"
                             @paste="addImg"
                             @keydown="mainKey"
                             @keyup="mainKeyUp"
@@ -461,7 +458,6 @@
                         <font-awesome-icon :icon="['fas', 'image']" @click="runSelectImg" />
                         <input v-model="msgWhileSend"
                             type="text"
-                            :disabled="runtimeData.tags.openSideBar"
                             @paste="addImg"
                             @click="toMainInput">
                     </div>
@@ -1503,10 +1499,6 @@ function moreFunClick(type = 'default') {
     }
 }
 
-function openLeftBar() {
-    runtimeData.tags.openSideBar = !runtimeData.tags.openSideBar
-}
-
 function getMeBan(): Time | undefined {
     if (!chat) return undefined
     if (!chat.isActive) return undefined
@@ -1810,7 +1802,6 @@ function exitWin() {
         }, 500)
     } else {
         // 自身
-        runtimeData.tags.openSideBar = true
         closeSession()
         new Logger().add(LogType.UI, '右滑打开侧边栏触发完成')
     }

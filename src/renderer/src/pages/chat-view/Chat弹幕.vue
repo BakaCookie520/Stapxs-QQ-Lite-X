@@ -12,7 +12,6 @@
         id="chat-pan"
         :class="{
             'chat-pan': true,
-            'open': runtimeData.tags.openSideBar,
         }">
         <div class="danmu-pan">
             <vue-danmaku
@@ -26,11 +25,6 @@
                 :loop="opt.loop"
                 use-slot>
                 <div class="controller">
-                    <div
-                        class="back"
-                        @click="openLeftBar">
-                        <font-awesome-icon :icon="['fas', 'angle-left']" />
-                    </div>
                     <div
                         class="back"
                         @click="opera">
@@ -312,19 +306,19 @@
 </template>
 
 <script lang="ts">
-    import vueDanmaku from 'vue3-danmaku'
     import Option from '@renderer/function/option'
+import vueDanmaku from 'vue3-danmaku'
 
-    import { defineComponent } from 'vue'
-    import { runtimeData } from '@renderer/function/msg'
-    import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
-    import { parseMsg } from '@renderer/function/sender'
     import { PopInfo, PopType } from '@renderer/function/base'
-    import { getTrueLang } from '@renderer/function/utils/systemUtil'
-    import { Msg } from '@renderer/function/model/msg'
-    import { ImgSeg, Seg } from '@renderer/function/model/seg'
-    import { Session } from '@renderer/function/model/session'
-    import { backend } from '@renderer/runtime/backend'
+import { Msg } from '@renderer/function/model/msg'
+import { ImgSeg, Seg } from '@renderer/function/model/seg'
+import { Session } from '@renderer/function/model/session'
+import { runtimeData } from '@renderer/function/msg'
+import { parseMsg } from '@renderer/function/sender'
+import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
+import { getTrueLang } from '@renderer/function/utils/systemUtil'
+import { backend } from '@renderer/runtime/backend'
+import { defineComponent } from 'vue'
 
     export interface refs {
         danmakuRef: InstanceType<typeof vueDanmaku>|undefined
@@ -367,10 +361,6 @@
             this.$watch(() => this.chat.messageList.length, this.updateList)
         },
         methods: {
-            openLeftBar() {
-                runtimeData.tags.openSideBar = !runtimeData.tags.openSideBar
-            },
-
             pause(index: number) {
                 (this.$refs.danmakuRef as any)?.pause()
                 this.parseIndex = index
