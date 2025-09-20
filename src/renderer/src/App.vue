@@ -1,7 +1,7 @@
 <template>
     <!-- 顶栏 -->
     <div v-if="win.withBar"
-        :class="'top-bar' + ((backend.platform == 'win32' && dev) ? ' win' : '')"
+        class="top-bar"
         name="appbar"
         data-tauri-drag-region="true">
         <div class="bar-button" @click="barMainClick()" />

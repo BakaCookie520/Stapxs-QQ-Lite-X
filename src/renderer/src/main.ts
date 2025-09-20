@@ -89,7 +89,7 @@ console.log('[ SSystem Bootloader Loading …… core/ssqq-core ]')
 setTimeout(async () => {
     // 加载设置项
     await backend.init() // Desktop：初始化客户端功能
-    await win.init() // 初始化窗口信息
     runtimeData.sysConfig = await Option.load()
+    await win.init() // 初始化窗口信息
     app.mount('#app')
 }, 0)

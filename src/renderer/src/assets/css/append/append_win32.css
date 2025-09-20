@@ -44,6 +44,10 @@ body.with-bar .chat-pan {
     padding-top: 20px;
 }
 
+body.with-bar .chat-pan > div.info {
+    margin: 16px;
+}
+
 .card-info-pan-bg {
     margin-top: -20px;
 }
@@ -58,19 +62,9 @@ body.with-bar .chat-pan {
 }
 
 @media (max-width: 700px) {
-    .side-bar-list {
-        width: 60px !important;
-    }
-
     .opt-main > div:last-child {
         padding-top: 25px !important;
         height: calc(100% - 37px) !important;
-    }
-
-    body.with-bar .chat-pan {
-        left: 60px !important;
-        height: calc(100% - 75px);
-        padding-top: 20px;
     }
 
     .chat-info {
@@ -82,39 +76,9 @@ body.with-bar .chat-pan {
         height: calc(100% + 55px);
         margin-top: -20px;
     }
-
-    .side-bar-list > div:first-child {
-        margin: 55px 15px 0 10px !important;
-    }
-
-    .side-bar-list > div:first-child > div.small > div {
-        width: 35px;
-        height: 35px;
-        margin-right: 0;
-    }
-
-    .side-bar-list.open > div:first-child > div.small > div {
-        height: 44px;
-        width: 44px;
-    }
-
-    .side-bar-list > div:first-child > div.small {
-        margin-top: -20px;
-        margin-left: 5px;
-        margin-bottom: 5px;
-    }
 }
 
 @media (max-width: 500px) {
-    body.with-bar .chat-pan {
-        padding-top: 0;
-        left: 0 !important;
-    }
-
-    .side-bar-list > div:first-child {
-        margin: 80px 15px 0 10px !important;
-    }
-
     .chat-info-pan {
         height: calc(100% + 95px);
     }
