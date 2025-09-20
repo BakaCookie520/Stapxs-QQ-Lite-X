@@ -197,9 +197,20 @@ export function usePasttime(time: number): ComputedRef<string> {
  * @param callback 回调
  */
 export function useEventListener<T extends keyof DocumentEventMap>(
-    target: Document,
+    target: Document|Window,
     event: T,
-    callback: (event: DocumentEventMap[T]) => void) {
+    callback: (event: DocumentEventMap[T]) => void
+)
+export function useEventListener(
+    target: Document|Window,
+    event: Exclude<string, keyof DocumentEventMap>,
+    callback: ((event: Event) => void) | ((event: CustomEvent) => void)
+)
+export function useEventListener(
+    target: Document|Window,
+    event: string,
+    callback: (event: any) => void
+) {
     // 如果你想的话，
     // 也可以用字符串形式的 CSS 选择器来寻找目标 DOM 元素
     onMounted(() => target.addEventListener(event, callback))

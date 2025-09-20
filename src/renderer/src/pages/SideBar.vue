@@ -151,7 +151,7 @@ const canControlFold = computed(() => {
 })
 const isHover = shallowRef(false)
 const dragging = shallowRef(false)
-const bar = useTemplateRef<HTMLDivElement>('side-bar')
+const bar = useTemplateRef('side-bar')
 const foldState = computed<'open' | 'fold'>(() => {
     if (canControlFold.value) return fold.value ? 'fold' : 'open'
     switch (runtimeData.sysConfig.auto_hide_side_bar) {
@@ -207,8 +207,11 @@ function hoverStart() {
     }
     clearTimeout(hoverTimeout)
 }
-function hoverEnd() {
+function hoverEnd(event?: MouseEvent) {
     if (!staticTime) return
+    if (event?.relatedTarget instanceof HTMLElement) {
+        if (event.relatedTarget.closest('.menu-component')) return
+    }
     const dTime = staticTime - Date.now()
     if (dTime <= 0) {
         isHover.value = false
@@ -239,6 +242,26 @@ function startDrag() {
         option.save('side_bar_width', runtimeData.sysConfig.side_bar_width)
     })
 }
+
+// 刷新菜单展开情况
+useEventListener(window, 'menu-close', (event: CustomEvent<{
+    x?: number,
+    y?: number
+}>) => {
+    if (!isHover.value) return
+    if (!bar.value) return
+
+    if (!event.detail.x || !event.detail.y) return
+    const rect = bar.value.getBoundingClientRect()
+    if (
+        event.detail.x < rect.left ||
+        event.detail.x > rect.right ||
+        event.detail.y < rect.top ||
+        event.detail.y > rect.bottom
+    ) {
+        hoverEnd()
+    }
+})
 
 useEventListener(document, 'mouseout', (event)=>{
     if (runtimeData.sysConfig.auto_hide_side_bar !== 'hide') return

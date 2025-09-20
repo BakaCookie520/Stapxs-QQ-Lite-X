@@ -15,7 +15,8 @@
                 :class="{
                     'menu-component': true,
                 }"
-                @click="closeMenu()">
+                @click.capture="recordMousePosition"
+                @click="closeMenu">
                 <div ref="content" class="content">
                     <slot />
                 </div>
@@ -24,7 +25,7 @@
     </Teleport>
 </template>
 <script setup lang="ts">
-import { nextTick, shallowRef, useTemplateRef } from 'vue'
+import { nextTick, shallowRef, useTemplateRef } from 'vue';
 const { name } = defineProps<{
     name: string
 }>()
@@ -55,12 +56,35 @@ function showMenu(x: number, y: number): Promise<void>|undefined {
     return promise
 }
 
+let mouseX: number | undefined
+let mouseY: number | undefined
+
+/**
+ * 记录鼠标位置
+ * @param event 事件对象
+ */
+function recordMousePosition(event: Event) {
+    if (event instanceof MouseEvent) {
+        mouseX = event.clientX
+        mouseY = event.clientY
+    }else if (event instanceof TouchEvent) {
+        mouseX = event.touches[0].clientX
+        mouseY = event.touches[0].clientY
+    }else {
+        mouseX = undefined
+        mouseY = undefined
+    }
+}
+
 /**
  * 关闭菜单
  */
 function closeMenu(): void {
     show.value = false
     if (showFinish) {
+        window.dispatchEvent(new CustomEvent('menu-close', {
+            detail: { x: mouseX, y: mouseY }
+        }))
         showFinish()
         showFinish = undefined
     }
