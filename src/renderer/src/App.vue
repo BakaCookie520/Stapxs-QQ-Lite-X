@@ -22,7 +22,7 @@
     <div v-if="backend.platform == 'darwin'" class="controller mac-controller"
         data-tauri-drag-region="true" />
     <div id="base-app">
-        <div class="main-body">
+        <div class="main-body" :style="{'--side-bar-width': runtimeData.sysConfig.side_bar_width + 'px'}">
             <SideBar />
             <div class="main-box">
                 <Chat

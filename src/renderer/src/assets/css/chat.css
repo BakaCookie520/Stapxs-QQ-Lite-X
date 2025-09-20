@@ -20,7 +20,7 @@ input {
     display: flex;
     height: 100%;
     width: 100%;
-    z-index: 2;
+    z-index: 1;
 }
 
 body.with-bar .chat-pan {

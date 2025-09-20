@@ -6,15 +6,24 @@
 -->
 <template>
     <div class="side-bar"
-        :style="get('fs_adaptation') > 0 ? `padding-bottom: ${get('fs_adaptation')}px;` : ''"
-        :class="{fold: fold}">
+        ref="side-bar"
+        :style="{
+            paddingBottom: get('fs_adaptation') > 0 ? `${get('fs_adaptation')}px` : '',
+        }"
+        :class="{
+            fold: foldState === 'fold',
+            hide: runtimeData.sysConfig.auto_hide_side_bar === 'hide',
+            show: isHover,
+        }"
+        @mouseenter="hoverStart"
+        @mouseleave="hoverEnd">
 
         <transition mode="out-in" :name="`change-side-bar-${changeSideBarDirection}`">
             <component ref="sideBar"
                 class="side-bar-main"
                 :is="sideBarInfo.template"
                 :key="sideBarInfo.type"
-                :side-bar-state="fold ? 'fold' : 'open'" />
+                :side-bar-state="foldState" />
         </transition>
 
         <div style="margin: auto;" />
@@ -43,7 +52,7 @@
                 <font-awesome-icon :icon="['fas', 'box']" />
             </div>
             <div style="margin: auto;" />
-            <div
+            <div v-if="canControlFold"
                 class="icon"
                 @click="fold = !fold"
                 :title="fold ? $t('展开') : $t('折叠')"
@@ -57,14 +66,23 @@
                 <font-awesome-icon :icon="['fas', 'gear']" />
             </div>
         </div>
+
+        <!-- 拖拽块 -->
+        <div class="drag-region"
+            :class="{'grabbing': dragging}"
+            @mousedown="startDrag" />
+
     </div>
 </template>
 
 <script setup lang="ts">
-import { get } from '@renderer/function/option'
+import { mousemoveMask } from '@renderer/function/input'
+import { runtimeData } from '@renderer/function/msg'
+import option, { get } from '@renderer/function/option'
 import { popBox } from '@renderer/function/utils/popBox'
+import { useEventListener, useKeyboard, useLocalStorage } from '@renderer/function/utils/vuse'
 import app from '@renderer/main'
-import { shallowRef } from 'vue'
+import { computed, shallowRef, useTemplateRef } from 'vue'
 import Boxes from './Boxes.vue'
 import Friends from './Friends.vue'
 import Messages from './Messages.vue'
@@ -97,8 +115,27 @@ const boxSideBar: SideBarInfo = {
 }
 
 const sideBarInfo = shallowRef<SideBarInfo>(messageSideBar)
-const fold = shallowRef(false)
+const fold = useLocalStorage('side_bar_fold_state', false)
 const changeSideBarDirection = shallowRef<'left' | 'right'>('right')
+const canControlFold = computed(() => {
+    return runtimeData.sysConfig.auto_hide_side_bar === 'none'
+})
+const isHover = shallowRef(false)
+const dragging = shallowRef(false)
+const bar = useTemplateRef<HTMLDivElement>('side-bar')
+const foldState = computed<'open' | 'fold'>(() => {
+    if (canControlFold.value) return fold.value ? 'fold' : 'open'
+    switch (runtimeData.sysConfig.auto_hide_side_bar) {
+        case 'none':
+            return 'open'
+        case 'fold':
+            if (isHover.value) return 'open'
+            return 'fold'
+        case 'hide':
+            return 'open'
+    }
+    throw new Error('解析侧边栏折叠状态失败')
+})
 
 function changeSideBar(bar: SideBarInfo) {
     if (sideBarInfo.value.type === bar.type) return
@@ -115,4 +152,60 @@ function openOptions() {
         template: Options,
     })
 }
+
+let hoverTimeout: ReturnType<typeof setTimeout> | undefined
+let staticTime: number | undefined
+function hoverStart() {
+    if (!staticTime) {
+        isHover.value = true
+        staticTime = Date.now() + 500
+    }
+    clearTimeout(hoverTimeout)
+}
+function hoverEnd() {
+    if (!staticTime) return
+    const dTime = staticTime - Date.now()
+    if (dTime <= 0) {
+        isHover.value = false
+        staticTime = undefined
+    }else {
+        hoverTimeout = setTimeout(() => {
+            isHover.value = false
+            staticTime = undefined
+        }, dTime);
+    }
+}
+
+function startDrag() {
+    bar.value!.style.transition = 'none'
+    mousemoveMask((event)=>{
+        // 拖拽标记
+        dragging.value = true
+        // 拖拽大小调整
+        runtimeData.sysConfig.side_bar_width = event.clientX
+        if (runtimeData.sysConfig.side_bar_width < 100) fold.value = true
+        else if (runtimeData.sysConfig.side_bar_width > 250) fold.value = false
+        // 计算鼠标指针大小
+        const el = document.getElementById('mask')!
+        el.style.cursor = fold.value ? 'e-resize' : 'ew-resize'
+    }, ()=>{
+        dragging.value = false
+        bar.value!.style.transition = ''
+        option.save('side_bar_width', runtimeData.sysConfig.side_bar_width)
+    })
+}
+
+useEventListener(document, 'mouseout', (event)=>{
+    if (runtimeData.sysConfig.auto_hide_side_bar !== 'hide') return
+    if (isHover.value) return
+    if (event.clientX > 5) return
+    hoverStart()
+    hoverEnd()
+})
+
+useKeyboard('ctrl+b', ()=>{
+    if (!canControlFold.value) return
+    fold.value = !fold.value
+    return true
+})
 </script>

@@ -174,9 +174,10 @@ body.with-bar #base-app {
     margin-top: 0;
     display: flex;
     height: 100%;
+    position: relative
 }
 
-.main-body > .side-bar {
+.side-bar {
     background: var(--color-card-1);
     flex-direction: column;
     display: flex;
@@ -186,6 +187,8 @@ body.with-bar #base-app {
     margin: 0;
     transition: width 0.2s, min-width 0.2s;
     overflow-x: hidden;
+    width: var(--side-bar-width);
+    position: relative;
 }
 
 .side-bar > hr {
@@ -259,6 +262,35 @@ body.with-bar #base-app {
 
 .side-bar.fold > .bottom {
     flex-direction: column;
+}
+
+.side-bar > .drag-region {
+    position: absolute;
+    width: 1mm;
+    height: 100%;
+    right: 0px;
+    transition: background-color 0.3s;
+    cursor: ew-resize;
+}
+
+.side-bar.fold > .drag-region {
+    cursor: e-resize;
+}
+
+.side-bar > .drag-region.grabbing,
+.side-bar > .drag-region:hover {
+    background-color: var(--color-card-2);
+}
+
+.side-bar.hide {
+    position: absolute;
+    z-index: 2;
+    left: calc(-1 * var(--side-bar-width));
+    transition: left 0.3s;
+}
+
+.side-bar.hide.show {
+    left: 0;
 }
 
 .side-bar-header {
@@ -344,6 +376,7 @@ body.with-bar #base-app {
     background-color: var(--color-bg);
     flex: 1;
     display: flex;
+    position: relative;
 }
 
 .main-box-bg {
