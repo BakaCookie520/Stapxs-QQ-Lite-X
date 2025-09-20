@@ -21,6 +21,7 @@ export interface RunTimeDataElem {
         canCors: boolean
         sw?: boolean
         darkMode: boolean
+        vibrancy: boolean
     }
     cm: number
     watch: {

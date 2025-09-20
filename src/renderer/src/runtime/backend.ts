@@ -1,11 +1,11 @@
-import app from '../main'
 import VConsole from 'vconsole'
+import app from '../main'
 
-import { IpcRenderer } from '@electron-toolkit/preload'
-import { InvokeArgs, InvokeOptions } from '@tauri-apps/api/core'
 import { CapacitorGlobal } from '@capacitor/core'
-import { Logger, LogType, PopInfo, PopType } from '../function/base'
+import { IpcRenderer } from '@electron-toolkit/preload'
 import { runtimeData } from '@renderer/function/msg'
+import { InvokeArgs, InvokeOptions } from '@tauri-apps/api/core'
+import { Logger, LogType, PopInfo, PopType } from '../function/base'
 
 const logger = new Logger()
 const popInfo = new PopInfo()
@@ -13,6 +13,7 @@ const popInfo = new PopInfo()
 export const backend = {
     type: 'web' as 'electron' | 'tauri' | 'capacitor' | 'web',
     platform: undefined as 'win32' | 'darwin' | 'linux' | 'android' | 'ios' | 'web' | undefined,
+    de: undefined as undefined | string,
     release: '',
     proxy: undefined as number | undefined,
 
@@ -69,6 +70,7 @@ export const backend = {
         this.platform = await this.call(undefined, 'sys:getPlatform', true)
         this.release = await this.call(undefined, 'sys:getRelease', true)
         this.proxy  = await this.call(undefined, 'sys:runProxy', true)
+        this.de = await this.call(undefined, 'win:getDe', true)
         if(this.type == 'tauri' && !this.proxy) {
             logger.error(null, 'Tauri 代理服务似乎没有正常启动，此服务异常将会影响应用内的大部分外部资源的加载。')
             popInfo.add(PopType.ERR, $t('Tauri 代理服务似乎没有正常启动'), false)

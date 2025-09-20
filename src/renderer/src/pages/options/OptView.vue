@@ -123,6 +123,21 @@
                 </div>
             </template>
             <div class="opt-item">
+                <div :class="checkDefault('vibrancy')" />
+                <font-awesome-icon :icon="['fas', 'window-maximize']" />
+                <div>
+                    <span>{{ $t('透明模式') }}</span>
+                    <span>{{ $t('如果你的系统支持的话，可以试试') }}</span>
+                </div>
+                <label class="ss-switch">
+                    <input v-model="runtimeData.sysConfig.vibrancy"
+                        type="checkbox" name="vibrancy" @change="save">
+                    <div>
+                        <div />
+                    </div>
+                </label>
+            </div>
+            <div class="opt-item">
                 <div :class="checkDefault('chat_background')" />
                 <font-awesome-icon :icon="['fas', 'image']" />
                 <div>

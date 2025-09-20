@@ -1,23 +1,22 @@
-import Store from 'electron-store'
-import path from 'path'
-import os from 'os'
-import log4js from 'log4js'
 import axios from 'axios'
+import Store from 'electron-store'
+import log4js from 'log4js'
+import os from 'os'
+import path from 'path'
 
 import {
-    ipcMain,
-    systemPreferences,
     app,
+    Notification as ELNotification,
+    ipcMain,
     Menu,
     MenuItemConstructorOptions,
-    Notification as ELNotification,
     shell,
+    systemPreferences,
 } from 'electron'
-import { runCommand } from './util.ts'
-import { win, touchBarInstance } from '../index.ts'
+import { logLevel, touchBarInstance, win } from '../index.ts'
 import { Connector } from './connector.ts'
-import { logLevel } from '../index.ts'
 import ScanNetwork from './scannetwork.ts'
+import { runCommand } from './util.ts'
 
 let connector = undefined as Connector | undefined
 const store = new Store()
@@ -160,28 +159,15 @@ export function regIpcListener() {
             win.setPosition(point.x, point.y)
         }
     })
-    // 判断是否为平铺窗口管理器
-    ipcMain.handle('win:isTiling', () => {
-        const TILING_WMS = [
-            'i3',
-            'sway',
-            'bspwm',
-            'awesome',
-            'herbstluftwm',
-            'hyprland'
-        ]
-
-        // 仅在 Linux 下尝试读取环境变量
-        if (process.platform === 'linux') {
-            const wm =
-                process.env.XDG_CURRENT_DESKTOP?.toLowerCase() ||
-                process.env.DESKTOP_SESSION?.toLowerCase() ||
-                process.env.GDMSESSION?.toLowerCase() ||
-                ''
-            return TILING_WMS.includes(wm)
-        } else {
-            return false
-        }
+    // de 信息(linux)
+    ipcMain.handle('win:getDe', () => {
+        if (process.platform !== 'linux') return undefined
+        const de =
+            process.env.XDG_CURRENT_DESKTOP?.toLowerCase() ||
+            process.env.DESKTOP_SESSION?.toLowerCase() ||
+            process.env.GDMSESSION?.toLowerCase() ||
+            undefined
+        return de
     })
     // 保存信息
     ipcMain.on('opt:store', (_, arg) => {

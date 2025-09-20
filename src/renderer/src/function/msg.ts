@@ -214,6 +214,7 @@ const baseRuntime = {
         firstLoad: false,
         darkMode: false,
         canCors: false,
+        vibrancy: false,
     }),
     watch: shallowReactive({
         backTimes: 0,

@@ -30,7 +30,8 @@
                     :chat="runtimeData.nowChat"
                     ref="chat" />
                 <!-- 背景 -->
-                <div class="main-box-bg">
+                <div v-if="!runtimeData.tags.vibrancy || !runtimeData.nowChat"
+                    class="main-box-bg">
                     <div class="ss-card choice-chat">
                         <template v-if="runtimeData.nowChat">
                             <font-awesome-icon :icon="['fas', 'angles-right']" />

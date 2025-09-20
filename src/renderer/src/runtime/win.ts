@@ -1,17 +1,30 @@
-import { Logger } from '@renderer/function/base'
-import { backend } from './backend'
-import { shallowRef, computed, watchEffect, ComputedRef } from 'vue'
-import horizontalCss from '@renderer/assets/css/append/mobile/append_mobile_horizontal.css?raw'
+import vibrancyCss from '@renderer/assets/css/append/append_vibrancy.css?raw'
+import horizontalStyles from '@renderer/assets/css/append/mobile/append_mobile_horizontal.css?raw'
 import verticalCss from '@renderer/assets/css/append/mobile/append_mobile_vertical.css?raw'
+import { Logger } from '@renderer/function/base'
+import { runtimeData } from '@renderer/function/msg'
 import option from '@renderer/function/option'
+import { computed, ComputedRef, shallowRef, watchEffect } from 'vue'
+import { backend } from './backend'
 
 export type WinAction = 'maximize' | 'minimize' | 'unmaximize' | 'close'
 
 const win = {
-    _isTiling: shallowRef(false),
+    _isTiling: undefined as any as ComputedRef<boolean>,
     _isMaximized: shallowRef(false),
     _needBar: undefined as any as ComputedRef<boolean>,
     _needMargin: undefined as any as ComputedRef<boolean>,
+
+    hasInit: false,
+
+    TILING_WMS: [
+        'i3',
+        'sway',
+        'bspwm',
+        'awesome',
+        'herbstluftwm',
+        'hyprland'
+    ],
 
     /**
      * 初始化
@@ -29,9 +42,11 @@ const win = {
             if (win.tiling) return false
             return !win.maximized
         })
+        this._isTiling = computed(()=>{
+            if (backend.platform !== 'linux') return false
+            return this.TILING_WMS.indexOf(backend.de || '') >= 0
+        })
 
-        if (backend.platform === 'linux')
-            win.tiling = await backend.call(undefined, 'win:isTiling', true)
         // 最大化检测
         backend.addListener(undefined, 'win:maximizedChanged',
             (_, data) => win.maximized = data
@@ -67,6 +82,8 @@ const win = {
                 document.body.style.setProperty('--safe-area-right', safeArea.right + 'px')
             }
         }
+
+        this.hasInit = true
     },
 
     /**
@@ -119,15 +136,15 @@ const win = {
 
         // 添加手机端样式
         const updateCss = (appendCss = '') => {
-            const cssStype = document.getElementById('mobile-css')
+            const cssStyle = document.getElementById('mobile-css')
 
             const width = window.innerWidth
             const height = window.innerHeight
-            if(cssStype) {
+            if(cssStyle) {
                 if(width > 600) {
-                    cssStype.innerHTML = (width > height ? horizontalCss : (horizontalCss + verticalCss)) + appendCss
+                    cssStyle.innerHTML = (width > height ? horizontalStyles : (horizontalStyles + verticalCss)) + appendCss
                 } else {
-                    cssStype.innerHTML = horizontalCss + verticalCss + appendCss
+                    cssStyle.innerHTML = horizontalStyles + verticalCss + appendCss
                 }
             }
 
@@ -150,38 +167,66 @@ const win = {
             })
         }
 
+        if (runtimeData.sysConfig.vibrancy) this.useVibrancy()
+    },
+
+    /**
+     * 添加透明效果
+     */
+    useVibrancy() {
+        if (runtimeData.tags.vibrancy) return
+        const cssStyle = document.createElement('style')
+        cssStyle.id = 'vibrancy-css'
+        document.head.appendChild(cssStyle)
+        document.head.append(cssStyle)
+        cssStyle.innerHTML = vibrancyCss
+        runtimeData.tags.vibrancy = true
+        new Logger().info('透明 UI 附加样式加载完成')
+    },
+    /**
+     * 移除透明效果
+     */
+    removeVibrancy() {
+        if (!runtimeData.tags.vibrancy) return
+        const cssStyle = document.getElementById('vibrancy-css')
+        if (cssStyle) {
+            document.head.removeChild(cssStyle)
+        }
+        runtimeData.tags.vibrancy = false
+        new Logger().info('已移除透明 UI 效果')
+    },
+
+    async supportVibrancyCheck(): Promise<boolean> {
         // 透明 UI 附加样式
+        if (!backend.isDesktop()) return false
         let subVersion = backend.release?.split('.') as any
         subVersion = subVersion ? Number(subVersion[2]) : 0
-        if (backend.isDesktop() &&
-            (platform == 'darwin' || (platform == 'win32' && subVersion > 22621))) {
-            await import('@renderer/assets/css/append/append_vibrancy.css')
-            logger.info('透明 UI 附加样式加载完成')
-        }
-        if (backend.isDesktop() && platform == 'linux') {
+
+        // mac
+        if (backend.platform == 'darwin') return true
+
+        // windows 10 20H1 以上
+        if (backend.platform == 'win32' && subVersion > 22621) return true
+
+        // linux 一大帮自
+        if (backend.de === 'hyprland') return true
+        if (backend.de === 'gnome') {
             const gnomeExtInfo = await backend.call(undefined, 'sys:getGnomeExt', true)
             if (gnomeExtInfo) {
                 const info = await gnomeExtInfo
                 if (
                     info['enable-all'] == 'true' ||
-                    (info['whitelist'] != undefined &&
-                        info['whitelist'].indexOf('stapxs-qq-lite')) > 0
+                    (
+                        info['whitelist'] != undefined &&
+                        info['whitelist'].indexOf('stapxs-qq-lite') > 0
+                    )
                 ) {
-                    await import(
-                        '@renderer/assets/css/append/append_vibrancy.css'
-                    )
-                    logger.info('透明 UI 附加样式加载完成')
-                    await import(
-                        '@renderer/assets/css/append/append_linux_vibrancy.css'
-                    )
-                    logger.info('Linux 透明 UI 附加样式加载完成')
+                    return true
                 }
             }
         }
-    },
 
-    set tiling(value) {
-        this._isTiling.value = value
+        return false
     },
 
     /**

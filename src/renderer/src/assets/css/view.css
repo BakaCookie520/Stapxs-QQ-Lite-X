@@ -230,7 +230,7 @@ body.with-bar #base-app {
     opacity: 1.0;
     color: var(--color-font-r);
     border-radius: 5px;
-    background-color: var(--color-main);
+    background-color: var(--color-main) !important;
 }
 
 .side-bar.fold {
@@ -1538,10 +1538,7 @@ body.with-bar #base-app {
     overflow-x: hidden;
 }
 
-.global-session-search-bar > div > div.session-item:hover {
-    background-color: var(--color-card-2);
-}
-
+.global-session-search-bar > div > div.session-item:hover,
 .global-session-search-bar > div > div.session-item.selected {
     background-color: var(--color-card-2);
 }
@@ -1566,7 +1563,7 @@ body.with-bar #base-app {
 
 .global-session-search-bar-enter-from,
 .global-session-search-bar-leave-to {
-    opacity: 0.0;
+    opacity: 0.0 !important;
 }
 
 .viewer-bar {

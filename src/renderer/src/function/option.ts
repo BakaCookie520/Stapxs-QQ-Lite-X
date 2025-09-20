@@ -24,6 +24,7 @@ import {
 } from '@renderer/function/utils/systemUtil'
 import { i18n } from '@renderer/main'
 import { backend } from '@renderer/runtime/backend'
+import win from '@renderer/runtime/win'
 import { Logger, LogType, PopInfo, PopType } from './base'
 import { BubbleBox } from './model/box'
 import { GroupSession, Session } from './model/session'
@@ -63,6 +64,7 @@ export const optDefault = {
     self_msg_direction: 'right',
     side_bar_width: 400,
     auto_hide_side_bar: 'none',
+    vibrancy: false,
     // Function
     close_notice: false,
     bubble_sort_user: true,
@@ -104,6 +106,13 @@ const configFunction: { [key: string]: (value: any) => void } = {
     bubble_sort_user: switchBubbleBox,
     merge_forward_width_type: setMergeForwardWidth,
     use_favicon_notice: setFaviconNotice,
+    vibrancy: switchVibrancy,
+}
+
+function switchVibrancy(value: boolean) {
+    if (!win.hasInit) return
+    if (value) win.useVibrancy()
+    else win.removeVibrancy()
 }
 
 function setFaviconNotice(_: boolean) {
