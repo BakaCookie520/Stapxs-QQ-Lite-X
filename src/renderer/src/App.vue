@@ -102,7 +102,7 @@ import GlobalSessionSearchBar from './components/GlobalSessionSearchBar.vue'
 import PopBox from './components/PopBox.vue'
 import Viewer from './components/Viewer.vue'
 import { vHide } from './function/utils/vcmd'
-import { useDailyDo } from './function/utils/vuse'
+import { useDailyDo, useKeyboard } from './function/utils/vuse'
 import Chat from './pages/Chat.vue'
 import SideBar from './pages/SideBar.vue'
 import { backend } from './runtime/backend'
@@ -161,6 +161,11 @@ window.onbeforeunload = () => {
 }
 // 绑定 runtimeData
 window.runtimeData = runtimeData
+
+useKeyboard('f12', ()=>{
+    if (!import.meta.env.DEV) return
+    backend.call(undefined, 'win:openDevTools', false)
+})
 //#endregion
 
 //#region == 方法函数 ===================================================

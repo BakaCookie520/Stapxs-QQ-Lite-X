@@ -9,7 +9,6 @@ body {
 
 .login-pan-card {
     background: transparent;
-    max-width: 240px !important;
 }
 
 .login-pan-card:hover {

@@ -21,25 +21,7 @@ body {
     font-weight: bold;
 }
 
-.main-body > ul {
-    min-width: 45px;
-}
-
-.main-body > ul > li {
-    line-height: 30px;
-    margin-top: 10px;
-    min-width: 50px;
-    padding: 0;
-}
-
-.main-body > ul > li > svg {
-    width: 15px;
-    height: 15px;
-    padding: 10px;
-}
-
 .login-pan-card {
-    max-width: 250px;
     padding: 30px 20px;
 }
 
@@ -95,31 +77,10 @@ body {
     background: transparent;
 }
 
-.side-bar-list {
-    width: 220px;
-}
-
-.side-bar-list > div:first-child label {
+.side-bar-header > label {
     height: 30px;
     font-size: 0.8rem;
     border-bottom: 1px solid var(--color-font-2);
-}
-
-.side-bar-list > div:first-child > div.small > span {
-    background: transparent;
-    color: var(--color-font);
-    font-weight: bold;
-    padding: 10px;
-    height: 44px;
-}
-
-.group-assist-message-list {
-    margin-right: -220px;
-}
-
-.group-assist-message-list.show {
-    margin-left: -220px;
-    margin-right: 0;
 }
 
 .box-body,
@@ -177,10 +138,6 @@ body {
 
 .member-info > div:first-child > div > div > div > span {
     font-size: 0.8rem;
-}
-
-.chat-pan {
-    left: 280px;
 }
 
 .chat-pan > div.info {
@@ -905,55 +862,38 @@ body {
     font-size: 0.8rem;
 }
 
+div.tiny-session-body {
+    height: 30px;
+    padding: 5px;
+}
+
+div.tiny-session-body img {
+    width: 30px;
+    height: 30px;
+}
+
+div.tiny-session-body > div p {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+div.tiny-session-body > div span {
+    font-size: 0.75rem;
+}
+
+.global-session-search-bar > input {
+    height: 30px;
+    min-height: 30px;
+    font-size: 0.8rem;
+}
+
 @media (max-width: 700px) {
-    .main-body > ul {
-        background: var(--color-card-2) !important;
-        height: 60px !important;
-    }
-
-    .side-bar-list {
-        width: 75px;
-    }
-
-    .chat-pan {
-        height: calc(100% - 60px);
-        left: 75px !important;
-    }
-
-    .chat-info {
-        width: calc(100% - 70px);
-    }
-
     .side-bar-list {
         background: var(--color-card-1) !important;
     }
 
-    .side-bar-list > div:first-child {
-        margin: 5px 15px 5px 0;
-    }
-
-    .side-bar-list > div:last-child {
-        padding: 0 7px 0 5px !important;
-    }
-
-    .side-bar-list > div:first-child > div.small {
-        margin-left: 15px;
-        margin-top: 10px;
-        height: 44px;
-    }
-
-    .side-bar-list > div:first-child > div.small > div {
-        margin-right: 10px;
-        width: 44px;
-    }
-
-    .side-bar-list > div:first-child > div.small > div > svg {
-        height: 14px;
-    }
-
-    .side-bar-list > div:first-child > div.small > label {
-        margin-top: 1px;
-        height: 44px;
+    .chat-info {
+        width: calc(100% - 70px);
     }
 }
 
@@ -971,5 +911,16 @@ body {
     .account-not-login {
         margin: 0 auto;
         width: calc(100% - 20px);
+    }
+}
+
+@container session-body (max-width: 100px) {
+    .box-body {
+        width: 40px;
+        margin: auto;
+    }
+
+    .box-content {
+        height: calc(var(--content-num) * (30px + 4px + 5px) + 4px) !important;
     }
 }
