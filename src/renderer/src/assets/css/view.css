@@ -2012,6 +2012,11 @@ body.with-bar #base-app {
         transform: scaleY(0);
     }
 
+    .pop-box-enter-from.pop-box-background,
+    .pop-box-leave-to.pop-box-background {
+        transform: unset;
+    }
+
     .pop-box-leave-to.move-close > div.pop-box-body {
         transform: translateX(100vw) !important;
     }

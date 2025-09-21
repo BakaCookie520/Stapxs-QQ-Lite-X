@@ -202,7 +202,6 @@ hr,
 .merge-pan > div:nth-child(1),
 .mask-background,
 .pop-box-background {
-    opacity: 1;
     background: rgba(var(--color-card-2-rgb), 0.1);
     backdrop-filter: blur(5px);
     transition: backdrop-filter 0.3s;

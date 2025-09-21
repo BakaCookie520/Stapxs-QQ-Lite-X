@@ -894,10 +894,6 @@ div.tiny-session-body > div span {
 }
 
 @media (max-width: 500px) {
-    .pop-box-body {
-        width: fit-content !important;
-    }
-
     .chat-info {
         width: calc(100% - 30px);
         height: calc(100% - 125px);

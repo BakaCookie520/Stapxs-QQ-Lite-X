@@ -59,14 +59,15 @@
         </TransitionGroup>
 
         <!-- 弹窗列表 -->
-        <div
-            v-hide="runtimeData.popBoxList.length === 0"
-            class="pop-box-background" />
+        <!-- 弹窗列表 -->
         <TransitionGroup name="pop-box">
-            <template v-for="pop in runtimeData.popBoxList" :key="'pop-box-' + pop.id">
+            <template v-for="(pop, index) in runtimeData.popBoxList" :key="'pop-box-' + pop.id">
+                <div v-hide="index !== runtimeData.popBoxList.length - 1"
+                    class="pop-box-background" />
                 <PopBox :props="pop" />
             </template>
         </TransitionGroup>
+
 
         <!-- 全局搜索栏 -->
         <GlobalSessionSearchBar />
