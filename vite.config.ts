@@ -13,7 +13,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 export default defineConfig({
     root: './src/renderer',
     envDir: '../../',
-    base: process.env.BUILD_BRANCH == 'test' ? '/test/' : './',
+    base: './',
     server: {
         port: 8080,
         proxy: {
