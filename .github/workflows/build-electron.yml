@@ -137,7 +137,7 @@ jobs:
             path: dist_electron/*.exe
 
       - name: 上传 unpack 包(arm)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-11-arm'
         uses: actions/upload-artifact@v4
         with:
             name: stapxs-qq-lite-x-${{ needs.init.outputs.version }}-${{ needs.init.outputs.hash }}-${{ matrix.identifier }}-arm
