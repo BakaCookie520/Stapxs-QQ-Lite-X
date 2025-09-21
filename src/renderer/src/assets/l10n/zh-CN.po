@@ -2054,3 +2054,123 @@ msgstr "访问次数"
 
 msgid "访客数据_visits"
 msgstr "访客"
+
+msgid "头像"
+msgstr ""
+
+msgid "透明模式"
+msgstr ""
+
+msgid "如果你的系统支持的话，可以试试"
+msgstr ""
+
+msgid "自动隐藏侧边栏"
+msgstr ""
+
+msgid "emm...这里该写些什么东西好呢？不知道，摆（"
+msgstr ""
+
+msgid "禁用（默认）"
+msgstr ""
+
+msgid "折叠"
+msgstr ""
+
+msgid "侧边栏宽度"
+msgstr ""
+
+msgid "难以通过拖拽侧边栏调整时，可以用这个"
+msgstr ""
+
+msgid "分析统计信息"
+msgstr ""
+
+msgid "都有些什么数据呢"
+msgstr ""
+
+msgid "查看"
+msgstr ""
+
+msgid "访客数据"
+msgstr ""
+
+msgid "最近 24 小时"
+msgstr ""
+
+msgid "本周"
+msgstr ""
+
+msgid "本月"
+msgstr ""
+
+msgid "本年"
+msgstr ""
+
+msgid "所有时间段"
+msgstr ""
+
+msgid "当前在线人数"
+msgstr ""
+
+msgid "浏览器"
+msgstr ""
+
+msgid "操作系统"
+msgstr ""
+
+msgid "设备"
+msgstr ""
+
+msgid "语言"
+msgstr ""
+
+msgid "屏幕"
+msgstr ""
+
+msgid "事件"
+msgstr ""
+
+msgid "上报客户端"
+msgstr ""
+
+msgid "触发按钮"
+msgstr ""
+
+msgid "预览链接"
+msgstr ""
+
+msgid "发送消息"
+msgstr ""
+
+msgid "触发彩蛋"
+msgstr ""
+
+msgid "切换聊天面板样式"
+msgstr ""
+
+msgid "切换语言"
+msgstr ""
+
+msgid "切换主题色"
+msgstr ""
+
+msgid "事件详情"
+msgstr ""
+
+msgid "概览
+msgstr ""
+
+msgid "数值（占比）"
+msgstr ""
+
+msgid "次数"
+msgstr ""
+
+msgid "其他"
+msgstr ""
+
+msgid "浏览量"
+msgstr ""
+
+msgid "访客"
+msgstr ""
