@@ -785,60 +785,6 @@ body {
     font-size: 0.7rem;
 }
 
-.script-view .list {
-    margin-left: -20px;
-}
-
-.script-view .list > header {
-    margin-top: 35px;
-}
-
-.script-view .list > header > span {
-    margin: 10px -5px 0 -5px;
-    font-size: 0.75rem;
-}
-
-.script-view .list-body {
-    margin: 0 -5px;
-}
-
-.script-view .list-body h2 {
-    font-size: 0.8rem;
-}
-
-.script-view .list-body span {
-    font-size: 0.75rem;
-}
-
-.script-view .list-body span svg {
-    margin: 0;
-    font-size: 0.7rem;
-}
-
-.script-view .editor-main {
-    box-shadow: -5px 0px 4px -5px var(--color-shader);
-}
-
-.script-view .save-controller > span,
-.script-view .save-controller > svg {
-    font-size: 0.8rem;
-}
-
-.script-view .opt-item > select,
-.script-view .ss-button {
-    height: 30px !important;
-}
-
-.script-view .ss-button,
-.script-view .opt-item > select,
-.script-view .ss-button > svg {
-    font-size: 0.75rem;
-}
-
-.script-view .editor {
-    font-size: 0.8rem;
-}
-
 .sys-not-list > div > div:first-child img {
     width: 40px;
     height: 40px;

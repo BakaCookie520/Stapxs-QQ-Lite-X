@@ -23,10 +23,7 @@ body.with-bar #base-app {
 
 .side-bar,
 .side-bar-main,
-.side-bar-list {
-    background-color: var(--color-bg);
-}
-
+.side-bar-list,
 .side-bar-list::-webkit-scrollbar {
     background-color: var(--color-bg);
 }

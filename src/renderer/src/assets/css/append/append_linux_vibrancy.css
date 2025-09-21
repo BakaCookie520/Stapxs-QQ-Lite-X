@@ -1,0 +1,7 @@
+.vibrancy .side-bar {
+    background-color: rgba(var(--color-bg-rgb), 0.6) !important;
+}
+
+.vibrancy .main-box {
+    background-color: rgba(var(--color-card-rgb), 0.6);
+}

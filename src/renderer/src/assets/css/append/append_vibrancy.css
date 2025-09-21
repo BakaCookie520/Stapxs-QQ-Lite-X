@@ -1,124 +1,104 @@
-html,
-body {
+body.vibrancy {
     background: transparent;
 }
 
-.side-bar {
+.vibrancy .side-bar {
     background-color: rgba(var(--color-card-rgb), 0.6) !important;
 }
 
-.side-bar > .bottom > div.icon:hover > svg {
+.vibrancy .side-bar > .bottom > div.icon:hover > svg {
     background: rgba(var(--color-card-2-rgb), 0.6);
 }
 
-.side-bar-header > label {
+.vibrancy .side-bar-header > label {
     background: rgba(var(--color-card-2-rgb), 0.6);
 }
 
-.side-bar-header > label > svg,
-.side-bar-header > label > input::placeholder {
+.vibrancy .side-bar-header > label > svg,
+.vibrancy .side-bar-header > label > input::placeholder {
     color: var(--color-font);
 }
 
-.side-bar-main,
-.side-bar-list,
-.side-bar-list::-webkit-scrollbar {
+.vibrancy .side-bar-main,
+.vibrancy .side-bar-list,
+.vibrancy .side-bar-list::-webkit-scrollbar {
     background: transparent;
 }
 
-.login-pan-card {
+.vibrancy .login-pan-card {
     background: transparent;
 }
 
-.login-pan-card:hover {
+.vibrancy .login-pan-card:hover {
     box-shadow: none !important;
 }
 
-.login-pan-card label {
+.vibrancy .login-pan-card label {
     border: 1px solid var(--color-main);
     opacity: 0.8;
     background: unset;
 }
 
-.login-pan-card label:focus-within {
+.vibrancy .login-pan-card label:focus-within {
     background: transparent;
 }
 
-.opt-main {
+.vibrancy .opt-main {
     background: rgba(var(--color-bg-rgb), 0.4);
 }
 
-.opt-main.active > div:last-child {
-    margin-left: -5px !important;
-}
-
-.opt-main > div:last-child {
-    transition: margin 0.3s;
-    height: calc(100% + 7px);
-    padding: 10px 10px 0 10px;
-}
-
-.about-pan > div {
+.vibrancy .about-pan > div {
     box-shadow: none !important;
     background: transparent;
 }
 
-.contributors-card {
+.vibrancy .contributors-card {
     background: rgba(var(--color-card-2-rgb), 0.7) !important;
 }
 
-.bcd-body {
+.vibrancy .bcd-body {
     background: rgba(var(--color-card-rgb), 0.7) !important;
 }
 
-.jump-card {
+.vibrancy .jump-card {
     background: rgba(var(--color-card-2-rgb), 0.7) !important;
     margin-right: 15px !important;
     margin-left: 10px;
 }
 
-.bcd-about {
+.vibrancy .bcd-about {
     background: rgba(var(--color-card-2-rgb), 0.7) !important;
 }
 
-.script-view {
-    background: rgba(var(--color-card-rgb), 0.6) !important;
-}
-
-.script-view .list > header > span,
-.script-view .list-body > div {
-    backdrop-filter: blur(10px);
-}
-
-.box-body.onmenu,
-.box-body:hover,
-.side-bar-button.onmenu,
-.side-bar-button:hover {
+.vibrancy .box-body.onmenu,
+.vibrancy .box-body:hover,
+.vibrancy .side-bar-button.onmenu,
+.vibrancy .side-bar-button:hover {
     background: rgba(var(--color-card-2-rgb), 0.4) !important;
     backdrop-filter: blur(50px);
 }
 
-.box-body.active,
-.side-bar-button.active,
-.box-body.active:hover,
-.side-bar-button.active:hover {
+.vibrancy .box-body.active,
+.vibrancy .side-bar-button.active,
+.vibrancy .box-body.active:hover,
+.vibrancy .side-bar-button.active:hover {
     background: var(--color-main) !important;
 }
 
-.box-content {
+.vibrancy .box-content {
     background: rgba(var(--color-card-1-rgb), 0.6) !important;
 }
 
-.box-body > .side-bar-button {
+.vibrancy .box-body > .side-bar-button {
     background: transparent !important;
     backdrop-filter: unset;
 }
 
-.main-box {
+.vibrancy .main-box {
     background: rgba(var(--color-bg-rgb), 0.6);
 }
 
-.chat-pan > .more {
+.vibrancy .chat-pan > .more {
     margin-left: 15px;
     margin-right: 15px;
     margin-bottom: 5px;
@@ -127,87 +107,87 @@ body {
     backdrop-filter: blur(50px);
 }
 
-.chat-pan > div.more > div:nth-child(2) {
+.vibrancy .chat-pan > div.more > div:nth-child(2) {
     padding: 5px;
 }
 
-.chat-pan > div.bg {
+.vibrancy .chat-pan > div.bg {
     height: 100%;
     margin: 0;
     opacity: 0.0;
 }
 
-hr,
-.member-info > div,
-.msg-preview > div,
-.side-bar,
-.chat-pan,
-.main-box > .main-box-bg > .choice-chat,
-.global-session-search-bar,
-.pop-box-body,
-.message-content > div.main {
+.vibrancy hr,
+.vibrancy .member-info > div,
+.vibrancy .msg-preview > div,
+.vibrancy .side-bar,
+.vibrancy .chat-pan,
+.vibrancy .main-box > .main-box-bg > .choice-chat,
+.vibrancy .global-session-search-bar,
+.vibrancy .pop-box-body,
+.vibrancy .message-content > div.main {
     border: 1px solid var(--color-shader);
     background: rgba(var(--color-bg-rgb), 0.1);
     box-shadow: 0 0 5px var(--color-shader);
     backdrop-filter: blur(100px);
 }
 
-.pop-box-body {
+.vibrancy .pop-box-body {
     backdrop-filter: unset;
     background-color: rgba(var(--color-card-rgb), 0.4);
 }
 
-.member-info > div,
-.msg-preview > div {
+.vibrancy .member-info > div,
+.vibrancy .msg-preview > div {
     background: rgba(var(--color-bg-rgb), 0.1) !important;
 }
 
-.main-box > .main-box-bg > .choice-chat {
+.vibrancy .main-box > .main-box-bg > .choice-chat {
     background: rgba(var(--color-card-1-rgb), 0.6);
 }
 
-.note-base,
-.chat-pan > .more,
-.chat-pan > div.info,
-.merge-pan > div.ss-card,
-.message-content > div.main {
+.vibrancy .note-base,
+.vibrancy .chat-pan > .more,
+.vibrancy .chat-pan > div.info,
+.vibrancy .merge-pan > div.ss-card,
+.vibrancy .message-content > div.main {
     background: rgba(var(--color-card-1-rgb), 0.6);
     border: 1px solid var(--color-card);
     box-shadow: 0 0 15px var(--color-bg);
 }
 
-.chat-pan {
+.vibrancy .chat-pan {
     background: transparent;
     height: 100%;
 }
 
-.merge-pan > div.ss-card {
+.vibrancy .merge-pan > div.ss-card {
     backdrop-filter: blur(50px);
 }
 
-.global-session-search-bar > input {
+.vibrancy .global-session-search-bar > input {
     background: rgba(var(--color-card-2-rgb), 0.6);
 }
 
-.global-session-search-bar > div::-webkit-scrollbar {
+.vibrancy .global-session-search-bar > div::-webkit-scrollbar {
     display: none;
 }
 
-.global-session-search-bar > div > div.session-item:hover,
-.global-session-search-bar > div > div.session-item.selected {
+.vibrancy .global-session-search-bar > div > div.session-item:hover,
+.vibrancy .global-session-search-bar > div > div.session-item.selected {
     background-color: rgba(var(--color-card-2-rgb), 0.6);
 }
 
-.merge-pan > div:nth-child(1),
-.mask-background,
-.pop-box-background {
+.vibrancy .merge-pan > div:nth-child(1),
+.vibrancy .mask-background,
+.vibrancy .pop-box-background {
     background: rgba(var(--color-card-2-rgb), 0.1);
     backdrop-filter: blur(5px);
     transition: backdrop-filter 0.3s;
 }
 
 @media (max-width: 500px) {
-    .chat-pan > div.info {
+    .vibrancy .chat-pan > div.info {
         margin-top: 35px;
     }
 }

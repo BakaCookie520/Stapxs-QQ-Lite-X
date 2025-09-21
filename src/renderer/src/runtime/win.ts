@@ -1,4 +1,3 @@
-import vibrancyCss from '@renderer/assets/css/append/append_vibrancy.css?raw'
 import horizontalStyles from '@renderer/assets/css/append/mobile/append_mobile_horizontal.css?raw'
 import verticalCss from '@renderer/assets/css/append/mobile/append_mobile_vertical.css?raw'
 import { Logger } from '@renderer/function/base'
@@ -167,6 +166,11 @@ const win = {
             })
         }
 
+        await import('@renderer/assets/css/append/append_vibrancy.css')
+        if (backend.platform === 'linux')
+            await import('@renderer/assets/css/append/append_linux_vibrancy.css')
+        new Logger().info('透明 UI 附加样式加载完成')
+
         if (runtimeData.sysConfig.vibrancy) this.useVibrancy()
     },
 
@@ -175,25 +179,18 @@ const win = {
      */
     useVibrancy() {
         if (runtimeData.tags.vibrancy) return
-        const cssStyle = document.createElement('style')
-        cssStyle.id = 'vibrancy-css'
-        document.head.appendChild(cssStyle)
-        document.head.append(cssStyle)
-        cssStyle.innerHTML = vibrancyCss
+        document.body.classList.add('vibrancy')
         runtimeData.tags.vibrancy = true
-        new Logger().info('透明 UI 附加样式加载完成')
+        new Logger().info('透明 UI 附加样式启用')
     },
     /**
      * 移除透明效果
      */
     removeVibrancy() {
         if (!runtimeData.tags.vibrancy) return
-        const cssStyle = document.getElementById('vibrancy-css')
-        if (cssStyle) {
-            document.head.removeChild(cssStyle)
-        }
+        document.body.classList.remove('vibrancy')
         runtimeData.tags.vibrancy = false
-        new Logger().info('已移除透明 UI 效果')
+        new Logger().info('已移除透明 UI 效果禁用')
     },
 
     async supportVibrancyCheck(): Promise<boolean> {
