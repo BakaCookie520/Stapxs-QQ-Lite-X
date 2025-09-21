@@ -45,15 +45,11 @@ body {
 }
 
 .opt-main {
-    background: rgba(var(--color-bg-rgb), 0.3);
+    background: rgba(var(--color-bg-rgb), 0.4);
 }
 
 .opt-main.active > div:last-child {
     margin-left: -5px !important;
-}
-
-.opt-main > div:first-child {
-    width: 285px !important;
 }
 
 .opt-main > div:last-child {
@@ -148,12 +144,17 @@ hr,
 .chat-pan,
 .main-box > .main-box-bg > .choice-chat,
 .global-session-search-bar,
-.message-content > div.main,
-.pop-box-body {
+.pop-box-body,
+.message-content > div.main {
     border: 1px solid var(--color-shader);
     background: rgba(var(--color-bg-rgb), 0.1);
     box-shadow: 0 0 5px var(--color-shader);
     backdrop-filter: blur(100px);
+}
+
+.pop-box-body {
+    backdrop-filter: unset;
+    background-color: rgba(var(--color-card-rgb), 0.4);
 }
 
 .member-info > div,
