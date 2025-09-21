@@ -1,12 +1,8 @@
-# 一个简单的 GitHub Pages 部署工作流
-name: 部署静态站
+name: 部署到 GitHub Pages
 
 on:
-  # 仅在推送到默认分支时运行
-  push:
-    branches:
-      - web
-      - test
+  repository_dispatch:
+    types: ['deploy-github-pages']
 
   # 这个选项可以使你手动在 Action tab 页面触发工作流
   workflow_dispatch:
@@ -30,53 +26,36 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: 设置 Nodejs
-        uses: actions/setup-node@v4
-        with:
-            node-version: 20.x
       - name: 拉取 test 分支
         uses: actions/checkout@v4
         with:
             submodules: recursive
-            ref: test
-      - name: 更新依赖
-        run: yarn
-      - name: 设置环境变量
+            ref: test-pages
+
+      - name: 备份 test 分支
         run: |
-            echo "BUILD_BRANCH=test" >> $GITHUB_ENV
-            echo "VITE_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-      - name: 构建
-        run: yarn build
-      - name: 存储结果
-        run: |
-            mv dist /tmp/test
-            mv node_modules /tmp/node_modules_backup
-            mv yarn.lock /tmp/yarn.lock_backup
+            mkdir -p /tmp/test-backup
+            mv ./* /tmp/test-backup/
 
       - name: 拉取 web 分支
         uses: actions/checkout@v4
         with:
             submodules: recursive
-            ref: web
-      - name: 恢复依赖缓存
+            ref: web-pages
+
+      - name: 安装 test 分支
         run: |
-            mv /tmp/node_modules_backup node_modules
-            mv /tmp/yarn.lock_backup yarn.lock
-      - name: 更新依赖
-        run: yarn
-      - name: 设置环境变量
-        run: echo "BUILD_BRANCH=main" >> $GITHUB_ENV
-      - name: 构建
-        run: yarn build
-      - name: 恢复test编译结果缓存
-        run: mv /tmp/test dist/test
+            mkdir -p test
+            mv /tmp/test-backup/* test
 
       - name: 配置 Pages 环境
         uses: actions/configure-pages@v5
+
       - name: 上传构建产物
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: './'
+
       - name: 部署到 GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
