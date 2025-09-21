@@ -96,6 +96,18 @@ body.margin .opt-main > div:first-child {
     background-color: var(--color-card);
 }
 
+.umami-info-pan > .type-list {
+    background-color: var(--color-card);
+}
+
+.umami-info-pan > .detail-list {
+    background-color: var(--color-card);
+}
+
+.umami-info-pan > .view-pan {
+    background-color: var(--color-card-1);
+}
+
 @container session-body (max-width: 100px) {
     .side-bar-button > div:nth-child(1).new {
         height: 7px;

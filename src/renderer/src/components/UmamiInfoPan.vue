@@ -55,12 +55,12 @@
             </template>
             <template v-else-if="showName === 'website'">
                 <div class="status">
-                    <div v-for="name in Object.keys(visitData.status)"
-                        v-show="name !== 'bounces' && name !== 'totaltime'"
-                        :key="name">
-                        <a>{{ formatNumber(visitData.status[name].value) }}</a>
-                        <span>{{ $t('访客数据_' + name) }}</span>
-                    </div>
+                    <template v-for="name in Object.keys(visitData.status)" :key="name">
+                        <div v-if="!['bounces', 'totaltime'].includes(name)">
+                            <a>{{ formatNumber(visitData.status[name].value) }}</a>
+                            <span>{{ $t('访客数据_' + name) }}</span>
+                        </div>
+                    </template>
                 </div>
                 <span>{{ $t('当前在线人数') }}: {{ visitData.online }}</span>
                 <div v-if="visitData.metrics != null" class="ss-card website-metric">
@@ -594,7 +594,7 @@ import { CanvasRenderer } from 'echarts/renderers'
     right: 80px;
 }
 .detail-list > .list {
-    overflow-y: scroll;
+    overflow-y: auto;
     margin-right: 7px;
     flex: 1;
 }
