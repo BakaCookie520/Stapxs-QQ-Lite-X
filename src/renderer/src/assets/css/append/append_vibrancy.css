@@ -119,21 +119,7 @@ body {
 }
 
 .main-box {
-    background: transparent;
-}
-
-.main-box > .main-box-bg {
     background: rgba(var(--color-bg-rgb), 0.6);
-}
-
-.main-box > .main-box-bg > .choice-chat {
-    position: relative;
-    background: rgba(var(--color-card-1-rgb), 0.6);
-}
-
-.chat-pan {
-    background: transparent;
-    height: 100%;
 }
 
 .chat-pan > .more {
@@ -152,12 +138,15 @@ body {
 .chat-pan > div.bg {
     height: 100%;
     margin: 0;
+    opacity: 0.0;
 }
 
 hr,
 .member-info > div,
 .msg-preview > div,
 .side-bar,
+.chat-pan,
+.main-box > .main-box-bg > .choice-chat,
 .global-session-search-bar,
 .message-content > div.main,
 .pop-box-body {
@@ -172,6 +161,10 @@ hr,
     background: rgba(var(--color-bg-rgb), 0.1) !important;
 }
 
+.main-box > .main-box-bg > .choice-chat {
+    background: rgba(var(--color-card-1-rgb), 0.6);
+}
+
 .note-base,
 .chat-pan > .more,
 .chat-pan > div.info,
@@ -180,6 +173,11 @@ hr,
     background: rgba(var(--color-card-1-rgb), 0.6);
     border: 1px solid var(--color-card);
     box-shadow: 0 0 15px var(--color-bg);
+}
+
+.chat-pan {
+    background: transparent;
+    height: 100%;
 }
 
 .merge-pan > div.ss-card {
