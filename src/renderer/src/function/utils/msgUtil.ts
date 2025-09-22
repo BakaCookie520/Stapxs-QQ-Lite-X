@@ -26,8 +26,6 @@ export function sendMsgRaw(
         msg,
         session,
     )
-    // 发消息事件
-    sendStatEvent('sendMsg', { type: session.type })
     // 添加进会话
     session.addMessage(preMsg)
     // 发送消息

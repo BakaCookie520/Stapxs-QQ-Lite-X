@@ -918,6 +918,16 @@ export function sendStatEvent(event: string, data: { [key: string]: any }) {
 }
 
 /**
+ * UM：上报会话数据
+ * @param data 数据
+ */
+export function sendIdentifyData(data: { [key: string]: any }) {
+    if (!option.get('close_ga') && !import.meta.env.DEV) {
+        Umami.trackIdentify(data)
+    }
+}
+
+/**
  * 是否应该自动聚焦输入框
  * @returns
  */
