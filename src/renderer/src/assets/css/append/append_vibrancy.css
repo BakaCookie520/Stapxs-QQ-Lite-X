@@ -29,17 +29,13 @@ body.vibrancy {
     background: transparent;
 }
 
-.vibrancy .login-pan-card:hover {
-    box-shadow: none !important;
-}
-
-.vibrancy .login-pan-card label {
+.vibrancy .login-pan-card label.input {
     border: 1px solid var(--color-main);
     opacity: 0.8;
     background: unset;
 }
 
-.vibrancy .login-pan-card label:focus-within {
+.vibrancy .login-pan-card label.input:focus-within {
     background: transparent;
 }
 

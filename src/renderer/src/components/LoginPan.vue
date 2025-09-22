@@ -4,7 +4,7 @@
         <p>{{ $t('连接到 协议端') }}</p>
         <form @submit.prevent @submit="connect">
             <template v-if="loginInfo.quickLogin == null || loginInfo.quickLogin.length == 0">
-                <label>
+                <label class="input">
                     <font-awesome-icon :icon="['fas', 'link']" />
                     <input id="sev_address" v-model="loginInfo.address" :placeholder="$t('连接地址')"
                         class="ss-input" autocomplete="off">
@@ -25,7 +25,7 @@
                     </div>
                 </div>
             </div>
-            <label>
+            <label class="input">
                 <font-awesome-icon :icon="['fas', 'lock']" />
                 <input id="access_token" v-model="loginInfo.token" :placeholder="$t('连接密钥')"
                     class="ss-input" type="password" autocomplete="off">
