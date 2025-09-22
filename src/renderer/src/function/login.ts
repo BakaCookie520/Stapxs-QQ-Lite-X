@@ -80,7 +80,7 @@ async function tryLogin(originUrl: string, token_: string): Promise<true | strin
     if (runtimeData.sysConfig.open_ga_bot) {
         const implInfo = await runtimeData.nowAdapter.getImplInfo()
         const implName = implInfo?.name ?? '（未知）'
-        sendIdentifyData({ bot: implInfo?.version ? implName + ',' + implInfo.version : implName })
+        sendIdentifyData({ bot_version: implInfo?.version ? implName + ',' + implInfo.version : implName })
     }
 
     // 显示账户菜单

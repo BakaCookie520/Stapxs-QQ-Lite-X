@@ -257,8 +257,11 @@ async function init() {
             config.hostName = backend.type + '.stapxs.cn'
         }
         Umami.initialize(config)
+        // 上报一些应用基础信息
         App.sendIdentifyData({
-            appversion: import.meta.env.VITE_APP_CLIENT_TAG + ',' + getVersion(),
+            'app_version': import.meta.env.VITE_APP_CLIENT_TAG + ',' + getVersion(),
+            'os_version': backend.release,
+            'os_arch': backend.arch,
         })
     } else if (dev) {
         logger.system('开发者，由于 Stapxs QQ Lite X 运行在调试模式下，分析组件并未初始化 …… 系统将无法捕获开发者阁下的访问状态，请悉知。')
