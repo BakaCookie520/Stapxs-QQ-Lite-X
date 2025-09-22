@@ -613,6 +613,8 @@ span.user-title {
     color: var(--color-font-r);
     border-radius: 0.5rem;
     padding: 1px 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 span.user-title.owner {
@@ -642,6 +644,7 @@ span.user-title.robot {
 .msg-raw-forward {
     cursor: pointer;
     width: var(--merge-forward-width);
+    max-width: 100%;
 }
 
 .msg-raw-forward > span {

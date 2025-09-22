@@ -698,10 +698,6 @@ body.with-bar .msg-menu {
     max-height: 40vh;
 }
 
-.msg-preview .message {
-    width: fit-content;
-}
-
 .member-info > div:first-child > div:nth-child(1) {
     display: flex;
 }
