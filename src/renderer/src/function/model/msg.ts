@@ -397,6 +397,12 @@ export class SelfMsg extends Msg {
         })
     }
 
+    override copy(): typeof this {
+        const msg = new Msg(this.serializeData())
+        if (!msg.session) throw new Error('复制消息失败，会话信息缺失')
+        return markRaw(shallowReactive(new SelfMsg(msg.message, msg.session))) as typeof this
+    }
+
     override get exist(): boolean {
         if (this.state !== 'sent') return false
         return super.exist
