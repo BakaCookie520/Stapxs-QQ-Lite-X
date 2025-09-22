@@ -1919,6 +1919,7 @@ body.with-bar .msg-menu {
     white-space: nowrap;
     overflow: hidden;
     flex: 1;
+    width: 1px;
 }
 
 .reply-tag > div {

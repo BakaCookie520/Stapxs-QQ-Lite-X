@@ -174,7 +174,7 @@ body.with-bar #base-app {
     margin-top: 0;
     display: flex;
     height: 100%;
-    position: relative
+    position: relative;
 }
 
 .side-bar {
@@ -378,6 +378,7 @@ body.with-bar #base-app {
     flex: 1;
     display: flex;
     position: relative;
+    width: 100%;
 }
 
 .main-box-bg {
