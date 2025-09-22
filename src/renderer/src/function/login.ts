@@ -8,7 +8,7 @@ import { Logger, PopInfo, PopType } from './base'
 import { URL } from './model/data'
 import { User } from './model/user'
 import { resetRuntime, runtimeData } from './msg'
-import { reloadUsers, sendIdentifyData, updateMenu } from './utils/appUtil'
+import { reloadUsers, sendIdentifyData, sendStatEvent, updateMenu } from './utils/appUtil'
 
 const SSL_WHITE_LIST = ['localhost', '127.0.0.1']
 
@@ -80,7 +80,9 @@ async function tryLogin(originUrl: string, token_: string): Promise<true | strin
     if (runtimeData.sysConfig.open_ga_bot) {
         const implInfo = await runtimeData.nowAdapter.getImplInfo()
         const implName = implInfo?.name ?? '（未知）'
-        sendIdentifyData({ bot_version: implInfo?.version ? implName + ',' + implInfo.version : implName })
+        const bot_version = implInfo?.version ? implName + ',' + implInfo.version : implName
+        sendStatEvent('connect', { method: bot_version })
+        sendIdentifyData({ bot_version })
     }
 
     // 显示账户菜单
