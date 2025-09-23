@@ -16,8 +16,19 @@ body.vibrancy {
     background: transparent;
 }
 
-.vibrancy .opt-main {
-    background: rgba(var(--color-bg-rgb), 0.4);
+.vibrancy .opt-main,
+.vibrancy .opt-main > div {
+    background: transparent;
+    padding: 0;
+}
+
+.vibrancy .opt-main .ss-card {
+    background: rgba(var(--color-card-rgb), 0.7);
+    border: solid 1px var(--color-shader);
+}
+
+.vibrancy .opt-main .account-info {
+    background: var(--color-main);
 }
 
 .vibrancy .about-pan > div {
@@ -34,7 +45,7 @@ body.vibrancy {
 }
 
 .vibrancy .jump-card {
-    background: rgba(var(--color-card-2-rgb), 0.7) !important;
+    background: rgba(var(--color-card-rgb), 0.7) !important;
     margin-right: 15px !important;
     margin-left: 10px;
 }
@@ -187,10 +198,15 @@ body.vibrancy {
     border: 1px solid var(--color-card);
     box-shadow: 0 0 15px var(--color-bg);
     backdrop-filter: blur(50px);
+    height: 100%;
 }
 
 .vibrancy .chat-info-base > div {
     background: rgba(var(--color-card-2-rgb), 0.6);
+}
+
+.vibrancy .chat-info-base.user > div:last-child {
+    background: transparent;
 }
 
 .vibrancy .at-tag.show::-webkit-scrollbar{
