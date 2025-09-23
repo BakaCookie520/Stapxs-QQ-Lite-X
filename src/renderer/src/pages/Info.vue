@@ -68,11 +68,13 @@
                     </span>
                     <span v-if="userInfo.country">{{ $t('地区') }}:
                         <span>
-                            {{
-                                `${userInfo.country}-
-                                ${userInfo.province}-
-                                ${userInfo.city}`
-                            }}
+                            <template v-if="userInfo.country">
+                                {{ userInfo.country }}
+                            </template>
+                            <template v-if="userInfo.province">
+                                {{ userInfo.province }}
+                            </template>
+                            - {{ userInfo.city }}
                         </span>
                     </span>
                 </div>
