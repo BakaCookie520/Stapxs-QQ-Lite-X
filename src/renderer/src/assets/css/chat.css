@@ -32,14 +32,6 @@ body.with-bar .chat-pan {
     z-index: 2;
 }
 
-.chat-pan > div.bg {
-    background: rgba(var(--color-card-rgb), 0.6);
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    z-index: 0;
-}
-
 .chat-pan > div.info {
     background: rgba(var(--color-card-1-rgb), 0.8);
     box-shadow: 0 0 1px var(--color-shader);
@@ -1015,6 +1007,7 @@ body.with-bar .msg-menu {
 
 .chat-info-tab > div:first-child {
     min-height: 30px;
+    background-color: transparent;
 }
 
 .chat-info-tab > div:first-child:hover {

@@ -215,6 +215,7 @@ const baseRuntime = {
         darkMode: false,
         canCors: false,
         vibrancy: false,
+        noLogin: true,  // 一次都没有登陆
     }),
     watch: shallowReactive({
         backTimes: 0,

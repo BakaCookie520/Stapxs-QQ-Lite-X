@@ -17,7 +17,6 @@
         :class="{
             'chat-pan': true,
         }"
-        :style="`background-image: url(${runtimeData.sysConfig.chat_background});`"
         @v-move-right.prevent="exitWin()">
         <!-- 聊天基本信息 -->
         <div class="info">
@@ -465,9 +464,6 @@
                 <div class="bg" @click="imgCache = []" />
             </div>
         </Transition>
-        <!-- 背景 -->
-        <div class="bg" :style=" runtimeData.sysConfig.chat_background ?
-            `backdrop-filter: blur(${runtimeData.sysConfig.chat_background_blur}px);` : ''" />
     </div>
 </template>
 

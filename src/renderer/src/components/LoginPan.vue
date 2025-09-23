@@ -121,6 +121,9 @@ async function connect() {
         if (Option.get('save_password'))
             Option.save('save_password', loginInfo.token)
 
+        // 移除未登陆状态
+        runtimeData.tags.noLogin = false
+
         // 关闭弹窗
         emit('closePopBox')
     }

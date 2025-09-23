@@ -31,6 +31,7 @@
                     ref="chat" />
                 <!-- 背景 -->
                 <div v-if="!runtimeData.tags.vibrancy || !runtimeData.nowChat"
+                    v-hide="runtimeData.tags.noLogin"
                     class="main-box-bg">
                     <div class="ss-card choice-chat">
                         <template v-if="runtimeData.nowChat">
@@ -77,6 +78,7 @@
         <FriendMenu ref="friendMenu" />
         <div id="mobile-css" />
     </div>
+    <div class="bg-blur" :style="{ backdropFilter: `blur(${runtimeData.sysConfig.background_img_blur}px)` }" />
 </template>
 
 <script setup lang="ts">

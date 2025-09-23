@@ -50,8 +50,8 @@ export const optDefault = {
     opt_auto_dark: true,
     theme_color: 0,
     opt_auto_win_color: false,
-    chat_background: '',
-    chat_background_blur: 0,
+    background_img: '',
+    background_img_blur: 0,
     opt_fast_animation: false,
     initial_scale: 0.85,
     fs_adaptation: 0,
@@ -64,7 +64,8 @@ export const optDefault = {
     self_msg_direction: 'right',
     side_bar_width: 400,
     auto_hide_side_bar: 'none',
-    vibrancy: false,
+    vibrancy: true,
+    pure_color_background: true,
     // Function
     close_notice: false,
     bubble_sort_user: true,
@@ -107,6 +108,13 @@ const configFunction: { [key: string]: (value: any) => void } = {
     merge_forward_width_type: setMergeForwardWidth,
     use_favicon_notice: setFaviconNotice,
     vibrancy: switchVibrancy,
+    background_img: setBackgroundImg,
+}
+
+function setBackgroundImg(value: string) {
+    document.body.style.backgroundImage = value ? `url(${value})` : ''
+    document.body.style.backgroundSize = 'cover'
+    document.body.style.backgroundPosition = 'center'
 }
 
 function switchVibrancy(value: boolean) {

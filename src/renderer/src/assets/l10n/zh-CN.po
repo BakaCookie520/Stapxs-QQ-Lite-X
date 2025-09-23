@@ -2174,3 +2174,9 @@ msgstr ""
 
 msgid "访客"
 msgstr ""
+
+msgid "更换背景"
+msgstr ""
+
+msgid "毛玻璃，好好看，颜值翻倍"
+msgstr ""

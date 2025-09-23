@@ -60,13 +60,6 @@ body.with-bar .chat-pan {
     box-shadow: -5px 0 4px -5px var(--color-shader);
 }
 
-.chat-pan > div.bg {
-    backdrop-filter: blur(0px);
-    margin-top: -25px;
-    height: calc(100% + 1px);
-    border-radius: 0 7px 7px 0;
-}
-
 .card-info-pan-bg {
     border-radius: 0 7px 7px 0;
     margin-top: -25px;
