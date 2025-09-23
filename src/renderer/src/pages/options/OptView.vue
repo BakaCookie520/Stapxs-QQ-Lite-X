@@ -26,13 +26,15 @@
                     <span>{{ $t('语言（Language）') }}</span>
                     <span>{{ $t('喵喵喵喵？') }}</span>
                 </div>
-                <select v-model="runtimeData.sysConfig.language"
-                    name="language" title="language"
-                    @change="save($event);gaLanguage($event)">
-                    <option v-for="item in languages" :key="item.value" :value="item.value">
-                        {{ item.name }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.language"
+                        name="language" title="language"
+                        @change="save($event);gaLanguage($event)">
+                        <option v-for="item in languages" :key="item.value" :value="item.value">
+                            {{ item.name }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
         <div v-if="backend.isMobile()" class="ss-card">
@@ -189,18 +191,20 @@
                     <span>{{ $t('自动隐藏侧边栏') }}</span>
                     <span>{{ $t('emm...这里该写些什么东西好呢？不知道，摆（') }}</span>
                 </div>
-                <select v-model="runtimeData.sysConfig.auto_hide_side_bar"
-                    name="auto_hide_side_bar" title="auto_hide_side_bar" @change="save">
-                    <option value="none">
-                        {{ $t('禁用（默认）') }}
-                    </option>
-                    <option value="fold">
-                        {{ $t('折叠') }}
-                    </option>
-                    <option value="hide">
-                        {{ $t('隐藏') }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.auto_hide_side_bar"
+                        name="auto_hide_side_bar" title="auto_hide_side_bar" @change="save">
+                        <option value="none">
+                            {{ $t('禁用（默认）') }}
+                        </option>
+                        <option value="fold">
+                            {{ $t('折叠') }}
+                        </option>
+                        <option value="hide">
+                            {{ $t('隐藏') }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="opt-item">
                 <div :class="checkDefault('side_bar_width')" />
@@ -376,15 +380,17 @@
                         {{ $t('是靠左边好呢？还是靠右边好呢？') }}
                     </span>
                 </div>
-                <select v-model="runtimeData.sysConfig.self_msg_direction"
-                    name="self_msg_direction" title="self_msg_direction" @change="save">
-                    <option value="left">
-                        {{ $t('左边') }}
-                    </option>
-                    <option value="right">
-                        {{ $t('右边（默认）') }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.self_msg_direction"
+                        name="self_msg_direction" title="self_msg_direction" @change="save">
+                        <option value="left">
+                            {{ $t('左边') }}
+                        </option>
+                        <option value="right">
+                            {{ $t('右边（默认）') }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="opt-item">
                 <font-awesome-icon :icon="['fas', 'arrows-rotate']" />

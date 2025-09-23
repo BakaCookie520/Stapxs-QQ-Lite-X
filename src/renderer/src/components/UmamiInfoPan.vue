@@ -2,23 +2,40 @@
     <div class="umami-info-pan">
         <div class="type-list">
             <font-awesome-icon :icon="['fas', 'book']" />
+            <!-- 概览 -->
             <font-awesome-icon
                 :class="{'select': showName === 'overview'}"
-                :icon="['fas', 'chart-bar']"
+                :icon="['fas', 'chart-column']"
                 @click="changeView('overview')" />
+            <!-- 访客数据 -->
             <font-awesome-icon
                 :class="{'select': showName === 'website'}"
-                :icon="['fas', 'user']"
+                :icon="['fas', 'globe']"
                 @click="changeView('website')" />
+            <!-- 访客详情 -->
+            <font-awesome-icon
+                :class="{'select': showName === 'session'}"
+                :icon="['fas', 'box-archive']"
+                @click="changeView('session')" />
+            <!-- 事件详情 -->
             <font-awesome-icon
                 :class="{'select': showName === 'event'}"
                 :icon="['fas', 'calendar-days']"
                 @click="changeView('event')" />
         </div>
         <div v-if="showName != 'overview'" class="detail-list">
-            <span v-if="showName === 'website'">{{ $t('访客数据') }}</span>
-            <span v-if="showName === 'event'">{{ $t('事件详情') }}</span>
-            <div class='list'>
+            <template v-if="showName === 'website'">
+                <span>{{ $t('访客数据') }}</span>
+            </template>
+            <template v-if="showName === 'session'">
+                <span>{{ $t('访客详情') }}</span>
+                <a> {{ $t('访客数据表示访问网站的独立会话，同一个访客只会统计一次。并且在下次访问时覆盖上次的数据。') }} </a>
+            </template>
+            <template v-if="showName === 'event'">
+                <span>{{ $t('事件详情') }}</span>
+                <a> {{ $t('事件数据表示用户在访问期间的具体操作或上报行为，每次触发都会单独记录，因此同一个访客可能产生多个事件。') }} </a>
+            </template>
+            <div class="list">
                 <div v-for="(item, index) in mainList"
                     :key="index"
                     :class="{'select': mainListSelected === item.value}"
@@ -28,44 +45,70 @@
                 </div>
             </div>
             <div class="time-select">
-                <select v-model="timeType" @change="updateData">
-                    <option value="1">{{ $t('最近 24 小时') }}</option>
-                    <option value="2">{{ $t('本周') }}</option>
-                    <option value="3">{{ $t('本月') }}</option>
-                    <option value="4">{{ $t('本年') }}</option>
-                    <option value="5">{{ $t('所有时间段') }}</option>
-                </select>
+                <div>
+                    <select v-model="timeType" @change="updateData">
+                        <option value="1">
+                            {{ $t('最近 24 小时') }}
+                        </option>
+                        <option value="2">
+                            {{ $t('本周') }}
+                        </option>
+                        <option value="3">
+                            {{ $t('本月') }}
+                        </option>
+                        <option value="4">
+                            {{ $t('本年') }}
+                        </option>
+                        <option value="5">
+                            {{ $t('所有时间段') }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
         <div class="view-pan">
+            <!-- 概览 -->
             <template v-if="showName === 'overview'">
                 <a v-if="visitData.pageviewChart != null">{{ $t('概览') }}</a>
                 <div v-if="visitData.pageviewChart != null" style="width: 100%;height: 100%;display: flex;align-items: center;flex-direction: column;">
                     <v-chart :option="visitData.pageviewChart" style="width: 100%;height: 100%;" autoresize />
                     <div class="time-select overview-time-select">
-                        <select v-model="timeType" @change="updateData">
-                            <option value="1">{{ $t('最近 24 小时') }}</option>
-                            <option value="2">{{ $t('本周') }}</option>
-                            <option value="3">{{ $t('本月') }}</option>
-                            <option value="4">{{ $t('本年') }}</option>
-                            <option value="5">{{ $t('所有时间段') }}</option>
-                        </select>
+                        <div>
+                            <select v-model="timeType" @change="updateData">
+                                <option value="1">
+                                    {{ $t('最近 24 小时') }}
+                                </option>
+                                <option value="2">
+                                    {{ $t('本周') }}
+                                </option>
+                                <option value="3">
+                                    {{ $t('本月') }}
+                                </option>
+                                <option value="4">
+                                    {{ $t('本年') }}
+                                </option>
+                                <option value="5">
+                                    {{ $t('所有时间段') }}
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </template>
+            <!-- 访客数据 -->
             <template v-else-if="showName === 'website'">
                 <div class="status">
-                    <template v-for="name in Object.keys(visitData.status)" :key="name">
-                        <div v-if="!['bounces', 'totaltime'].includes(name)">
-                            <a>{{ formatNumber(visitData.status[name].value) }}</a>
-                            <span>{{ $t('访客数据_' + name) }}</span>
-                        </div>
-                    </template>
+                    <div v-for="name in Object.keys(visitData.status)"
+                        v-show="name !== 'bounces' && name !== 'totaltime'"
+                        :key="name">
+                        <a>{{ formatNumber(visitData.status[name].value) }}</a>
+                        <span>{{ $t('访客数据_' + name) }}</span>
+                    </div>
                 </div>
                 <span>{{ $t('当前在线人数') }}: {{ visitData.online }}</span>
                 <div v-if="visitData.metrics != null" class="ss-card website-metric">
                     <div>
-                        <span v-if="mainListSelected !== ''">{{ $t(metricTypes[1][metricTypes[0].indexOf(mainListSelected)]) }}</span>
+                        <span v-if="mainListSelected !== ''">{{ $t(metricTypes[mainListSelected]) }}</span>
                         <a style="width: calc(5rem + 20px);">{{ $t('数值（占比）') }}</a>
                     </div>
                     <div v-for="(metric, index) in visitData.metrics" :key="index">
@@ -83,9 +126,11 @@
                     </div>
                 </div>
             </template>
-            <template v-if="showName === 'event'">
-                <div v-if="eventData != null" style="width: 100%;height: 100%;display: flex;align-items: center;flex-direction: column;">
-                    <v-chart :option="eventData" style="width: 80%;margin-top: -10%;" autoresize />
+            <!-- 访客详情 & 事件详情 -->
+            <template v-if="showName === 'event' || showName === 'session'">
+                <div v-if="eventData != null" class="pie-pan">
+                    <v-chart :option="eventData" autoresize />
+                    <a>{{ $t('占比小于 {per}% 的数据将不会展示在饼图中', { per: minPiePercentage * 100 }) }}</a>
                 </div>
             </template>
         </div>
@@ -95,16 +140,16 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
 
-    import { BarChart, PieChart } from 'echarts/charts'
-import {
-    BrushComponent,
-    GridComponent,
-    LegendComponent,
-    ToolboxComponent,
-    TooltipComponent
-} from 'echarts/components'
-import { use } from 'echarts/core'
-import { CanvasRenderer } from 'echarts/renderers'
+    import { use } from 'echarts/core'
+    import { PieChart, BarChart } from 'echarts/charts'
+    import {
+        LegendComponent,
+        BrushComponent,
+        ToolboxComponent,
+        TooltipComponent,
+        GridComponent
+    } from 'echarts/components'
+    import { CanvasRenderer } from 'echarts/renderers'
 
     import VChart from 'vue-echarts'
 
@@ -130,10 +175,17 @@ import { CanvasRenderer } from 'echarts/renderers'
         },
         data() {
             return {
-                metricTypes: [['url', 'browser', 'os', 'device', 'language', 'screen', 'event'],
-                              ['页面', '浏览器', '操作系统', '设备', '语言', '屏幕', '事件']],
+                metricTypes: {
+                    'url': '页面',
+                    'browser': '浏览器',
+                    'os': '操作系统',
+                    'device': '设备',
+                    'language': '语言',
+                    'screen': '屏幕',
+                    'event': '事件'
+                },
                 eventTypes: {
-                    'sendMsg': '发送消息',
+                    'send_msg': '发送消息',
                     'link_view': '预览链接',
                     'connect': '连接',
                     'use_theme_color': '切换主题色',
@@ -141,8 +193,14 @@ import { CanvasRenderer } from 'echarts/renderers'
                     'click_statistics': '触发按钮',
                     'use_chatview': '切换聊天面板样式',
                     'cilent': '上报客户端',
-                    'show_qed': '触发彩蛋'
+                    'show_qed': '触发彩蛋',
+
+                    'app_version': '应用版本',
+                    'os_version': '系统版本',
+                    'bot_version': '机器人版本',
+                    'os_arch': '系统架构',
                 },
+                minPiePercentage: 0.0084, // 饼图中最小显示百分比
                 showName: 'website',
                 timeType: 1,
                 mainListSelected: '',
@@ -174,6 +232,7 @@ import { CanvasRenderer } from 'echarts/renderers'
                 this.showName = view
                 this.mainListSelected = ''
                 this.visitData.metrics = null
+                this.eventData = null
                 this.updateData()
             },
 
@@ -187,8 +246,10 @@ import { CanvasRenderer } from 'echarts/renderers'
             },
 
             getData(value: string) {
-             // 获取 css 中的 var(--color-main)
-             const colorMainRaw = getComputedStyle(document.documentElement).getPropertyValue('--color-main')
+                // 获取 css 中的 var(--color-main)
+                const colorMainRaw = getComputedStyle(document.documentElement).getPropertyValue('--color-main')
+                const colorFont = getComputedStyle(document.documentElement).getPropertyValue('--color-font-1')
+                const colorCard = getComputedStyle(document.documentElement).getPropertyValue('--color-card-1')
 
                 this.mainListSelected = value
                 if (this.showName === 'overview') {
@@ -211,19 +272,32 @@ import { CanvasRenderer } from 'echarts/renderers'
                         // 给 colorMain 加透明的
                         const colorMainWithAlpha = colorMain.replace(')', ', 0.5)').replace('rgb', 'rgba')
                         this.visitData.pageviewChart = {
+                            textStyle: {
+                                color: colorFont
+                            },
                             legend: {
                                 data: [this.$t('浏览量'), this.$t('访客')],
-                                left: '10%'
+                                left: '10%',
+                                textStyle: {
+                                    color: colorFont
+                                }
                             },
                             tooltip: {},
                             xAxis: {
                                 data: xAxisData,
                                 name: this.getRealTimeRange().formatName,
                                 axisLine: { onZero: true },
+                                axisLabel: {
+                                    color: colorFont
+                                },
                                 splitLine: { show: false },
-                                splitArea: { show: false }
+                                splitArea: { show: false },
                             },
-                            yAxis: {},
+                            yAxis: {
+                                axisLabel: {
+                                    color: colorFont
+                                }
+                            },
                             grid: {
                                 bottom: 100,
                                 left: 50,
@@ -253,7 +327,7 @@ import { CanvasRenderer } from 'echarts/renderers'
                     })
                 } else if (this.showName === 'website') {
                     this.getMetric(value)
-                } else if (this.showName === 'event') {
+                } else if (this.showName === 'event' || this.showName === 'session') {
                     const eventData = this.mainList.find(item => item.value === value)?.data
                     if (eventData) {
                         // eventData 格式：[{value: 'xxx', total: 123}, ...]
@@ -263,12 +337,12 @@ import { CanvasRenderer } from 'echarts/renderers'
                             name: (item.value != '' && item.value != null) ? item.value : this.$t('（未知）')
                         }))
                         // 只取前 9 项，其他归为“其他”，如果恰巧有 10 项也不处理防止第 10 项变成“其他”
-                        if (pieData.length > 10) {
-                            const topData = pieData.slice(0, 9)
-                            const otherTotal = pieData.slice(9).reduce((sum: number, item: any) => sum + item.value, 0)
-                            topData.push({ value: otherTotal, name: this.$t('其他') })
-                            pieData = topData
-                        }
+                        // if (pieData.length > 10) {
+                        //     const topData = pieData.slice(0, 9)
+                        //     const otherTotal = pieData.slice(9).reduce((sum: number, item: any) => sum + item.value, 0)
+                        //     topData.push({ value: otherTotal, name: this.$t('其他') })
+                        //     pieData = topData
+                        // }
                         // 按 value 降序排列
                         pieData.sort((a: any, b: any) => b.value - a.value)
                         // 这边的颜色用 colorMainRaw 创建 10 级不同透明度的颜色，不需要转为 rgba，使用十六进制颜色
@@ -277,16 +351,28 @@ import { CanvasRenderer } from 'echarts/renderers'
                         //     const alpha = Math.floor((i / 10) * 255).toString(16).padStart(2, '0')
                         //     colors.push(colorMainRaw + alpha)
                         // }
+                        // 去除占比小于等于 0.84% 的
+                        pieData = pieData.filter((item: any) => (item.value / pieData.reduce((sum: number, it: any) => sum + it.value, 0)) > this.minPiePercentage)
                         this.eventData = {
-                            // color: colors,
+                            // colors: colors,
                             color: ['#d87c7c', '#919e8b', '#d7ab82', '#6e7074', '#61a0a8', '#efa18d', '#787464', '#cc7e63', '#724e58', '#4b565b'],
                             tooltip: {
-                                trigger: 'item'
+                                formatter: (params: any) => {
+                                    return `${params.marker} ${params.name}: ${params.value} (${params.percent}%)`
+                                },
+                                trigger: 'item',
+                                backgroundColor: colorCard,
+                                textStyle: {
+                                    color: colorFont
+                                },
                             },
                             legend: {
                                 top: 'bottom',
                                 left: 'center',
-                                type: 'scroll'
+                                type: 'scroll',
+                                textStyle: {
+                                    color: colorFont
+                                }
                             },
                             series: [
                                 {
@@ -294,7 +380,7 @@ import { CanvasRenderer } from 'echarts/renderers'
                                     radius: ['40%', '70%'],
                                     center: ['50%', '55%'],
                                     avoidLabelOverlap: false,
-                                    padAngle: 2,
+                                    padAngle: 3,
                                     itemStyle: {
                                         borderRadius: 7
                                     },
@@ -353,16 +439,19 @@ import { CanvasRenderer } from 'echarts/renderers'
                         count?: number,
                         data?: any
                     }[]
-                    for(const type of this.metricTypes[0]) {
+                    for(const type of Object.keys(this.metricTypes)) {
                         list.push({
-                            label: this.$t(this.metricTypes[1][this.metricTypes[0].indexOf(type)]),
+                            label: this.$t(this.metricTypes[type]),
                             value: type,
                         })
                     }
                     if(this.showName == 'website')
                         this.mainList = list
-                } else if(this.showName == 'event') {
-                    const url = API_URL + '/events/' + this.getRealTimeRange().time
+                } else if(this.showName == 'event' || this.showName == 'session') {
+                    let url = API_URL + '/events/' + this.getRealTimeRange().time
+                    if(this.showName == 'session') {
+                        url = API_URL + '/sessions/' + this.getRealTimeRange().time
+                    }
                     const res = await fetch(url)
                     const data = await res.json()
                     if(!data.error) {
@@ -374,6 +463,10 @@ import { CanvasRenderer } from 'echarts/renderers'
                             data?: any
                         }[]
                         for(const item of data) {
+                            if(!item.eventName) {
+                                item.eventName = item.propertyName
+                                delete item.propertyName
+                            }
                             list.push({
                                 label: this.eventTypes[item.eventName] ? this.$t(this.eventTypes[item.eventName]) : item.eventName,
                                 subLabel: item.propertyName,
@@ -384,7 +477,7 @@ import { CanvasRenderer } from 'echarts/renderers'
                         }
                         // 根据 count 降序排列
                         list.sort((a, b) => (b.count || 0) - (a.count || 0))
-                        if(this.showName == 'event')
+                        if(this.showName == 'event' || this.showName == 'session')
                             this.mainList = list
                     }
                 }
@@ -576,13 +669,43 @@ import { CanvasRenderer } from 'echarts/renderers'
     display: block;
     margin: 1rem;
 }
+.detail-list > a {
+    border-radius: 7px;
+    padding: 10px;
+    background: var(--color-card-2);
+    margin: 0 1rem 1rem 1rem;
+    font-size: 0.8rem;
+    color: var(--color-font-1);
+}
 .time-select {
     margin: 1rem;
 }
-.time-select > select {
-    background: var(--color-card-1);
+.time-select > div {
+    position: relative
+}
+.time-select > div::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--color-font-2);
+}
+.time-select select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: var(--color-card-2);
+    border: none;
+    border-bottom: 1px solid var(--color-font-2);
     color: var(--color-font);
-    border: navajowhite;
+    font-size: 0.8rem;
+    padding: 0 10px;
     border-radius: 7px;
     width: 100%;
     height: 30px;
@@ -590,8 +713,12 @@ import { CanvasRenderer } from 'echarts/renderers'
 .overview-time-select {
     position: absolute;
     bottom: 17px;
-    width: 150px;
+    width: 25%;
+    max-width: 200px;
     right: 80px;
+}
+.overview-time-select select {
+    background: var(--color-card-1);
 }
 .detail-list > .list {
     overflow-y: auto;
@@ -601,11 +728,18 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 .detail-list > .list > div {
     justify-content: space-between;
+    cursor: pointer;
     margin: 0 1rem 5px 1rem;
     flex-direction: row;
     border-radius: 7px;
     padding: 7px 10px;
+    align-items: center;
     display: flex;
+}
+.detail-list > .list > div > span > span {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-font-2);
 }
 .detail-list > .list > div:hover {
     background: var(--color-card-2);
@@ -613,6 +747,9 @@ import { CanvasRenderer } from 'echarts/renderers'
 .detail-list > .list > div.select {
     background: var(--color-main);
     color: var(--color-font-r);
+}
+.detail-list > .list > div.select > span > span {
+    color: var(--color-font-2-r);
 }
 
 .view-pan {
@@ -651,12 +788,34 @@ import { CanvasRenderer } from 'echarts/renderers'
     margin: 0 1rem 1rem 1rem;
 }
 
+.pie-pan {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column-reverse;
+}
+.pie-pan > x-vue-echarts {
+    width: 80%;
+    margin-top: -15%;
+}
+.pie-pan > a {
+    display: block;
+    width: 80%;
+    text-align: center;
+    background: var(--color-card-1);
+    padding: 10px;
+    border-radius: 7px;
+    font-size: 0.8rem;
+    color: var(--color-font-2);
+}
+
 .status {
     margin-top: 1rem;
     padding-bottom: 1rem;
+    flex-direction: column;
     width: calc(100% - 30px);
     display: flex;
-    flex-direction: row;
     justify-content: space-around;
     flex-wrap: wrap;
 }
