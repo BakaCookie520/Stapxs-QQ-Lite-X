@@ -1,7 +1,6 @@
 import anime from 'animejs'
 
 import { runtimeData } from '@renderer/function/msg'
-import { sendStatEvent } from './appUtil'
 import { Msg, SelfMsg } from '../model/msg'
 import { Seg } from '../model/seg'
 import { GroupSession, Session, UserSession } from '../model/session'
@@ -26,8 +25,6 @@ export function sendMsgRaw(
         msg,
         session,
     )
-    // 发消息事件
-    sendStatEvent('sendMsg', { type: session.type })
     // 添加进会话
     session.addMessage(preMsg)
     // 发送消息
@@ -185,4 +182,54 @@ export async function mergeForward(msgList: Msg[]) {
             type: 'merge',
         }
     })
+}
+
+/**
+ * 计算 QQ 等级图标
+ * @param level QQ 等级
+ * @returns 图标数量
+ */
+export function qqLevelIcons(level) {
+    const result = {
+        crown: 0,  // 皇冠
+        sun: 0,    // 太阳
+        moon: 0,   // 月亮
+        star: 0    // 星星
+    }
+
+    result.crown = Math.floor(level / 64)
+    level %= 64
+
+    result.sun = Math.floor(level / 16)
+    level %= 16
+
+    result.moon = Math.floor(level / 4)
+    level %= 4
+
+    result.star = level
+
+    return result
+}
+
+/**
+ * 计算 QQ 等级表情
+ * @param level QQ 等级
+ * @returns 表情字符串
+ */
+export function qqLevelToEmoji(level) {
+    const rawLevel = level
+    if(level <= 0) return level
+
+    const crown = Math.floor(level / 64)
+    level %= 64
+
+    const sun = Math.floor(level / 16)
+    level %= 16
+
+    const moon = Math.floor(level / 4)
+    level %= 4
+
+    const star = level
+
+    return '👑'.repeat(crown) + '☀️'.repeat(sun) + '🌙'.repeat(moon) + '⭐️'.repeat(star) + '（' + rawLevel + '）'
 }

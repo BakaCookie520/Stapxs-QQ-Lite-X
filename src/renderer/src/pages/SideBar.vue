@@ -166,18 +166,28 @@ const foldState = computed<'open' | 'fold'>(() => {
     throw new Error('解析侧边栏折叠状态失败')
 })
 
+/**
+ * 滑动切换上一个侧边栏内容
+ */
 function nextSideBar() {
     const id = (sideBarInfo.value.id + 1) % sideBars.length
     changeSideBarDirection.value = 'right'
     setSideBar(sideBars[id])
 }
 
+/**
+ * 滑动切换下一个侧边栏内容
+ */
 function prevSideBar() {
     const id = (sideBarInfo.value.id - 1 + sideBars.length) % sideBars.length
     changeSideBarDirection.value = 'left'
     setSideBar(sideBars[id])
 }
 
+/**
+ * 通过点击切换侧边栏内容
+ * @param bar
+ */
 function clickChangeSideBar(bar: SideBarInfo) {
     if (sideBarInfo.value.type === bar.type) return
     if (bar.id > sideBarInfo.value.id)
@@ -188,10 +198,17 @@ function clickChangeSideBar(bar: SideBarInfo) {
     setSideBar(bar)
 }
 
+/**
+ * 设置侧边栏内容
+ * @param bar
+ */
 function setSideBar(bar: SideBarInfo) {
     sideBarInfo.value = bar
 }
 
+/**
+ * 打开设置
+ */
 function openOptions() {
     popBox({
         template: Options,
@@ -200,13 +217,22 @@ function openOptions() {
 
 let hoverTimeout: ReturnType<typeof setTimeout> | undefined
 let staticTime: number | undefined
-function hoverStart() {
+/**
+ * 鼠标移入
+ * 可以指定多长时间，才允许鼠标移出后，侧边栏收起
+ * @param timeout
+ */
+function hoverStart(timeout: number = 500) {
     if (!staticTime) {
         isHover.value = true
-        staticTime = Date.now() + 500
+        staticTime = Date.now() + timeout
     }
     clearTimeout(hoverTimeout)
 }
+/**
+ * 鼠标移出
+ * @param event 鼠标移除位置检测
+ */
 function hoverEnd(event?: MouseEvent) {
     if (!staticTime) return
     if (event?.relatedTarget instanceof HTMLElement) {
@@ -224,6 +250,9 @@ function hoverEnd(event?: MouseEvent) {
     }
 }
 
+/**
+ * 开始拖拽
+ */
 function startDrag() {
     bar.value!.style.transition = 'none'
     mousemoveMask((event)=>{
@@ -272,8 +301,12 @@ useEventListener(document, 'mouseout', (event)=>{
 })
 
 useKeyboard('ctrl+b', ()=>{
-    if (!canControlFold.value) return
-    fold.value = !fold.value
+    if (canControlFold.value){
+        fold.value = !fold.value
+    }else{
+        hoverStart(2000)
+        hoverEnd()
+    }
     return true
 })
 </script>

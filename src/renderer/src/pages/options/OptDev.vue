@@ -77,21 +77,23 @@
                     <span>{{ $t('日志等级') }}</span>
                     <span>{{ $t('ReferenceError: moYu is not defined') }}</span>
                 </div>
-                <select v-model="runtimeData.sysConfig.log_level"
-                    name="log_level" title="log_level" @change="save">
-                    <option value="err">
-                        {{ $t('错误') }}
-                    </option>
-                    <option value="debug">
-                        {{ $t('调试') }}
-                    </option>
-                    <option value="info">
-                        {{ $t('基本') }}
-                    </option>
-                    <option value="all">
-                        {{ $t('全部') }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.log_level"
+                        name="log_level" title="log_level" @change="save">
+                        <option value="err">
+                            {{ $t('错误') }}
+                        </option>
+                        <option value="debug">
+                            {{ $t('调试') }}
+                        </option>
+                        <option value="info">
+                            {{ $t('基本') }}
+                        </option>
+                        <option value="all">
+                            {{ $t('全部') }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <!-- TODO 这个输入框确实不好用...不知道用啥输入框合适...等那天都啥api统计齐全了直接做成复选框 -->
             <div class="opt-item">

@@ -26,13 +26,15 @@
                     <span>{{ $t('语言（Language）') }}</span>
                     <span>{{ $t('喵喵喵喵？') }}</span>
                 </div>
-                <select v-model="runtimeData.sysConfig.language"
-                    name="language" title="language"
-                    @change="save($event);gaLanguage($event)">
-                    <option v-for="item in languages" :key="item.value" :value="item.value">
-                        {{ item.name }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.language"
+                        name="language" title="language"
+                        @change="save($event);gaLanguage($event)">
+                        <option v-for="item in languages" :key="item.value" :value="item.value">
+                            {{ item.name }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
         <div v-if="backend.isMobile()" class="ss-card">
@@ -127,7 +129,7 @@
                 <font-awesome-icon :icon="['fas', 'window-maximize']" />
                 <div>
                     <span>{{ $t('透明模式') }}</span>
-                    <span>{{ $t('如果你的系统支持的话，可以试试') }}</span>
+                    <span>{{ $t('毛玻璃，好好看，颜值翻倍') }}</span>
                 </div>
                 <label class="ss-switch">
                     <input v-model="runtimeData.sysConfig.vibrancy"
@@ -137,30 +139,48 @@
                     </div>
                 </label>
             </div>
-            <div class="opt-item">
-                <div :class="checkDefault('chat_background')" />
+            <div v-if="runtimeData.sysConfig.vibrancy" class="opt-item">
+                <div :class="checkDefault('background_img')" />
                 <font-awesome-icon :icon="['fas', 'image']" />
                 <div>
                     <span>{{ $t('背景图片') }}</span>
                     <span>{{ $t('嘿嘿嘿（痴呆') }}</span>
                 </div>
-                <input v-model="runtimeData.sysConfig.chat_background"
-                    class="ss-input" style="width: 150px"
-                    type="text" name="chat_background" @keyup="save">
+                <div class="file-choice">
+                    <div class="choice-btn"
+                        @click="($refs.choiceImg as any)?.click()">
+                        {{
+                            runtimeData.sysConfig.background_img
+                                ? $t('更换背景')
+                                : $t('上传背景')
+                        }}
+                        <input ref="choiceImg"
+                            type="file"
+                            style="display: none"
+                            name="background_img"
+                            accept="image/*"
+                            @change="setBackground($event)">
+                    </div>
+                    <div v-if="runtimeData.sysConfig.background_img !== ''"
+                        class="rm-btn"
+                        @click="removeBackground">
+                        <font-awesome-icon :icon="['fas', 'xmark']" />
+                    </div>
+                </div>
             </div>
-            <div class="opt-item">
-                <div :class="checkDefault('chat_background_blur')" />
+            <div v-if="runtimeData.sysConfig.background_img" class="opt-item">
+                <div :class="checkDefault('background_img_blur')" />
                 <font-awesome-icon :icon="['fas', 'o']" />
                 <div>
                     <span>{{ $t('背景模糊') }}</span>
                     <span>{{ $t('什么都看不见了（恼') }}</span>
                 </div>
                 <div class="ss-range">
-                    <input v-model="runtimeData.sysConfig.chat_background_blur"
-                        :style="`background-size: ${runtimeData.sysConfig.chat_background_blur}% 100%;`"
-                        type="range" name="chat_background_blur" @input="save">
-                    <span :style="`color: var(--color-font${ runtimeData.sysConfig.chat_background_blur > 50 ? '-r' : ''})`">
-                        {{ runtimeData.sysConfig.chat_background_blur }}
+                    <input v-model="runtimeData.sysConfig.background_img_blur"
+                        :style="`background-size: ${runtimeData.sysConfig.background_img_blur}% 100%;`"
+                        type="range" name="background_img_blur" @input="save">
+                    <span :style="`color: var(--color-font${ runtimeData.sysConfig.background_img_blur > 50 ? '-r' : ''})`">
+                        {{ runtimeData.sysConfig.background_img_blur }}
                         px</span>
                 </div>
             </div>
@@ -171,18 +191,20 @@
                     <span>{{ $t('自动隐藏侧边栏') }}</span>
                     <span>{{ $t('emm...这里该写些什么东西好呢？不知道，摆（') }}</span>
                 </div>
-                <select v-model="runtimeData.sysConfig.auto_hide_side_bar"
-                    name="auto_hide_side_bar" title="auto_hide_side_bar" @change="save">
-                    <option value="none">
-                        {{ $t('禁用（默认）') }}
-                    </option>
-                    <option value="fold">
-                        {{ $t('折叠') }}
-                    </option>
-                    <option value="hide">
-                        {{ $t('隐藏') }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.auto_hide_side_bar"
+                        name="auto_hide_side_bar" title="auto_hide_side_bar" @change="save">
+                        <option value="none">
+                            {{ $t('禁用（默认）') }}
+                        </option>
+                        <option value="fold">
+                            {{ $t('折叠') }}
+                        </option>
+                        <option value="hide">
+                            {{ $t('隐藏') }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="opt-item">
                 <div :class="checkDefault('side_bar_width')" />
@@ -358,15 +380,17 @@
                         {{ $t('是靠左边好呢？还是靠右边好呢？') }}
                     </span>
                 </div>
-                <select v-model="runtimeData.sysConfig.self_msg_direction"
-                    name="self_msg_direction" title="self_msg_direction" @change="save">
-                    <option value="left">
-                        {{ $t('左边') }}
-                    </option>
-                    <option value="right">
-                        {{ $t('右边（默认）') }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.self_msg_direction"
+                        name="self_msg_direction" title="self_msg_direction" @change="save">
+                        <option value="left">
+                            {{ $t('左边') }}
+                        </option>
+                        <option value="right">
+                            {{ $t('右边（默认）') }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="opt-item">
                 <font-awesome-icon :icon="['fas', 'arrows-rotate']" />
@@ -387,13 +411,13 @@
 </template>
 
 <script lang="ts">
-    import { getDeviceType } from '@renderer/function/utils/systemUtil'
+import { getDeviceType } from '@renderer/function/utils/systemUtil'
 import { BrowserInfo, detect } from 'detect-browser'
 import { defineComponent, toRaw } from 'vue'
 import { runtimeData } from '../../function/msg'
-import { checkDefault, get, runASWEvent as save } from '../../function/option'
+import Option, { checkDefault, get, runASWEvent as save } from '../../function/option'
 
-    import { sendStatEvent } from '@renderer/function/utils/appUtil'
+import { sendStatEvent } from '@renderer/function/utils/appUtil'
 import { closePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { backend } from '@renderer/runtime/backend'
 import languages from '../../assets/l10n/_l10nconfig.json'
@@ -552,6 +576,31 @@ import languages from '../../assets/l10n/_l10nconfig.json'
             changeIcon(name: string) {
                 backend.call('Onebot', 'changeIcon', false, { name: name != '' ? (name + 'AppIcon') : name })
                 this.usedIcon = name
+            },
+
+            /**
+             * 设置背景图片
+             */
+            setBackground(event: Event) {
+                const sender = event.target as HTMLInputElement
+                const img = sender.files?.[0]
+                if (!img) return
+                img.arrayBuffer().then((buffer) => {
+                    const base64String = btoa(
+                        new Uint8Array(buffer)
+                            .reduce((data, byte) => data + String.fromCharCode(byte), ''),
+                    )
+                    const imgSrc = `data:${img.type};base64,${base64String}`
+                    runtimeData.sysConfig.background_img = imgSrc
+                    Option.runAS('background_img', imgSrc)
+                })
+            },
+            /**
+             * 移除背景图片
+             */
+            removeBackground() {
+                runtimeData.sysConfig.background_img = ''
+                Option.runAS('background_img', '')
             },
         },
     })

@@ -17,6 +17,7 @@ import { logLevel, touchBarInstance, win } from '../index.ts'
 import { Connector } from './connector.ts'
 import ScanNetwork from './scannetwork.ts'
 import { runCommand } from './util.ts'
+import { execSync } from 'child_process'
 
 let connector = undefined as Connector | undefined
 const store = new Store()
@@ -63,7 +64,21 @@ export function regIpcListener() {
         return process.platform
     })
     ipcMain.handle('sys:getRelease', () => {
-        return os.release()
+        const osName = os.type() // 'Linux', 'Darwin', 'Windows_NT'
+        let osVersion = os.release()
+        if(osName === 'Darwin') {
+            osVersion = execSync('sw_vers -productVersion').toString().trim()
+            if (osVersion.split('.').length === 2) {
+                osVersion += '.0';
+            }
+        }
+        let releaseInfo = ''
+        if (osName === 'Linux') releaseInfo = 'Linux ' + osVersion
+        if (osName === 'Darwin') releaseInfo = 'macOS ' + osVersion
+        if (osName === 'Windows_NT') releaseInfo = 'Windows ' + osVersion
+        // 获取架构
+        const arch = os.arch()
+        return { release: releaseInfo, arch: arch }
     })
     // 获取最终 URL
     ipcMain.handle('sys:getFinalRedirectUrl', async (_, str: string) => {

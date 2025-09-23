@@ -2174,3 +2174,15 @@ msgstr ""
 
 msgid "访客"
 msgstr ""
+
+msgid "更换背景"
+msgstr ""
+
+msgid "毛玻璃，好好看，颜值翻倍"
+msgstr ""
+
+msgid "占比小于 {per}% 的数据将不会展示在饼图中"
+msgstr ""
+
+msgid "访客数据表示访问网站的独立会话，同一个访客只会统计一次。并且在下次访问时覆盖上次的数据。"
+msgstr ""

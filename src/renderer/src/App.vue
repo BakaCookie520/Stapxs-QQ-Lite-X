@@ -31,6 +31,7 @@
                     ref="chat" />
                 <!-- 背景 -->
                 <div v-if="!runtimeData.tags.vibrancy || !runtimeData.nowChat"
+                    v-hide="runtimeData.tags.noLogin"
                     class="main-box-bg">
                     <div class="ss-card choice-chat">
                         <template v-if="runtimeData.nowChat">
@@ -77,6 +78,7 @@
         <FriendMenu ref="friendMenu" />
         <div id="mobile-css" />
     </div>
+    <div class="bg-blur" :style="{ backdropFilter: `blur(${runtimeData.sysConfig.background_img_blur}px)` }" />
 </template>
 
 <script setup lang="ts">
@@ -257,6 +259,12 @@ async function init() {
             config.hostName = backend.type + '.stapxs.cn'
         }
         Umami.initialize(config)
+        // 上报一些应用基础信息
+        App.sendIdentifyData({
+            'app_version': import.meta.env.VITE_APP_CLIENT_TAG + ',' + getVersion(),
+            'os_version': backend.release,
+            'os_arch': backend.arch,
+        })
     } else if (dev) {
         logger.system('开发者，由于 Stapxs QQ Lite X 运行在调试模式下，分析组件并未初始化 …… 系统将无法捕获开发者阁下的访问状态，请悉知。')
     }

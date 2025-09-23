@@ -70,7 +70,7 @@
         "@modyfi/vite-plugin-yaml": "^1.1.0",
         "@rushstack/eslint-patch": "^1.10.3",
         "@stapxs/capacitor-sync-version": "^1.0.10",
-        "@stapxs/umami-logger-typescript": "^1.0.12",
+        "@stapxs/umami-logger-typescript": "^1.0.15",
         "@tauri-apps/cli": "^2.3.1",
         "@types/animejs": "^3.1.13",
         "@types/jsonpath": "^0.2.4",

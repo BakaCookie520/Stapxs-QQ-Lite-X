@@ -419,5 +419,6 @@ function restoreScrollPosition() {
 
 defineExpose({
     isMergeOpen,
+    closeMergeMsg,
 })
 </script>

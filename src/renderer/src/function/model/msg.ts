@@ -23,6 +23,7 @@ import { AtSeg, ForwardSeg, ReplySeg, Seg } from './seg'
 import { GroupSession, Session, TempSession } from './session'
 import { BaseUser, ForwardSender, getSender, Member, type IUser } from './user'
 import { autoMarkRaw, autoReactive } from './utils'
+import { sendStatEvent } from '../utils/appUtil'
 
 type IconData = { icon: string, rotate: boolean, desc: string, color: string }
 
@@ -314,6 +315,8 @@ export class SelfMsg extends Msg {
             return false
         }
         this.message_id = msgId
+        // 上报信息
+        sendStatEvent('send_msg', { type: this.session.type })
         //#endregion
 
         //#region 获取发送后真实消息 ============================================
@@ -333,6 +336,7 @@ export class SelfMsg extends Msg {
             } catch {/**/}
             await delay(100)
         }
+
         if (!msg) {
             new PopInfo().add(PopType.ERR, '更新消息失败...')
             // 不知道自己组装的消息和tx的消息有多大差距...按照sent处理吧
@@ -391,6 +395,12 @@ export class SelfMsg extends Msg {
             }
             check()
         })
+    }
+
+    override copy(): typeof this {
+        const msg = new Msg(this.serializeData())
+        if (!msg.session) throw new Error('复制消息失败，会话信息缺失')
+        return markRaw(shallowReactive(new SelfMsg(msg.message, msg.session))) as typeof this
     }
 
     override get exist(): boolean {

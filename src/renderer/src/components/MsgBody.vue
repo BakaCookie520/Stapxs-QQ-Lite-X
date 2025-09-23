@@ -412,7 +412,8 @@
             }">
             <div class="emoji-like-body">
                 <TransitionGroup name="emoji-like">
-                    <template v-for="info, id in data.emojis" :key="'respond-' + data.uuid + '-' + id">
+                    <template v-for="info, id in (data.emojis as { [key: string]: number[] })"
+                        :key="'respond-' + data.uuid + '-' + id">
                         <div :class="{
                                  'me-send': info.includes(runtimeData.loginInfo.uin),
                              }"

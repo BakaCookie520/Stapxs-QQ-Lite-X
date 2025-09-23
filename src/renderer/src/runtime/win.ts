@@ -196,7 +196,7 @@ const win = {
     async supportVibrancyCheck(): Promise<boolean> {
         // 透明 UI 附加样式
         if (!backend.isDesktop()) return false
-        let subVersion = backend.release?.split('.') as any
+        let subVersion = backend.release?.split(' ')?.[1]?.split('.') as any
         subVersion = subVersion ? Number(subVersion[2]) : 0
 
         // mac

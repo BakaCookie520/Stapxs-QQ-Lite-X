@@ -9,7 +9,7 @@
     <div class="chat-info-pan">
         <div :class="'chat-info-base ' + chat.type">
             <div>
-                <img :src="chat.face">
+                <img :src="chat.face" :alt="chat.showName">
                 <div>
                     <a>{{ chat.showName }}</a>
                     <span>{{ chat.id }}</span>
@@ -40,7 +40,7 @@
                 <header>
                     <span>{{ $t('等级') }}</span>
                 </header>
-                <span>{{ userInfo.level }}</span>
+                <span>{{ qqLevelToEmoji(userInfo.level) }}</span>
                 <header v-if="userInfo.regTime">
                     <span>{{ $t('注册时间') }}</span>
                 </header>
@@ -68,11 +68,13 @@
                     </span>
                     <span v-if="userInfo.country">{{ $t('地区') }}:
                         <span>
-                            {{
-                                `${userInfo.country}-
-                                ${userInfo.province}-
-                                ${userInfo.city}`
-                            }}
+                            <template v-if="userInfo.country">
+                                {{ userInfo.country }}
+                            </template>
+                            <template v-if="userInfo.province">
+                                {{ userInfo.province }}
+                            </template>
+                            - {{ userInfo.city }}
                         </span>
                     </span>
                 </div>
@@ -256,7 +258,7 @@ import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { Member, User } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
-import { changeSession } from '@renderer/function/utils/msgUtil'
+import { changeSession, qqLevelToEmoji } from '@renderer/function/utils/msgUtil'
 import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { copyToClipboard, delay, getTrueLang } from '@renderer/function/utils/systemUtil'
 import { vSearch } from '@renderer/function/utils/vcmd'

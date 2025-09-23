@@ -76,7 +76,6 @@ export interface MsgPrevPan {
 .msg-preview {
     margin-left: var(--x);
     margin-top: var(--y);
-    max-width: max(30vw, 400px);
 }
 .msg-preview :deep(*) {
     pointer-events: none !important;

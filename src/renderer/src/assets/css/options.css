@@ -29,7 +29,7 @@
 
 .opt-main > div:first-child {
     transition: all 0.3s;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 10px;
     width: 350px;
 }
@@ -345,15 +345,36 @@
     background: var(--color-font);
 }
 
+.opt-item > div.select-wrapper {
+    position: relative;
+    margin-right: 0;
+    height: 30px;
+    max-width: 170px;
+}
+.opt-item > div.select-wrapper::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--color-font-2);
+}
 .opt-item select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     background: var(--color-card-1);
     color: var(--color-font);
-    border: navajowhite;
+    border: none;
+    padding: 0 10px;
     border-radius: 7px;
     font-size: 0.8rem;
-    padding: 0 10px;
-    height: 30px;
-    width: 170px;
+    height: 100%;
 }
 
 .opt-item > div > span:last-child {
@@ -397,6 +418,35 @@
 
 .opt-item div.ss-range input::-webkit-slider-runnable-track {
     opacity: 0;
+}
+
+.opt-item > div.file-choice {
+    display: flex;
+    max-width: 170px;
+    flex-direction: row;
+    margin-right: 0;
+}
+
+.opt-item > div.file-choice > div {
+    background: var(--color-card-1);
+    border-radius: 7px;
+    font-size: 0.8rem;
+    height: 30px;
+    min-width: 30px;
+    line-height: 30px;
+    text-align: center;
+}
+
+.opt-item > div.file-choice > div.choice-btn {
+    flex: 1;
+    padding: 0 10px;
+}
+
+.opt-item > div.file-choice > div.rm-btn {
+    margin-left: 10px;
+    width: 30px;
+    cursor: pointer;
+    color: var(--color-red);
 }
 
 .opt-page > div.ss-card > div.cors {
@@ -750,5 +800,10 @@
     .opt-main {
         width: 100%;
         height: 100%;
+    }
+
+    .opt-main > div:last-child {
+        height: unset;
+        overflow: auto
     }
 }
