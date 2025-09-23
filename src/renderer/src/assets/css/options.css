@@ -29,7 +29,7 @@
 
 .opt-main > div:first-child {
     transition: all 0.3s;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 10px;
     width: 350px;
 }
@@ -800,5 +800,10 @@
     .opt-main {
         width: 100%;
         height: 100%;
+    }
+
+    .opt-main > div:last-child {
+        height: unset;
+        overflow: auto
     }
 }
