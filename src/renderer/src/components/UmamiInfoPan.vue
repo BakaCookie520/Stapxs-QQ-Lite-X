@@ -1,6 +1,6 @@
 <template>
     <div class="umami-info-pan">
-        <div class="type-list">
+        <div :class="'type-list' + (loading ? ' load' : '')">
             <font-awesome-icon :icon="['fas', 'book']" />
             <!-- 概览 -->
             <font-awesome-icon
@@ -23,116 +23,123 @@
                 :icon="['fas', 'calendar-days']"
                 @click="changeView('event')" />
         </div>
-        <div v-if="showName != 'overview'" class="detail-list">
-            <template v-if="showName === 'website'">
-                <span>{{ $t('访客数据') }}</span>
-            </template>
-            <template v-if="showName === 'session'">
-                <span>{{ $t('访客详情') }}</span>
-                <a> {{ $t('访客数据表示访问网站的独立会话，同一个访客只会统计一次。并且在下次访问时覆盖上次的数据。') }} </a>
-            </template>
-            <template v-if="showName === 'event'">
-                <span>{{ $t('事件详情') }}</span>
-                <a> {{ $t('事件数据表示用户在访问期间的具体操作或上报行为，每次触发都会单独记录，因此同一个访客可能产生多个事件。') }} </a>
-            </template>
-            <div class="list">
-                <div v-for="(item, index) in mainList"
-                    :key="index"
-                    :class="{'select': mainListSelected === item.value}"
-                    @click="getData(item.value)">
-                    <span>{{ item.label }}<span v-if="item.subLabel">{{ item.subLabel }}</span></span>
-                    <a>{{ item.count ? formatNumber(Number(item.count)) : '' }}</a>
-                </div>
-            </div>
-            <div class="time-select">
-                <div>
-                    <select v-model="timeType" @change="updateData">
-                        <option value="1">
-                            {{ $t('最近 24 小时') }}
-                        </option>
-                        <option value="2">
-                            {{ $t('本周') }}
-                        </option>
-                        <option value="3">
-                            {{ $t('本月') }}
-                        </option>
-                        <option value="4">
-                            {{ $t('本年') }}
-                        </option>
-                        <option value="5">
-                            {{ $t('所有时间段') }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="view-pan">
-            <!-- 概览 -->
-            <template v-if="showName === 'overview'">
-                <a v-if="visitData.pageviewChart != null">{{ $t('概览') }}</a>
-                <div v-if="visitData.pageviewChart != null" style="width: 100%;height: 100%;display: flex;align-items: center;flex-direction: column;">
-                    <v-chart :option="visitData.pageviewChart" style="width: 100%;height: 100%;" autoresize />
-                    <div class="time-select overview-time-select">
-                        <div>
-                            <select v-model="timeType" @change="updateData">
-                                <option value="1">
-                                    {{ $t('最近 24 小时') }}
-                                </option>
-                                <option value="2">
-                                    {{ $t('本周') }}
-                                </option>
-                                <option value="3">
-                                    {{ $t('本月') }}
-                                </option>
-                                <option value="4">
-                                    {{ $t('本年') }}
-                                </option>
-                                <option value="5">
-                                    {{ $t('所有时间段') }}
-                                </option>
-                            </select>
-                        </div>
+        <div :class="mainListSelected ? 'select' : ''">
+            <div v-if="showName != 'overview'" class="detail-list">
+                <template v-if="showName === 'website'">
+                    <span>{{ $t('访客数据') }}</span>
+                </template>
+                <template v-if="showName === 'session'">
+                    <span>{{ $t('访客详情') }}</span>
+                    <a> {{ $t('访客数据表示访问网站的独立会话，同一个访客只会统计一次。并且在下次访问时覆盖上次的数据。') }} </a>
+                </template>
+                <template v-if="showName === 'event'">
+                    <span>{{ $t('事件详情') }}</span>
+                    <a> {{ $t('事件数据表示用户在访问期间的具体操作或上报行为，每次触发都会单独记录，因此同一个访客可能产生多个事件。') }} </a>
+                </template>
+                <div class="list">
+                    <div v-for="(item, index) in mainList"
+                        :key="index"
+                        :class="{'select': mainListSelected === item.value}"
+                        @click="getData(item.value)">
+                        <span>{{ item.label }}<span v-if="item.subLabel">{{ item.subLabel }}</span></span>
+                        <a>{{ item.count ? formatNumber(Number(item.count)) : '' }}</a>
                     </div>
                 </div>
-            </template>
-            <!-- 访客数据 -->
-            <template v-else-if="showName === 'website'">
-                <div class="status">
-                    <div v-for="name in Object.keys(visitData.status)"
-                        v-show="name !== 'bounces' && name !== 'totaltime'"
-                        :key="name">
-                        <a>{{ formatNumber(visitData.status[name].value) }}</a>
-                        <span>{{ $t('访客数据_' + name) }}</span>
-                    </div>
-                </div>
-                <span>{{ $t('当前在线人数') }}: {{ visitData.online }}</span>
-                <div v-if="visitData.metrics != null" class="ss-card website-metric">
+                <div class="time-select">
                     <div>
-                        <span v-if="mainListSelected !== ''">{{ $t(metricTypes[mainListSelected]) }}</span>
-                        <a style="width: calc(5rem + 20px);">{{ $t('数值（占比）') }}</a>
+                        <select v-model="timeType" :disabled="loading" @change="changeTime">
+                            <option value="1">
+                                {{ $t('最近 24 小时') }}
+                            </option>
+                            <option value="2">
+                                {{ $t('本周') }}
+                            </option>
+                            <option value="3">
+                                {{ $t('本月') }}
+                            </option>
+                            <option value="4">
+                                {{ $t('本年') }}
+                            </option>
+                            <option value="5">
+                                {{ $t('所有时间段') }}
+                            </option>
+                        </select>
                     </div>
-                    <div v-for="(metric, index) in visitData.metrics" :key="index">
-                        <span v-if="mainListSelected === 'event'">
-                            {{ eventTypes[metric.x] ? $t(eventTypes[metric.x]) + $t('次数') : metric.x }}
-                        </span>
-                        <span v-else>{{ (metric.x && metric.x != '') ? metric.x : '-' }}</span>
-                        <div>
-                            <a>{{ formatNumber(metric.y) }}</a>
-                            <!-- 按百分比绘制背景 -->
-                            <div :style="{background: `linear-gradient(to right, color-mix(in srgb, var(--color-main) 20%, transparent) ${metric.percentage}%, transparent ${metric.percentage}%)`}">
-                                <span>{{ metric.percentage }}%</span>
+                </div>
+            </div>
+            <div class="view-pan">
+                <font-awesome-icon
+                    v-if="showName != 'overview'"
+                    :icon="['fas', 'arrow-left']"
+                    @click="mainListSelected = ''" />
+                <!-- 概览 -->
+                <template v-if="showName === 'overview'">
+                    <a v-if="visitData.pageviewChart != null">{{ $t('概览') }}</a>
+                    <div v-if="visitData.pageviewChart != null" style="width: 100%;height: 100%;display: flex;align-items: center;flex-direction: column;">
+                        <v-chart :option="visitData.pageviewChart" style="width: 100%;height: 100%;" autoresize />
+                        <div class="time-select overview-time-select">
+                            <div>
+                                <select v-model="timeType" :disabled="loading" @change="changeTime">
+                                    <option value="1">
+                                        {{ $t('最近 24 小时') }}
+                                    </option>
+                                    <option value="2">
+                                        {{ $t('本周') }}
+                                    </option>
+                                    <option value="3">
+                                        {{ $t('本月') }}
+                                    </option>
+                                    <option value="4">
+                                        {{ $t('本年') }}
+                                    </option>
+                                    <option value="5">
+                                        {{ $t('所有时间段') }}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                     </div>
-                </div>
-            </template>
-            <!-- 访客详情 & 事件详情 -->
-            <template v-if="showName === 'event' || showName === 'session'">
-                <div v-if="eventData != null" class="pie-pan">
-                    <v-chart :option="eventData" autoresize />
-                    <a>{{ $t('占比小于 {per}% 的数据将不会展示在饼图中', { per: minPiePercentage * 100 }) }}</a>
-                </div>
-            </template>
+                </template>
+                <!-- 访客数据 -->
+                <template v-else-if="showName === 'website'">
+                    <div class="status">
+                        <template v-for="name in Object.keys(visitData.status)"
+                            :key="name">
+                            <div v-if="name !== 'bounces' && name !== 'totaltime'">
+                                <a>{{ formatNumber(visitData.status[name].value) }}</a>
+                                <span>{{ $t('访客数据_' + name) }}</span>
+                            </div>
+                        </template>
+                    </div>
+                    <span>{{ $t('当前在线人数') }}: {{ visitData.online }}</span>
+                    <div v-show="mainListSelected != ''" v-if="visitData.metrics != null" class="ss-card website-metric">
+                        <div>
+                            <span v-if="mainListSelected !== ''">{{ $t(metricTypes[mainListSelected]) }}</span>
+                            <a style="width: calc(5rem + 20px);">{{ $t('数值（占比）') }}</a>
+                        </div>
+                        <div v-for="(metric, index) in visitData.metrics" :key="index">
+                            <span v-if="mainListSelected === 'event'">
+                                {{ eventTypes[metric.x] ? $t(eventTypes[metric.x]) + $t('次数') : metric.x }}
+                            </span>
+                            <span v-else>{{ (metric.x && metric.x != '') ? metric.x : '-' }}</span>
+                            <div>
+                                <a>{{ formatNumber(metric.y) }}</a>
+                                <!-- 按百分比绘制背景 -->
+                                <div :style="{background: `linear-gradient(to right, color-mix(in srgb, var(--color-main) 20%, transparent) ${metric.percentage}%, transparent ${metric.percentage}%)`}">
+                                    <span>{{ metric.percentage }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <!-- 访客详情 & 事件详情 -->
+                <template v-if="showName === 'event' || showName === 'session'">
+                    <div v-show="mainListSelected != ''" v-if="eventData != null" class="pie-pan">
+                        <v-chart :option="eventData" autoresize />
+                        <a>{{ $t('占比小于 {per}% 的数据将不会展示在饼图中', { per: minPiePercentage * 100 }) }}</a>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 </template>
@@ -203,6 +210,7 @@
                 minPiePercentage: 0.0084, // 饼图中最小显示百分比
                 showName: 'website',
                 timeType: 1,
+                loading: false,
                 mainListSelected: '',
                 mainList: [] as {
                     label: string,
@@ -222,6 +230,14 @@
             }
         },
         mounted() {
+            this.$watch(() => this.mainList, (newValue) => {
+                if(newValue.length > 0)
+                    this.loading = false
+            })
+            this.$watch(() => this.visitData.pageviewChart, (newValue) => {
+                if(newValue != null)
+                    this.loading = false
+            })
             this.updateData()
             this.$watch(this.showName, () => {
                 this.updateData()
@@ -229,6 +245,8 @@
         },
         methods: {
             changeView(view: string) {
+                if(this.loading) return
+
                 this.showName = view
                 this.mainListSelected = ''
                 this.visitData.metrics = null
@@ -236,7 +254,15 @@
                 this.updateData()
             },
 
+            changeTime() {
+                if(this.loading) return
+
+                this.mainListSelected = '';
+                this.updateData();
+            },
+
             updateData() {
+                this.loading = true
                 this.getStatus()
                 this.getOnlineCount()
                 this.getList()
@@ -630,6 +656,10 @@
     overflow: hidden;
     z-index: -1;
 }
+.umami-info-pan > div:last-child {
+    flex: 1;
+    display: flex;
+}
 .type-list {
     background: var(--color-card-2);
     flex-direction: column;
@@ -638,6 +668,7 @@
     z-index: 10;
 }
 .type-list > svg {
+    transition: all 0.3s;
     cursor: pointer;
     color: var(--color-font);
     width: 15px;
@@ -654,6 +685,9 @@
 .type-list > svg.select {
     background: var(--color-main);
     color: var(--color-font-r);
+}
+.type-list.load > svg.select {
+    opacity: 0.5;
 }
 
 .detail-list {
@@ -677,6 +711,7 @@
     font-size: 0.8rem;
     color: var(--color-font-1);
 }
+
 .time-select {
     margin: 1rem;
 }
@@ -710,6 +745,11 @@
     width: 100%;
     height: 30px;
 }
+.time-select select:disabled {
+    background: var(--color-card-1);
+    color: var(--color-font-2);
+    cursor: not-allowed;
+}
 .overview-time-select {
     position: absolute;
     bottom: 17px;
@@ -720,6 +760,11 @@
 .overview-time-select select {
     background: var(--color-card-1);
 }
+.overview-time-select select:disabled {
+    background: var(--color-bg);
+    color: var(--color-font-2);
+    cursor: not-allowed;
+}
 .detail-list > .list {
     overflow-y: auto;
     margin-right: 7px;
@@ -727,6 +772,7 @@
 }
 
 .detail-list > .list > div {
+    transition: all 0.3s;
     justify-content: space-between;
     cursor: pointer;
     margin: 0 1rem 5px 1rem;
@@ -759,6 +805,9 @@
     align-items: center;
     padding: 20px;
     flex: 1;
+}
+.view-pan > svg {
+    display: none;
 }
 .view-pan > span {
     display: block;
@@ -813,9 +862,9 @@
 .status {
     margin-top: 1rem;
     padding-bottom: 1rem;
-    flex-direction: column;
     width: calc(100% - 30px);
     display: flex;
+    flex-direction: row;
     justify-content: space-around;
     flex-wrap: wrap;
 }
@@ -892,26 +941,72 @@
 
 @media (max-width: 500px) {
     .umami-info-pan {
-        flex-direction: column !important;
+        flex-direction: column-reverse !important;
+        height: calc(100% + 40px) !important;
     }
+    .umami-info-pan > div:last-child {
+        overflow-x: hidden;
+    }
+    .umami-info-pan > div:last-child > div:first-child {
+        transition: margin-left 0.3s;
+    }
+    .umami-info-pan > div:last-child.select > div:first-child {
+        margin-left: -100%;
+    }
+
     .type-list {
+        background: var(--color-card-1);
         flex-direction: row !important;
-        padding-top: 40px !important;
+        padding: 10px !important;
         justify-content: space-evenly;
+    }
+    .type-list > svg {
+        margin: 0;
+        padding: 13px;
+        height: 20px;
+        width: 20px;
     }
     .type-list > svg:first-child {
         display: none !important;
     }
+
+    .view-pan > a,
+    .detail-list > span {
+        font-size: 1.3rem;
+    }
     .detail-list {
-        max-height: 30%;
-        width: 100% !important;
+        min-width: 100% !important;
+        background: var(--color-bg);
     }
+    .time-select > div {
+        height: 35px;
+    }
+    .time-select > div > select {
+        height: 35px;
+    }
+
     .view-pan {
-        height: calc(70% - 140px);
+        min-width: calc(100% - 40px) !important;
+        margin-top: 1.5rem;
+        justify-content: start;
     }
+    .view-pan > svg {
+        display: block !important;
+        color: var(--color-font-r);
+        background: var(--color-main);
+        padding: 13px;
+        border-radius: 7px;
+        margin-top: 1.3rem;
+    }
+
+    .pie-pan {
+        height: 70%;
+    }
+
     .overview-time-select {
+        bottom: 100px !important;
         right: 20px !important;
-        width: 100px !important;
+        width: 30% !important;
     }
 }
 </style>
