@@ -142,17 +142,19 @@
                     <span>{{ $t('强制窗口状态') }}</span>
                     <span>{{ $t('喵喵喵，喵呜——') }}</span>
                 </div>
-                <select v-model="winState" @change="forceWinState">
-                    <option value="none">
-                        {{ $t('取消') }}
-                    </option>
-                    <option value="win">
-                        {{ $t('窗口') }}
-                    </option>
-                    <option value="tiling">
-                        {{ $t('平铺') }}
-                    </option>
-                </select>
+                <div class="select-wrapper">
+                    <select v-model="winState" @change="forceWinState">
+                        <option value="none">
+                            {{ $t('取消') }}
+                        </option>
+                        <option value="win">
+                            {{ $t('窗口') }}
+                        </option>
+                        <option value="tiling">
+                            {{ $t('平铺') }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <div v-if="dev" class="opt-item">
                 <font-awesome-icon :icon="['fas', 'trash']" />
@@ -607,13 +609,13 @@ const illegalProxyUrl = computed(() => {
             async forceWinState() {
                 switch (this.winState) {
                     case 'none':
-                        win.tiling = await backend.call(undefined, 'win:isTiling', true)
+                        win._forceTilingState.value = undefined
                         break
                     case 'tiling':
-                        win.tiling = true
+                        win._forceTilingState.value = true
                         break
                     case 'win':
-                        win.tiling = false
+                        win._forceTilingState.value = false
                         break
                 }
             }

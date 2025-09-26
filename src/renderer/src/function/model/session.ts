@@ -54,7 +54,7 @@ export abstract class Session {
     imgTail: Img | undefined
     readonly _newMsg = shallowRef(0)
     headMsg?: Msg
-    preMessage?: Message
+    readonly _preMessage = shallowRef<undefined|Message>()
     // 设置
     alwaysTop: boolean = false
     // 额外信息
@@ -695,6 +695,14 @@ export abstract class Session {
     set newMsg(num: number) {
         if (num < 0) num = 0
         this._newMsg.value = num
+    }
+
+    get preMessage(): Message | undefined {
+        return this._preMessage.value
+    }
+
+    set preMessage(value: Message | undefined) {
+        this._preMessage.value = value
     }
 
     get showNotice(): boolean {

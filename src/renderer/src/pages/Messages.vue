@@ -24,10 +24,10 @@
             </div>
         </header>
         <TransitionGroup
+            is="div"
             id="message-list-body"
             name="onmsg"
             tag="div"
-            is="div"
             class="session-body-container side-bar-list">
             <!-- 群收纳盒 -->
             <BoxBody

@@ -35,7 +35,7 @@
         <span v-show="needShow && !showAll">{{ $t('点击展开') }}</span>
         <div class="info">
             <img :src="data.sender.face"
-                :alt="data.sender.name" />
+                :alt="data.sender.name">
             <a>{{ data.sender.name }}</a>
             <div />
             <span v-if="data.read !== undefined">{{

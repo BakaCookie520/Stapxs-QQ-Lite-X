@@ -348,9 +348,8 @@
 import { runtimeData } from '@renderer/function/msg'
 import { checkDefault, runASWEvent as save } from '@renderer/function/option'
 import { noticePopBox, popBox } from '@renderer/function/utils/popBox'
+import UmamiInfoPan from '@renderer/popboxes/UmamiInfoPan.vue'
 import { defineComponent } from 'vue'
-
-    import UmamiInfoPan from '@renderer/components/UmamiInfoPan.vue'
 
     export default defineComponent({
         name: 'ViewOptFunction',

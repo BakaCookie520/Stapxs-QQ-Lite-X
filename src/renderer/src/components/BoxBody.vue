@@ -33,7 +33,7 @@
                     <p>{{ data.showName }}</p>
                     <div style="flex: 1" />
                     <a v-if="data.preMessage?.time" class="time">
-                        {{data.preMessage?.time.format('hour')}}
+                        {{ data.preMessage?.time.format('hour') }}
                     </a>
                 </div>
                 <div>

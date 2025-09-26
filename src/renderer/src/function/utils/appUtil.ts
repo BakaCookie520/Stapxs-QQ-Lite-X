@@ -5,8 +5,6 @@ import FileDownloader from 'js-file-downloader'
 import semver from 'semver'
 import appInfo from '../../../../../package.json'
 
-import UpdatePan from '@renderer/components/UpdatePan.vue'
-import WelPan from '@renderer/components/WelPan.vue'
 
 import { KeyboardInfo } from '@capacitor/keyboard'
 import { LogType, Logger, PopInfo, PopType } from '@renderer/function/base'
@@ -609,6 +607,8 @@ import { SessionBox } from '../model/box'
 import { Message } from '../model/message'
 import { ProxyUrl } from '../model/proxyUrl'
 import { htmlPopBox, popBox } from './popBox'
+import UpdatePan from '@renderer/popboxes/UpdatePan.vue'
+import WelPan from '@renderer/popboxes/WelPan.vue'
 /**
 * 初始化快速连接信息
 * @param address 地址

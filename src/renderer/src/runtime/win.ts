@@ -3,16 +3,18 @@ import verticalCss from '@renderer/assets/css/append/mobile/append_mobile_vertic
 import { Logger } from '@renderer/function/base'
 import { runtimeData } from '@renderer/function/msg'
 import option from '@renderer/function/option'
-import { computed, ComputedRef, shallowRef, watchEffect } from 'vue'
+import { computed, ComputedRef, shallowRef, watchEffect, markRaw } from 'vue'
 import { backend } from './backend'
 
 export type WinAction = 'maximize' | 'minimize' | 'unmaximize' | 'close'
 
-const win = {
+const win = markRaw({
     _isTiling: undefined as any as ComputedRef<boolean>,
     _isMaximized: shallowRef(false),
     _needBar: undefined as any as ComputedRef<boolean>,
     _needMargin: undefined as any as ComputedRef<boolean>,
+
+    _forceTilingState: shallowRef<undefined|boolean>(),
 
     hasInit: false,
 
@@ -230,6 +232,8 @@ const win = {
      * 是否为平铺桌面
      */
     get tiling() {
+        if (this._forceTilingState.value !== undefined)
+            return this._forceTilingState.value
         return this._isTiling.value
     },
 
@@ -251,6 +255,6 @@ const win = {
     get margin() {
         return this._needMargin.value
     },
-}
+})
 
 export default win

@@ -54,31 +54,24 @@
             <!-- 前缀 -->
             <!-- 搜索 -->
             <template v-if="details[3].open">
-                <div class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('没有更多消息啦～') }}</a>
-                </div>
+                <CustomHr>
+                    <a class="chat-hr-note">{{ $t('没有更多消息啦～') }}</a>
+                </CustomHr>
             </template>
             <!-- 通常 -->
             <template v-else>
-                <div v-if="chat.loadHistoryState === 'loading'"
-                    class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('获取历史记录ing') }}</a>
-                </div>
-                <div v-else-if="chat.loadHistoryState === 'fail'"
-                    class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('获取历史记录失败') }}</a>
-                </div>
-                <div v-else-if="chat.loadHistoryState === 'end'"
-                    class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('没有更多消息啦～') }}</a>
-                </div>
+                <CustomHr v-if="chat.loadHistoryState === 'loading'">
+                    <a class="chat-hr-note">{{ $t('获取历史记录ing') }}</a>
+                </CustomHr>
+                <CustomHr v-else-if="chat.loadHistoryState === 'fail'">
+                    <a class="chat-hr-note">{{ $t('获取历史记录失败') }}</a>
+                </CustomHr>
+                <CustomHr v-else-if="chat.loadHistoryState === 'end'">
+                    <a class="chat-hr-note">{{ $t('没有更多消息啦～') }}</a>
+                </CustomHr>
             </template>
             <MsgBar
-                :ref="'msgBar'"
+                ref="msgBar"
                 :key="chat.id"
                 :msgs="details[3].open ? (tags.search.list as Message[]) : chat.messageList"
                 :show-msg-menu="showMsgMenu"
@@ -468,6 +461,7 @@
 </template>
 
 <script setup lang="ts">
+import CustomHr from '@renderer/components/CustomHr.vue'
 import EmojiFace from '@renderer/components/EmojiFace.vue'
 import FacePan from '@renderer/components/FacePan.vue'
 import Menu from '@renderer/components/Menu.vue'
@@ -523,16 +517,15 @@ const { chat } = defineProps<{chat: Session}>()
 const $t = app.config.globalProperties.$t
 
 //#region  == 模板引用 ======================================
-const choiceFile = useTemplateRef<HTMLInputElement>('choiceFile')
-const choicePic = useTemplateRef<HTMLInputElement>('choice-pic')
-const msgBar = useTemplateRef<InstanceType<typeof MsgBar>>('msgBar')
-const mergePan = useTemplateRef<InstanceType<typeof MergePan>>('mergePan')
-const infoRef = useTemplateRef<InstanceType<typeof Info>>('infoRef')
-const msgMenu = useTemplateRef<InstanceType<typeof Menu>>('msgMenu')
-const userMenu = useTemplateRef<InstanceType<typeof Menu>>('userMenu')
-const mainInput = useTemplateRef<HTMLTextAreaElement|HTMLInputElement>('main-input')
-const msgPan = useTemplateRef<HTMLDivElement>('msgPan')
-const chatPan = useTemplateRef<HTMLDivElement>('chat-pan')
+const choiceFile = useTemplateRef('choiceFile')
+const choicePic = useTemplateRef('choice-pic')
+const msgBar = useTemplateRef('msgBar')
+const mergePan = useTemplateRef('mergePan')
+const msgMenu = useTemplateRef('msgMenu')
+const userMenu = useTemplateRef('userMenu')
+const mainInput = useTemplateRef('main-input')
+const msgPan = useTemplateRef('msgPan')
+const chatPan = useTemplateRef('chat-pan')
 //#endregion
 
 //#region == 用户信息栏相关 ================================

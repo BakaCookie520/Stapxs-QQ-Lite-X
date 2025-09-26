@@ -333,15 +333,7 @@ function sendSingleForward(){
 
     closeMultiselect()
 }
-/**
- * 删除消息
- */
-function delMsgs() {
-    new PopInfo().add(
-        PopType.INFO,
-        $t('欸嘿，这个按钮只是用来占位置的'),
-    )
-}
+
 /**
  * 复制消息
  */

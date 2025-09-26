@@ -459,7 +459,7 @@ msgstr ""
 msgid "好耶"
 msgstr ""
 
-msgid "好耶！Stapxs QQ Lite 已经被打开 {times} 次了！"
+msgid "好耶！Stapxs QQ Lite X 已经被打开 {times} 次了！"
 msgstr ""
 
 msgid "真的不去点个 star 吗 ……"

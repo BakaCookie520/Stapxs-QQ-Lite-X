@@ -66,9 +66,9 @@ import { runtimeData } from '@renderer/function/msg'
 import Option from '@renderer/function/option'
 import { noticePopBox, popBox } from '@renderer/function/utils/popBox'
 import { i18n } from '@renderer/main'
-import HowToConnect from '@renderer/popboxes/HowToConnect.vue'
 import { computed, shallowReactive, shallowRef } from 'vue'
-import Icon from './Icon.vue'
+import Icon from '@renderer/components/Icon.vue'
+import HowToConnect from '@renderer/popboxes/doc/HowToConnect.vue'
 const loginInfo = shallowReactive({
     savePassword: false,
     quickLoginSelect: '',

@@ -93,8 +93,8 @@
             <div :name="$t('成员')">
                 <div class="chat-info-tab-member">
                     <input
-                        class="search-view"
                         v-search="userSearchInfo!"
+                        class="search-view"
                         :placeholder="$t('搜索 ……')">
                     <div v-if="(userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList).length > 0">
                         <div v-for="member in userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList"
@@ -122,8 +122,8 @@
                 <div class="bulletins">
                     <template v-if="anns">
                         <input
-                            class="search-view"
                             v-search="annSearchInfo!"
+                            class="search-view"
                             :placeholder="$t('搜索 ……')">
                         <div v-if="(annSearchInfo!.isSearch ? annSearchInfo!.query : anns).length > 0">
                             <BulletinBody
@@ -147,8 +147,8 @@
                 <div class="group-files">
                     <template v-if="fileInfo">
                         <input
-                            class="search-view"
                             v-search="fileSearchInfo!"
+                            class="search-view"
                             :placeholder="$t('搜索 ……')">
                         <div v-if="(fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo)?.length > 0"
                             class="file-list">

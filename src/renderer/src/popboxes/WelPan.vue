@@ -390,7 +390,7 @@
 
 <script setup lang="ts">
 import languages from '@renderer/assets/l10n/_l10nconfig.json'
-import Icon from './Icon.vue'
+import Icon from '@renderer/components/Icon.vue'
 
 import { defineComponent } from 'vue'
 import { runtimeData } from '@renderer/function/msg'

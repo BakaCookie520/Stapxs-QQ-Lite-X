@@ -453,8 +453,8 @@ msgstr "（點選以檢視合併訊息）"
 msgid "好耶"
 msgstr "好耶"
 
-msgid "好耶！Stapxs QQ Lite 已经被打开 {times} 次了！"
-msgstr "好耶！Stapxs QQ Lite 已經被使用 {times} 次了！"
+msgid "好耶！Stapxs QQ Lite X 已经被打开 {times} 次了！"
+msgstr "好耶！Stapxs QQ Lite X 已經被使用 {times} 次了！"
 
 msgid "真的不去点个 star 吗 ……"
 msgstr "真的不想給我的專案一個 Star 嗎……"

@@ -69,7 +69,7 @@ export function regIpcListener() {
         if(osName === 'Darwin') {
             osVersion = execSync('sw_vers -productVersion').toString().trim()
             if (osVersion.split('.').length === 2) {
-                osVersion += '.0';
+                osVersion += '.0'
             }
         }
         let releaseInfo = ''

@@ -32,16 +32,6 @@
                     <font-awesome-icon :icon="['fas', 'circle-info']" />
                 </a>
             </div>
-            <div v-if="constList.length > 0"
-                class="ss-card contributors-card">
-                <div>
-                    <div v-for="info in constList"
-                        :key="'contributors-' + info.title"
-                        :title="info.title"
-                        :style="'background-image: url(' + info.url + ');'"
-                        @click="openLink(info.link)" />
-                </div>
-            </div>
         </div>
         <div class="ss-card jump-card"
             :style="showUI ? '' : 'background: var(--color-card-1);'"
@@ -190,7 +180,6 @@
 </template>
 
 <script setup lang="ts">
-import { shallowReactive, onMounted } from 'vue'
 import { openLink, sendStatEvent } from '@renderer/function/utils/appUtil'
 import { popBox } from '@renderer/function/utils/popBox'
 import app from '@renderer/main'
@@ -208,28 +197,6 @@ const emit = defineEmits<{
     closePopBox: []
 }>()
 
-interface ContributorElem {
-    url: string
-    link: string
-    title: string
-}
-
-const constList = shallowReactive<ContributorElem[]>([])
-
-onMounted(() => {
-    // 加载贡献者信息
-    fetch('https://api.github.com/repos/chzxxuanzheng/stapxs-qq-lite-X/contributors')
-        .then((response) => response.json())
-        .then((data: { [key: string]: string }[]) => {
-            for (let i = 0; i < data.length; i++) {
-                constList.push({
-                    url: data[i].avatar_url,
-                    link: data[i].html_url,
-                    title: data[i].login,
-                })
-            }
-        })
-})
 function dependencies(type = undefined as string | undefined, title = '许可版权声明') {
     const $t = app.config.globalProperties.$t
     emit('closePopBox')

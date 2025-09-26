@@ -40,18 +40,8 @@ body.vibrancy {
     background: rgba(var(--color-card-2-rgb), 0.7) !important;
 }
 
-.vibrancy .bcd-body {
-    background: rgba(var(--color-card-rgb), 0.7) !important;
-}
-
 .vibrancy .jump-card {
     background: rgba(var(--color-card-rgb), 0.7) !important;
-    margin-right: 15px !important;
-    margin-left: 10px;
-}
-
-.vibrancy .bcd-about {
-    background: rgba(var(--color-card-2-rgb), 0.7) !important;
 }
 
 .vibrancy .box-body.onmenu,
@@ -244,15 +234,15 @@ body.vibrancy {
     background-color: transparent;
 }
 
-.vibrancy .umami-info-pan > .type-list {
+.vibrancy .umami-info-pan .type-list {
     background-color: rgba(var(--color-card-2-rgb), 0.8);
 }
 
-.vibrancy .umami-info-pan > .detail-list {
+.vibrancy .umami-info-pan .detail-list {
     background-color: rgba(var(--color-card-1-rgb), 0.8);
 }
 
-.vibrancy .umami-info-pan > .view-pan {
+.vibrancy .umami-info-pan .view-pan {
     background-color: rgba(var(--color-card-rgb), 0.8);
 }
 

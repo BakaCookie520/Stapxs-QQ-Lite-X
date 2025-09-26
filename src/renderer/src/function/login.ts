@@ -177,9 +177,9 @@ async function preCheck(
     return { protocol, ssl, url, token }
 }
 
-import WhyNeedToken from '@renderer/components/WhyNeedToken.vue'
 import { popBox } from './utils/popBox'
 import { dns } from './utils/systemUtil'
+import WhyNeedToken from '@renderer/popboxes/doc/WhyNeedToken.vue'
 
 /**
  * 判断传入的 host 是否为公网 IP。

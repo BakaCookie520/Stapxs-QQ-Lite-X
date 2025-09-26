@@ -27,8 +27,8 @@
             <div class="main-box">
                 <Chat
                     v-if="driver.isConnected() && runtimeData.nowChat"
-                    :chat="runtimeData.nowChat"
-                    ref="chat" />
+                    ref="chat"
+                    :chat="runtimeData.nowChat" />
                 <!-- 背景 -->
                 <div v-if="!runtimeData.tags.vibrancy || !runtimeData.nowChat"
                     v-hide="runtimeData.tags.noLogin"
