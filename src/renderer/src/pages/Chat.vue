@@ -78,7 +78,7 @@
                 </div>
             </template>
             <MsgBar
-                :ref="'msgBar'"
+                ref="msgBar"
                 :key="chat.id"
                 :msgs="details[3].open ? (tags.search.list as Message[]) : chat.messageList"
                 :show-msg-menu="showMsgMenu"
@@ -523,16 +523,15 @@ const { chat } = defineProps<{chat: Session}>()
 const $t = app.config.globalProperties.$t
 
 //#region  == 模板引用 ======================================
-const choiceFile = useTemplateRef<HTMLInputElement>('choiceFile')
-const choicePic = useTemplateRef<HTMLInputElement>('choice-pic')
-const msgBar = useTemplateRef<InstanceType<typeof MsgBar>>('msgBar')
-const mergePan = useTemplateRef<InstanceType<typeof MergePan>>('mergePan')
-const infoRef = useTemplateRef<InstanceType<typeof Info>>('infoRef')
-const msgMenu = useTemplateRef<InstanceType<typeof Menu>>('msgMenu')
-const userMenu = useTemplateRef<InstanceType<typeof Menu>>('userMenu')
-const mainInput = useTemplateRef<HTMLTextAreaElement|HTMLInputElement>('main-input')
-const msgPan = useTemplateRef<HTMLDivElement>('msgPan')
-const chatPan = useTemplateRef<HTMLDivElement>('chat-pan')
+const choiceFile = useTemplateRef('choiceFile')
+const choicePic = useTemplateRef('choice-pic')
+const msgBar = useTemplateRef('msgBar')
+const mergePan = useTemplateRef('mergePan')
+const msgMenu = useTemplateRef('msgMenu')
+const userMenu = useTemplateRef('userMenu')
+const mainInput = useTemplateRef('main-input')
+const msgPan = useTemplateRef('msgPan')
+const chatPan = useTemplateRef('chat-pan')
 //#endregion
 
 //#region == 用户信息栏相关 ================================

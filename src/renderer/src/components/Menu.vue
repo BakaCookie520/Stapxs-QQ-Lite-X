@@ -25,7 +25,7 @@
     </Teleport>
 </template>
 <script setup lang="ts">
-import { nextTick, shallowRef, useTemplateRef } from 'vue';
+import { nextTick, shallowRef, useTemplateRef } from 'vue'
 const { name } = defineProps<{
     name: string
 }>()

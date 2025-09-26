@@ -159,8 +159,6 @@ function init() {
  * @param session 被选择的会话
  */
 function choiceSession(session: Session) {
-    runtimeData.tags.openSideBar = false
-
     changeSession(session)
     close()
 }

@@ -5,9 +5,9 @@
  * @Version: 1.0
 -->
 <template>
-    <div v-move="moveOptions"
+    <div ref="side-bar"
+        v-move="moveOptions"
         class="side-bar"
-        ref="side-bar"
         :style="{
             paddingBottom: get('fs_adaptation') > 0 ? `${get('fs_adaptation')}px` : '',
         }"
@@ -18,54 +18,53 @@
         }"
         @v-move-left="nextSideBar()"
         @v-move-right="prevSideBar()"
-        @mouseenter="hoverStart"
-        @mouseleave="hoverEnd">
-
+        @mouseenter="hoverStart()"
+        @mouseleave="hoverEnd($event)">
         <transition mode="out-in" :name="`change-side-bar-${changeSideBarDirection}`">
-            <component ref="sideBar"
-                class="side-bar-main"
-                :is="sideBarInfo.template"
+            <component :is="sideBarInfo.template"
+                ref="sideBar"
                 :key="sideBarInfo.type"
+                class="side-bar-main"
                 :side-bar-state="foldState" />
         </transition>
 
         <div style="margin: auto;" />
-        <hr />
+        <hr>
 
         <div class="bottom">
             <div
                 class="icon"
                 :title="$t('消息')"
-                @click="clickChangeSideBar(messageSideBar)"
-                :class="{'active': sideBarInfo.type === 'Message'}">
+                :class="{'active': sideBarInfo.type === 'Message'}"
+                @click="clickChangeSideBar(messageSideBar)">
                 <font-awesome-icon :icon="['fas', 'envelope']" />
             </div>
             <div
                 class="icon"
                 :title="$t('联系人')"
-                @click="clickChangeSideBar(friendSideBar)"
-                :class="{'active': sideBarInfo.type === 'Friend'}">
+                :class="{'active': sideBarInfo.type === 'Friend'}"
+                @click="clickChangeSideBar(friendSideBar)">
                 <font-awesome-icon :icon="['fas', 'user']" />
             </div>
             <div
                 class="icon"
                 :title="$t('收纳盒')"
-                @click="clickChangeSideBar(boxSideBar)"
-                :class="{'active': sideBarInfo.type === 'Box'}">
+                :class="{'active': sideBarInfo.type === 'Box'}"
+                @click="clickChangeSideBar(boxSideBar)">
                 <font-awesome-icon :icon="['fas', 'box']" />
             </div>
             <div style="margin: auto;" />
             <div v-if="canControlFold"
                 class="icon"
-                @click="fold = !fold"
                 :title="fold ? $t('展开') : $t('折叠')"
-                :class="{'active': fold}">
+                :class="{'active': fold}"
+                @click="fold = !fold">
                 <font-awesome-icon :icon="['fas', 'bars-staggered']" />
             </div>
             <div
                 class="icon"
-                @click="openOptions"
-                :title="$t('设置')">
+                :title="$t('设置')"
+                @click="openOptions">
                 <font-awesome-icon :icon="['fas', 'gear']" />
             </div>
         </div>
@@ -74,7 +73,6 @@
         <div class="drag-region"
             :class="{'grabbing': dragging}"
             @mousedown="startDrag" />
-
     </div>
 </template>
 
@@ -246,7 +244,7 @@ function hoverEnd(event?: MouseEvent) {
         hoverTimeout = setTimeout(() => {
             isHover.value = false
             staticTime = undefined
-        }, dTime);
+        }, dTime)
     }
 }
 

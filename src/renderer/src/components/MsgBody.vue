@@ -99,7 +99,7 @@
                         <div class="msg-img face alone"
                             style="--width: 35vh">
                             <Lottie :animation-link="(data.message[0] as FaceSeg).face!.superValue"
-                                    :title="(data.message[0] as FaceSeg).face!.description"/>
+                                :title="(data.message[0] as FaceSeg).face!.description" />
                         </div>
                     </template>
                     <template v-else-if="!hasCard()">

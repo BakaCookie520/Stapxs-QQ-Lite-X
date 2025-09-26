@@ -257,8 +257,8 @@
             changeTime() {
                 if(this.loading) return
 
-                this.mainListSelected = '';
-                this.updateData();
+                this.mainListSelected = ''
+                this.updateData()
             },
 
             updateData() {
