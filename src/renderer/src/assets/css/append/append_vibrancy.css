@@ -40,18 +40,8 @@ body.vibrancy {
     background: rgba(var(--color-card-2-rgb), 0.7) !important;
 }
 
-.vibrancy .bcd-body {
-    background: rgba(var(--color-card-rgb), 0.7) !important;
-}
-
 .vibrancy .jump-card {
     background: rgba(var(--color-card-rgb), 0.7) !important;
-    margin-right: 15px !important;
-    margin-left: 10px;
-}
-
-.vibrancy .bcd-about {
-    background: rgba(var(--color-card-2-rgb), 0.7) !important;
 }
 
 .vibrancy .box-body.onmenu,
