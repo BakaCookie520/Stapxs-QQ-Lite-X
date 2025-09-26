@@ -54,28 +54,21 @@
             <!-- 前缀 -->
             <!-- 搜索 -->
             <template v-if="details[3].open">
-                <div class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('没有更多消息啦～') }}</a>
-                </div>
+                <CustomHr>
+                    <a class="chat-hr-note">{{ $t('没有更多消息啦～') }}</a>
+                </CustomHr>
             </template>
             <!-- 通常 -->
             <template v-else>
-                <div v-if="chat.loadHistoryState === 'loading'"
-                    class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('获取历史记录ing') }}</a>
-                </div>
-                <div v-else-if="chat.loadHistoryState === 'fail'"
-                    class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('获取历史记录失败') }}</a>
-                </div>
-                <div v-else-if="chat.loadHistoryState === 'end'"
-                    class="note note-nomsg">
-                    <hr>
-                    <a>{{ $t('没有更多消息啦～') }}</a>
-                </div>
+                <CustomHr v-if="chat.loadHistoryState === 'loading'">
+                    <a class="chat-hr-note">{{ $t('获取历史记录ing') }}</a>
+                </CustomHr>
+                <CustomHr v-else-if="chat.loadHistoryState === 'fail'">
+                    <a class="chat-hr-note">{{ $t('获取历史记录失败') }}</a>
+                </CustomHr>
+                <CustomHr v-else-if="chat.loadHistoryState === 'end'">
+                    <a class="chat-hr-note">{{ $t('没有更多消息啦～') }}</a>
+                </CustomHr>
             </template>
             <MsgBar
                 ref="msgBar"
@@ -468,6 +461,7 @@
 </template>
 
 <script setup lang="ts">
+import CustomHr from '@renderer/components/CustomHr.vue'
 import EmojiFace from '@renderer/components/EmojiFace.vue'
 import FacePan from '@renderer/components/FacePan.vue'
 import Menu from '@renderer/components/Menu.vue'

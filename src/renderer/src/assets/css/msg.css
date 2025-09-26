@@ -717,30 +717,10 @@ span.user-title.robot {
     color: var(--color-font-1);
 }
 
-.note-nomsg {
-    color: var(--color-font-2);
-    text-align: center;
-    margin: 40px auto;
-    display: block;
-    opacity: 0.5;
-    width: 80%;
-}
-
-.note-nomsg > a {
-    background: var(--color-card);
-    color: var(--color-font);
-    position: relative;
+a.chat-hr-note {
+    color: var(--font-color);
     font-size: 0.8rem;
     padding: 0 20px;
-    z-index: 1;
-}
-
-.note-nomsg > hr {
-    border-style: inset !important;
-    border: 0 !important;
-    border-bottom: 1px solid var(--color-main) !important;
-    opacity: 0.5;
-    margin-bottom: -0.5rem;
 }
 
 .file-view {
