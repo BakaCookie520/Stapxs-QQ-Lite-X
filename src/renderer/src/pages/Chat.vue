@@ -383,6 +383,10 @@
                         <div><font-awesome-icon :icon="['fas', 'code']" /></div>
                         <a>{{ $t('复制选中文本') }}</a>
                     </div>
+                    <div v-show="menuDisplay.copyImg" @click="copyImg">
+                        <div><font-awesome-icon :icon="['fas', 'object-ungroup']" /></div>
+                        <a>{{ $t('复制图片') }}</a>
+                    </div>
                     <div v-show="menuDisplay.downloadImg != false" @click="downloadImg">
                         <div><font-awesome-icon :icon="['fas', 'floppy-disk']" /></div>
                         <a>{{ $t('下载图片') }}</a>
@@ -838,6 +842,7 @@ const menuDisplayDefault = {
     copy: true,
     selectCache: '',
     copySelect: false,
+    copyImg: false,
     downloadImg: false as string | false,
     revoke: false,
     at: true,
@@ -922,11 +927,12 @@ function showMsgMenu(data: MenuEventData, msg: Msg): Promise<void> | undefined {
         menuDisplay.forward = false
         menuDisplay.add = false
     }
-    if (data.target.nodeName == 'IMG') {
+    if (data.target.nodeName == 'IMG' && (data.target as HTMLImageElement).src.length > 0) {
         // 右击图片需要显示的内容，这边特例设置为链接
         menuDisplay.downloadImg = (
             data.target as HTMLImageElement
         ).src
+        if (runtimeData.tags.canCors) menuDisplay.copyImg = true
     }
 
     // 开发者工具
@@ -1574,6 +1580,60 @@ function copySelectMsg() {
         )
 
     closeMsgMenu()
+}
+/**
+ * 复制图片
+ */
+async function copyImg() {
+    if (!menuDisplay.downloadImg) return
+
+    // 关闭菜单
+    closeMsgMenu()
+
+    // 类型白名单
+    const typeWhiteList = [
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/svg+xml',
+    ]
+
+    // 获取图片数据
+    const response = await fetch(menuDisplay.downloadImg)
+    let blob = await response.blob()
+
+    // 乱七八糟浏览器不一定支持的格式统统转png
+    if (!typeWhiteList.includes(blob.type)) {
+        // 创建 canvas 来转换格式
+        const img = new Image()
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+
+        await new Promise((resolve, reject) => {
+            img.onload = resolve
+            img.onerror = reject
+            img.src = URL.createObjectURL(blob)
+        })
+
+        canvas.width = img.width
+        canvas.height = img.height
+        ctx?.drawImage(img, 0, 0)
+
+        // 转换为 PNG blob
+        blob = await new Promise(resolve => {
+            canvas.toBlob((blob)=>{
+                resolve(blob as Blob)
+            }, 'image/png')
+        })
+
+        URL.revokeObjectURL(img.src)
+    }
+    const item = new ClipboardItem({ [blob.type]: blob })
+    try {
+        await copyToClipboard([item])
+        const popInfo = new PopInfo()
+        popInfo.add(PopType.INFO, $t('复制成功'))
+    }catch {/**/}
 }
 /**
  * 下载选中的图片
