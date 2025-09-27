@@ -7,7 +7,6 @@ import { GroupSession, Session, UserSession } from '../model/session'
 import { IUser } from '../model/user'
 import { BubbleBox, SessionBox } from '../model/box'
 import { popBox } from './popBox'
-import { markRaw, toRaw } from 'vue'
 import app from '@renderer/main'
 import { backend } from '@renderer/runtime/backend'
 
@@ -107,8 +106,8 @@ export function isShowTime(
 export function changeSession(session: Session, fromBox?: SessionBox) {
     runtimeData.nowBox = fromBox
     if (runtimeData.nowChat === session) return
-    if (!session.isActive) toRaw(session).activate()
-    runtimeData.nowChat = markRaw(session)
+    if (!session.isActive) session.activate()
+    runtimeData.nowChat = session
 
     // 补加列表没有的会话时,盒子切换
     if (!fromBox && !session.alwaysTop) {

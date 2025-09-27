@@ -140,51 +140,48 @@ export const backend = {
      * @returns 返回值
      */
     async call(type: string | undefined, name: string, needBack: boolean, ...args: any[]) {
-        if (this.function) {
-            // 处理名称
-            if (this.type == 'tauri') {
-                name = name.replaceAll(':', '_').replace(/([A-Z])/g, '_$1').toLowerCase()
-            }
-            if (this.type == 'capacitor' && name.includes(':')) {
-                name = name.split(':')[1]
-            }
-            // 调用对应方法
-            try {
-                if ('electron' == this.type && 'invoke' in this.function && 'send' in this.function) {
-                    if (needBack) {
-                        return await this.function.invoke(name, ...args)
-                    } else {
-                        this.function.send(name, ...args)
-                        return undefined
-                    }
-                } else if ('tauri' == this.type && 'invoke' in this.function) {
-                    // tauri 这边必须传入一个字典
-                    if (args.length == 0 || Object.prototype.toString.call(args[0]) !== '[object Object]') {
-                        args = [{ data: args[0] }]
-                    }
-                    return await this.function.invoke(name, args[0])
-                } else if ('capacitor' == this.type && 'plugins' in this.function && 'capacitor' in this.function) {
-                    // capacitor 这边必须传入一个字典
-                    if (args.length == 0 || Object.prototype.toString.call(args[0]) !== '[object Object]') {
-                        args = [{ data: args[0] }]
-                    }
-                    let functionGet = this.function.capacitor[name]
-                    if (type != undefined && functionGet == undefined) {
-                        functionGet = this.function.plugins[type][name] ?? this.function.capacitor[type][name]
-                    }
-                    const back = await functionGet(args[0])
-                    if (Object.prototype.toString.call(back) === '[object Object]' && Object.keys(back).length == 1) {
-                        return back[Object.keys(back)[0]]
-                    } else {
-                        return back
-                    }
+        if (!this.function) return undefined
+
+        // 处理名称
+        if (this.type == 'tauri') {
+            name = name.replaceAll(':', '_').replace(/([A-Z])/g, '_$1').toLowerCase()
+        }
+        if (this.type == 'capacitor' && name.includes(':')) {
+            name = name.split(':')[1]
+        }
+        // 调用对应方法
+        try {
+            if ('electron' == this.type && 'invoke' in this.function && 'send' in this.function) {
+                if (needBack) {
+                    return await this.function.invoke(name, ...args)
+                } else {
+                    this.function.send(name, ...args)
+                    return undefined
                 }
-            } catch (ex) {
-                logger.add(LogType.DEBUG, `调用后端方法 ${(type ?? '') + ' - '}${name} 失败`, ex)
-                return undefined
+            } else if ('tauri' == this.type && 'invoke' in this.function) {
+                // tauri 这边必须传入一个字典
+                if (args.length == 0 || Object.prototype.toString.call(args[0]) !== '[object Object]') {
+                    args = [{ data: args[0] }]
+                }
+                return await this.function.invoke(name, args[0])
+            } else if ('capacitor' == this.type && 'plugins' in this.function && 'capacitor' in this.function) {
+                // capacitor 这边必须传入一个字典
+                if (args.length == 0 || Object.prototype.toString.call(args[0]) !== '[object Object]') {
+                    args = [{ data: args[0] }]
+                }
+                let functionGet = this.function.capacitor[name]
+                if (type != undefined && functionGet == undefined) {
+                    functionGet = this.function.plugins[type][name] ?? this.function.capacitor[type][name]
+                }
+                const back = await functionGet(args[0])
+                if (Object.prototype.toString.call(back) === '[object Object]' && Object.keys(back).length == 1) {
+                    return back[Object.keys(back)[0]]
+                } else {
+                    return back
+                }
             }
-        } else {
-            logger.add(LogType.ERR, '调用后端方法失败', new Error('当前运行环境不支持调用后端方法'))
+        } catch (ex) {
+            logger.add(LogType.DEBUG, `调用后端方法 ${(type ?? '') + ' - '}${name} 失败`, ex)
             return undefined
         }
     },
