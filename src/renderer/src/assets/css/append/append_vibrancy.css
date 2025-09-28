@@ -72,19 +72,6 @@ body.vibrancy {
     background: rgba(var(--color-bg-rgb), 0.6);
 }
 
-.vibrancy .chat-pan > .more {
-    margin-left: 15px;
-    margin-right: 15px;
-    margin-bottom: 5px;
-    border-radius: 7px;
-    padding: 5px;
-    backdrop-filter: blur(50px);
-}
-
-.vibrancy .chat-pan > div.more > div:nth-child(2) {
-    padding: 5px;
-}
-
 .vibrancy hr,
 .vibrancy .member-info > div,
 .vibrancy .msg-preview > div,
@@ -125,7 +112,7 @@ body.vibrancy {
 }
 
 .vibrancy .pop-box-body {
-    backdrop-filter: unset;
+    backdrop-filter: blur(50px);
     background-color: rgba(var(--color-card-rgb), 0.4);
 }
 
@@ -138,8 +125,14 @@ body.vibrancy {
     background: rgba(var(--color-card-1-rgb), 0.6);
 }
 
+.vibrancy .chat-pan > .chat-bottom > .input-pan > .input {
+    background-color: rgba(var(--color-card-rgb), 0.6);
+}
+
+.vibrancy .face-pan,
+.vibrancy .jin-pan,
 .vibrancy .note-base,
-.vibrancy .chat-pan > .more,
+.vibrancy .chat-pan > .chat-bottom > .input-pan,
 .vibrancy .chat-pan > div.info,
 .vibrancy .merge-pan > div.ss-card,
 .vibrancy .message-content > div.main {
@@ -154,6 +147,10 @@ body.vibrancy {
     height: 100%;
 }
 
+.vibrancy .face-pan,
+.vibrancy .jin-pan,
+.vibrancy .note-base,
+.vibrancy .chat-pan > .chat-bottom > .input-pan,
 .vibrancy .merge-pan > div.ss-card {
     backdrop-filter: blur(50px);
 }
@@ -201,25 +198,6 @@ body.vibrancy {
 
 .vibrancy .at-tag.show::-webkit-scrollbar{
     display: none;
-}
-
-.vibrancy .more-detail.show,
-.vibrancy .at-tag.show,
-.vibrancy .reply-tag.show {
-    margin: 5px 5px 0px 5px;
-}
-
-.vibrancy .more-detail.show {
-    padding-top: 0;
-    width: calc(100% - 10px);
-}
-
-.vibrancy .more-detail > div:first-child {
-    margin-left: 0;
-}
-
-.vibrancy .more-detail > div:last-child {
-    margin-right: 0;
 }
 
 .vibrancy .folder.open,

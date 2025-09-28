@@ -166,31 +166,6 @@
                     type="text" name="msg_taill" @keyup="save">
             </div>
             <div class="opt-item">
-                <div :class="checkDefault('quick_send')" />
-                <font-awesome-icon :icon="['fas', 'square-xmark']" />
-                <div>
-                    <span>{{ $t('默认功能按钮') }}</span>
-                    <span>{{ $t('可以右击试试哦') }}</span>
-                </div>
-                <div class="select-wrapper">
-                    <select v-model="runtimeData.sysConfig.quick_send" name="quick_send"
-                        title="quick_send" @change="save">
-                        <option value="default">
-                            {{ $t('默认') }}
-                        </option>
-                        <option value="img">
-                            {{ $t('图片') }}
-                        </option>
-                        <option value="file">
-                            {{ $t('文件') }}
-                        </option>
-                        <option value="face">
-                            {{ $t('表情') }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-            <div class="opt-item">
                 <div :class="checkDefault('send_face')" />
                 <font-awesome-icon :icon="['fas', 'square-arrow-up-right']" />
                 <div>

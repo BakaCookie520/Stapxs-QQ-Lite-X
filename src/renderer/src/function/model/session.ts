@@ -727,8 +727,6 @@ export class GroupSession extends Session {
      * 是否开启通知
      */
     notice: boolean = false
-    // 群精华列表
-    essenceList: EssenceMsg[] = []
     constructor(id: number, name: string, memberCount: number) {
         const { $t } = app.config.globalProperties
         super(id, name)
@@ -801,7 +799,7 @@ export class GroupSession extends Session {
     override prepareUnactive(): void {
         this.memberList = new Array(this.memberList.length).fill(null)
         this.annCache = undefined
-        this.essenceList = []
+        this.essenceCache = undefined
         this.me = null
     }
 
@@ -844,8 +842,8 @@ export class GroupSession extends Session {
      * @returns 自身成员对象
      */
     override getMe(): Member {
-        if (!this.me === null) throw new Error('请先激活会话')
-        return this.me as Member
+        if (!this.me) throw new Error('请先激活会话')
+        return this.me
     }
 
     /**
@@ -866,11 +864,9 @@ export class GroupSession extends Session {
             } else {
                 noticeInfo[runtimeData.loginInfo.uin] = [this.id]
             }
-        } else {
-            if (list) {
-                const index = list.indexOf(this.id)
-                if (index >= 0) list.splice(index, 1)
-            }
+        } else if (list) {
+            const index = list.indexOf(this.id)
+            if (index >= 0) list.splice(index, 1)
         }
         option.save('notice_group', noticeInfo)
     }
@@ -947,6 +943,9 @@ export class GroupSession extends Session {
         this.fileCache = out
         return out
     }
+    /**
+     * 对 getFile 的封装
+     */
     useFile(): ShallowRef<(GroupFile | GroupFileFolder)[] | undefined> {
         const fileList = shallowRef<(GroupFile | GroupFileFolder)[] | undefined>(undefined)
         this.getFile().then(data => {
@@ -954,23 +953,33 @@ export class GroupSession extends Session {
         })
         return fileList
     }
+    private essenceCache?: EssenceMsg[]
     /**
-     * 刷新群精华列表
+     * 获取群精华消息
+     * @param useCache 是否使用缓存
+     * @returns
      */
-    async reloadEssenceList(): Promise<void> {
-        if (!runtimeData.nowAdapter?.getGroupEssence) return
+    async getEssenceList(useCache: boolean = true): Promise<EssenceMsg[]> {
+        if (useCache && this.essenceCache) return this.essenceCache
+
+        if (!runtimeData.nowAdapter?.getGroupEssence) return []
 
         const data = await runtimeData.nowAdapter.getGroupEssence(this)
-        // 获取失败
-        if (!data) {
-            new PopInfo().add(
-                PopType.ERR,
-                app.config.globalProperties.$t('获取群精华消息失败'),
-            )
-            return
-        }
-        const list = data.map(item => new EssenceMsg(item, this))
-        this.essenceList = list
+        if (!data) return []
+
+        this.essenceCache = data.map(item => new EssenceMsg(item, this))
+
+        return this.essenceCache
+    }
+    /**
+     * 对 getEssenceList 的封装
+     */
+    useEssenceList(): ShallowRef<EssenceMsg[] | undefined> {
+        const essenceList = shallowRef<EssenceMsg[] | undefined>(undefined)
+        this.getEssenceList().then(data => {
+            essenceList.value = data
+        })
+        return essenceList
     }
 }
 
