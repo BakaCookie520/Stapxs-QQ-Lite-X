@@ -641,8 +641,12 @@ function mainKey(event: KeyboardEvent) {
 function mainKeyUp(event: KeyboardEvent) {
     const logger = new Logger()
     // 发送完成后输入框会遗留一个换行，把它删掉 ……
-    if (checkNewLineFlag && msgWhileSend.value == '\n')
-        msgWhileSend.value = ''
+    if (checkNewLineFlag){
+        checkNewLineFlag = false
+        if (msgWhileSend.value == '\n'){
+            msgWhileSend.value = ''
+        }
+    }
 
     if (event.key !== 'Enter') {
         // 获取最后一个输入的符号用于判定 at
