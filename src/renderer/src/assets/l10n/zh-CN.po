@@ -1230,7 +1230,7 @@ msgstr ""
 msgid "禁止解析[已删除]"
 msgstr ""
 
-msgid "ob会把撤回的消息显示为你自己发的[已删除]"
+msgid "在tx服务器里，被撤回的消息为[已删除]"
 msgstr ""
 
 msgid "这条消息迷失在虚空里了"
@@ -2191,4 +2191,10 @@ msgid "空消息不可以发送哦～"
 msgstr ""
 
 msgid "展开"
+msgstr ""
+
+msgid "发送键"
+msgstr ""
+
+msgid "你可以使用其他组合键来换行"
 msgstr ""

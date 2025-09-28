@@ -588,27 +588,58 @@ function chatScroll(event: Event) {
 }
 
 //#region == 发送消息 ==========================================
+let checkNewLineFlag = false
 /**
  * 发送框按键事件
  * @param event 事件
  */
 function mainKey(event: KeyboardEvent) {
-    if (!event.shiftKey && event.key === 'Enter') {
-        // enter 发送消息
-        if (canSendMsg.value)
-            sendMsg()
+    if (event.key !== 'Enter') return
+    let canSend = false
+    switch (runtimeData.sysConfig.send_key) {
+        case 'none':
+            if (event.shiftKey) break
+            if (event.ctrlKey) break
+            if (event.altKey) break
+            if (event.metaKey) break
+            canSend = true
+            break
+        case 'shift':
+            if (!event.shiftKey) break
+            canSend = true
+            break
+        case 'ctrl':
+            if (!event.ctrlKey) break
+            canSend = true
+            break
+        case 'alt':
+            if (!event.altKey) break
+            canSend = true
+            break
+        case 'meta':
+            if (!event.metaKey) break
+            canSend = true
+            break
     }
+
+    if (canSend && canSendMsg.value) sendMsg()
+    else
+    // 补加 enter
+    // ctrl + enter
+    // meta + enter
+    // alt + enter
+    // 上述组合不自带enter,需要手动补充
+    if (
+        event.key === 'Enter' &&
+        (event.ctrlKey || event.metaKey || event.altKey)
+    ) msgWhileSend.value += '\n'
 }
 function mainKeyUp(event: KeyboardEvent) {
     const logger = new Logger()
     // 发送完成后输入框会遗留一个换行，把它删掉 ……
-    if (
-        !event.shiftKey &&
-        event.key === 'Enter' &&
-        msgWhileSend.value == '\n'
-    ) {
+    if (checkNewLineFlag && msgWhileSend.value == '\n')
         msgWhileSend.value = ''
-    }
+
     if (event.key !== 'Enter') {
         // 获取最后一个输入的符号用于判定 at
         const lastInput = msgWhileSend.value.at(-1)
@@ -1222,6 +1253,7 @@ function sendMsg() {
     sendCache.length = 0
     imgCache.length = 0
     cancelReply()
+    checkNewLineFlag = true
     nextTick(async ()=>{
         await delay(100)
         scrollBottom(true)

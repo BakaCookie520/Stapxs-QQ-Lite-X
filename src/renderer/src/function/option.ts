@@ -11,7 +11,7 @@
  */
 
 import languageConfig from '@renderer/assets/l10n/_l10nconfig.json'
-import app from '@renderer/main'
+import app, { i18n } from '@renderer/main'
 
 import {
     loadWinColor,
@@ -22,7 +22,6 @@ import {
     getPortableFileLang,
     getTrueLang,
 } from '@renderer/function/utils/systemUtil'
-import { i18n } from '@renderer/main'
 import { backend } from '@renderer/runtime/backend'
 import win from '@renderer/runtime/win'
 import { Logger, LogType, PopInfo, PopType } from './base'
@@ -76,7 +75,7 @@ export const optDefault = {
     group_notice_type: 'none',
     show_response_message: 'self',
     send_face: false,
-    use_breakline: false,
+    send_key: 'none',
     close_browser: false,
     close_ga: false,
     open_ga_bot: true,

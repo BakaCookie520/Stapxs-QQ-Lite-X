@@ -183,26 +183,39 @@
                 </label>
             </div>
             <div class="opt-item">
-                <div :class="checkDefault('use_breakline')" />
+                <div :class="checkDefault('send_key')" />
                 <font-awesome-icon :icon="['fas', 'keyboard']" />
                 <div>
-                    <span>{{ $t('使用 shift enter 换行') }}</span>
-                    <span>{{ $t('I have a shift I have an enter ...') }}</span>
+                    <span>{{ $t('发送键') }}</span>
+                    <span>{{ $t('你可以使用其他组合键来换行') }}</span>
                 </div>
-                <label class="ss-switch">
-                    <input v-model="runtimeData.sysConfig.use_breakline" type="checkbox"
-                        name="use_breakline" @change="breakLineTip($event);save($event)">
-                    <div>
-                        <div />
-                    </div>
-                </label>
+                <div class="select-wrapper">
+                    <select v-model="runtimeData.sysConfig.send_key"
+                        name="send_key" title="send_key" @change="save">
+                        <option value="none">
+                            Enter
+                        </option>
+                        <option value="shift">
+                            Shift + Enter
+                        </option>
+                        <option value="ctrl">
+                            Ctrl + Enter
+                        </option>
+                        <option value="alt">
+                            Alt + Enter
+                        </option>
+                        <option value="meta">
+                            Meta + Enter
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="opt-item">
                 <div :class="checkDefault('dont_parse_delete')" />
                 <font-awesome-icon :icon="['fas', 'delete-left']" />
                 <div>
                     <span>{{ $t('禁止解析[已删除]') }}</span>
-                    <span>{{ $t('ob会把撤回的消息显示为你自己发的[已删除]') }}</span>
+                    <span>{{ $t('在tx服务器里，被撤回的消息为[已删除]') }}</span>
                 </div>
                 <label class="ss-switch">
                     <input v-model="runtimeData.sysConfig.dont_parse_delete"
@@ -351,12 +364,6 @@ import { defineComponent } from 'vue'
                     this.ndv = false
                 }, 300)
             },
-            breakLineTip(event: Event) {
-                const sender = event.target as HTMLInputElement
-                if (sender.checked) {
-                    noticePopBox(this.$t('开启 shift enter 换行可能会在一些拥有特殊选词模式的输入法上出现问题，如 微软注音2003、新注音2003 和 绝大部分很早期的拼音输入法；如果在使用的时候遇到问题可以尝试关闭此功能。（或者换个更现代的输入法）'))
-                }
-            }
         },
     })
 </script>
