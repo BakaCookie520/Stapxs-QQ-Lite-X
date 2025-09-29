@@ -334,7 +334,7 @@ export class MilkyAdapter implements AdapterInterface {
             title: member.title,
             user_id: member.user_id,
             unfriendly: false,
-            banTime: member.shut_up_end_time,
+            banTime: member.shut_up_end_time ?? undefined,
         }))
     }
     /**
@@ -345,14 +345,14 @@ export class MilkyAdapter implements AdapterInterface {
     async getGroupAnnouncement(group: GroupSession): Promise<GroupAnnouncementData[]> {
         const data = await this.callApi(
             'get_group_announcement_list',
-            Api.GetGroupAnnouncementListInput.parse({
+            Api.GetGroupAnnouncementsInput.parse({
                 group_id: group.id,
             }),
-            Api.GetGroupAnnouncementListOutput
+            Api.GetGroupAnnouncementsOutput
         )
         return data.announcements.map(item => ({
-            content: item.content,
-            img_id: item.image_url,
+            content: item.content ?? undefined,
+            img_id: item.image_url ?? undefined,
             time: item.time,
             sender: item.user_id,
         }))

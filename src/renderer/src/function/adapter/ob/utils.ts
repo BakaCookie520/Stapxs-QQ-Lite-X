@@ -176,7 +176,7 @@ export class ObConnector {
     async send(
         name: string,
         args: { [key: string]: any },
-    ): Promise<ObResponse<any>|undefined> {
+    ): Promise<ObResponse<any>> {
         // 过滤掉空的参数
         if (!driver.isConnected())
             throw new Error('WebSocket未连接，无法发送消息')
