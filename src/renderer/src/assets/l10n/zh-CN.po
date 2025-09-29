@@ -1329,7 +1329,7 @@ msgstr ""
 msgid "预览通知"
 msgstr ""
 
-msgid "注入撤回消息等事件也会做为预览消息"
+msgid "诸如撤回消息等事件也会做为预览消息"
 msgstr ""
 
 msgid "自定义跨域服务"
@@ -1521,7 +1521,7 @@ msgstr ""
 msgid "预览通知"
 msgstr ""
 
-msgid "注入撤回消息等事件也会做为预览消息"
+msgid "诸如撤回消息等事件也会做为预览消息"
 msgstr ""
 
 msgid "自定义跨域服务"

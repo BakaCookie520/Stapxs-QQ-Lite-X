@@ -67,7 +67,7 @@
                 <font-awesome-icon :icon="['fas', 'eye']" />
                 <div>
                     <span>{{ $t('预览通知') }}</span>
-                    <span>{{ $t('注入撤回消息等事件也会做为预览消息') }}</span>
+                    <span>{{ $t('诸如撤回消息等事件也会做为预览消息') }}</span>
                 </div>
                 <label class="ss-switch">
                     <input v-model="runtimeData.sysConfig.preview_notice"
