@@ -203,14 +203,6 @@
                         <span>{{ $t('禁用图片发送框') }}</span>
                         <span>{{ $t('你也向往自由吗？') }}</span>
                     </div>
-                    <label class="ss-switch">
-                        <input v-model="runtimeData.sysConfig.close_chat_pic_pan"
-                            type="checkbox" name="close_chat_pic_pan"
-                            @change="save">
-                        <div>
-                            <div />
-                        </div>
-                    </label>
                 </div>
             </div>
         </div>

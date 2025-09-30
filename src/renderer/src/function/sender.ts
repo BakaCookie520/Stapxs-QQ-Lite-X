@@ -16,27 +16,17 @@
 // https://docs.go-cqhttp.org/cqcode/#%E8%BD%AC%E4%B9%89
 
 import { Msg } from './model/msg'
-import { ImgSeg, ReplySeg, Seg, TxtSeg } from './model/seg'
+import { ReplySeg, Seg, TxtSeg } from './model/seg'
 import { runtimeData } from './msg'
 
 /**
  * 反序列化消息
  * @param msg 带有 SQCode 标记的文本消息（也可以不带有）
  * @param cache 多媒体消息缓存列表
- * @param img 图片缓存列表
  * @param reply 回复消息对象
  * @returns 消息序列
  */
-export function parseMsg(msg: string, cache: Seg[], img: string[], reply?: Msg|string): Seg[] {
-    // 如果消息发送框功能是启用的，则先将 cache 的图片插入到最前面
-    // 将图片插入 cache 列表并在消息文本前插入 SQCode
-    img.forEach((item) => {
-        // 插入图片到缓存列表
-        cache.push(new ImgSeg(
-            'base64://' + item.substring(item.indexOf('base64,') + 7, item.length),
-        ))
-        msg = `[SQ:${cache.length - 1}]` + msg
-    })
+export function parseMsg(msg: string, cache: Seg[], reply?: Msg|string): Seg[] {
     // 处理消息
     let back = parseMsgToSegs(msg, cache)
     // 插入引用

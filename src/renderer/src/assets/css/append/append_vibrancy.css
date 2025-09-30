@@ -125,6 +125,8 @@ body.vibrancy {
     background: rgba(var(--color-card-1-rgb), 0.6);
 }
 
+
+.vibrancy .chat-pan > .chat-bottom > .input-pan > .input-special-tag,
 .vibrancy .chat-pan > .chat-bottom > .input-pan > .input {
     background-color: rgba(var(--color-card-rgb), 0.6);
 }
@@ -133,6 +135,7 @@ body.vibrancy {
 .vibrancy .jin-pan,
 .vibrancy .note-base,
 .vibrancy .chat-pan > .chat-bottom > .input-pan,
+.vibrancy .chat-pan > .chat-bottom > .img-pan,
 .vibrancy .chat-pan > div.info,
 .vibrancy .merge-pan > div.ss-card,
 .vibrancy .message-content > div.main {
@@ -151,6 +154,7 @@ body.vibrancy {
 .vibrancy .jin-pan,
 .vibrancy .note-base,
 .vibrancy .chat-pan > .chat-bottom > .input-pan,
+.vibrancy .chat-pan > .chat-bottom > .img-pan,
 .vibrancy .merge-pan > div.ss-card {
     backdrop-filter: blur(50px);
 }

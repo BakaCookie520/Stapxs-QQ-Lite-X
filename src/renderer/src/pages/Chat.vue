@@ -143,6 +143,38 @@
                 <EssenceMsgsPan v-show="details === 'essence'"
                     :session="chat" :key="chat.id" @close="switchDetail('essence')" />
             </Transition>
+            <Transition name="img-pan">
+                <!-- 图片指示器 -->
+                <div v-show="imgCache.size > 0"
+                    :class="{
+                        'img-pan': true,
+                        'ss-card': true,
+                    }"
+                    @wheel="
+                        !menuDisplay.respond ?
+                            ($event.currentTarget as HTMLElement).scrollLeft += $event.deltaY
+                            : ''
+                    ">
+                    <div class="imgs">
+                        <div v-for="[key, value] in imgCache"
+                            :key="'imgCache-' + key">
+                            <div class="img-btns">
+                                <div>
+                                    <font-awesome-icon :icon="['fas', 'pencil']" />
+                                </div>
+                                <hr />
+                                <div @click="deleteImg(key)">
+                                    <font-awesome-icon style="color: var(--color-red)" :icon="['fas', 'xmark']" />
+                                </div>
+                            </div>
+                            <div class="img">
+                                <img :src="value" :alt="`[SQ:${key}]`"/>
+                            </div>
+                            <span>[SQ:{{ key }}]</span>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
             <div class="input-pan ss-card">
                 <!-- 功能附加 -->
                 <div>
@@ -339,35 +371,6 @@
                 </div> -->
             </div>
         </Menu>
-        <!-- 图片发送器 -->
-        <Transition>
-            <div v-show="imgCache.length > 0" class="img-sender">
-                <div class="card ss-card">
-                    <div class="hander">
-                        <span>{{ $t('发送图片') }}</span>
-                        <button class="ss-button" @click="sendMsg">
-                            {{ $t('发送') }}
-                        </button>
-                    </div>
-                    <div class="imgs">
-                        <div v-for="(img64, index) in imgCache" :key="'sendImg-' + index">
-                            <div @click="deleteImg(index)">
-                                <font-awesome-icon :icon="['fas', 'xmark']" />
-                            </div>
-                            <img :src="img64" :alt="'[' + $t('图片') + ']'">
-                        </div>
-                    </div>
-                    <div class="sender">
-                        <font-awesome-icon :icon="['fas', 'image']" @click="runSelectImg" />
-                        <input v-model="msgWhileSend"
-                            type="text"
-                            @paste="addImg"
-                            @click="toMainInput">
-                    </div>
-                </div>
-                <div class="bg" @click="imgCache = []" />
-            </div>
-        </Transition>
     </div>
 </template>
 
@@ -388,7 +391,7 @@ import {
 import { Time } from '@renderer/function/model/data'
 import Emoji from '@renderer/function/model/emoji'
 import { Msg, SelfMsg } from '@renderer/function/model/msg'
-import { AtSeg, FaceSeg, FileSeg, ImgSeg, Seg, TxtSeg } from '@renderer/function/model/seg'
+import { AtSeg, FileSeg, ImgSeg, Seg, TxtSeg } from '@renderer/function/model/seg'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { BaseUser, IUser, Member } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
@@ -489,13 +492,12 @@ const tagsDefault = {
 }
 const details = shallowRef<'face'|'essence'|undefined>()
 const sendCache = shallowReactive<Seg[]>([])
-const imgCache = shallowReactive<string[]>([])
+const imgCache = shallowReactive<Map<number, string>>(new Map())
 const msgWhileSend = shallowRef<string>('')
 const tags = shallowReactive({...tagsDefault})
 const atFindList = shallowRef<Member[]|null>(null)
 const msgWhileReply = shallowRef<undefined | Msg>()
 const canSendMsg = computed(() => {
-    if (imgCache.length > 0) return true
     return msgWhileSend.value.trim() !== ''
 })
 //#endregion
@@ -555,7 +557,7 @@ function init() {
     // 重置部分状态数据
     Object.assign(tags, tagsDefault)
     sendCache.length = 0
-    imgCache.length = 0
+    imgCache.clear()
     details.value = undefined
     initMenuDisplay()
     // 聚焦输入框
@@ -1063,7 +1065,11 @@ function openChatInfoPan() {
  * @param { number } index 图片编号
  */
 function deleteImg(index: number) {
-    imgCache.splice(index, 1)
+    imgCache.delete(index)
+    msgWhileSend.value = msgWhileSend.value.replace(
+        '[SQ:' + index + ']',
+        '',
+    )
 }
 
 /**
@@ -1105,66 +1111,70 @@ function selectImg(event: Event) {
 
 /**
  * 将图片转换为 base64 并缓存
- * @param blob 文件对象
+ * @param file 文件对象
  */
-async function setImg(blob: File | null) {
+async function setImg(file: File | null) {
     const popInfo = new PopInfo()
-    if (
-        blob !== null &&
-        blob.type.indexOf('image/') >= 0 &&
-        blob.size !== 0
-    ) {
-        if (blob.size < 3145728) {
-            // 转换为 Base64
-            const reader = new FileReader()
-            reader.readAsDataURL(blob)
-            reader.onloadend = () => {
-                const base64data = reader.result as string
-                if (base64data !== null) {
-                    if (Option.get('close_chat_pic_pan') === true) {
-                        // 在关闭图片插入面板的模式下将直接以 SQCode 插入输入框
-                        const data = new ImgSeg(
-                            'base64://' +
-                            base64data.substring(
-                                base64data.indexOf('base64,') + 7,
-                                base64data.length
-                            )
-                        )
-                        addSpecialSeg(data)
-                    } else {
-                        // 记录图片信息
-                        // 只要你内存够猛，随便 cache 图片，这边就不做限制了
-                        imgCache.push(base64data)
-                    }
-                }
-            }
-        } else {
-            // 压缩图片
-            const options = { maxSizeMB: 3, useWebWorker: true }
-            try {
-                popInfo.add(
-                    PopType.INFO,
-                    $t('正在压缩图片 ……'),
-                )
-                const compressedFile = await imageCompression(
-                    blob,
-                    options,
-                )
-                new Logger().add(
-                    LogType.INFO,
-                    '图片压缩成功，原大小：' +
-                        blob.size / 1024 / 1024 +
-                        ' MB，压缩后大小：' +
-                        compressedFile.size / 1024 / 1024 +
-                        ' MB',
-                )
-                setImg(compressedFile)
-            } catch (error) {
-                new Logger().error(error as Error, '图片压缩失败')
-                popInfo.add(PopType.INFO, $t('压缩图片失败'))
-            }
+    if (!file) return
+    if (!file.type.includes('image/')) return
+    if (file.size === 0) return
+
+    // 图片太大
+    if (file.size > 3145728) {
+        const options = { maxSizeMB: 3, useWebWorker: true }
+        try {
+            popInfo.add(
+                PopType.INFO,
+                $t('正在压缩图片 ……'),
+            )
+            const compressedFile = await imageCompression(
+                file,
+                options,
+            )
+            new Logger().add(
+                LogType.INFO,
+                '图片压缩成功，原大小：' +
+                    file.size / 1024 / 1024 +
+                    ' MB，压缩后大小：' +
+                    compressedFile.size / 1024 / 1024 +
+                    ' MB',
+            )
+            setImg(compressedFile)
+        } catch (error) {
+            new Logger().error(error as Error, '图片压缩失败')
+            popInfo.add(PopType.INFO, $t('压缩图片失败'))
         }
+        return
     }
+
+    // sq 占位符
+    const id = sendCache.length
+    const data = new TxtSeg('[' + $t('图片') + ']')
+    addSpecialSeg(data)
+
+    imgCache.set(id, await fileToDataURL(file))
+}
+
+/**
+ * 将文件转换为 data URL
+ * @param file 文件对象
+ * @returns data URL
+ */
+function fileToDataURL(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+
+        reader.onload = function(event) {
+            if (!event.target) reject(new Error('读取文件失败'))
+            else resolve(event.target.result as string) // 这就是 data URL
+        }
+
+        reader.onerror = function(error) {
+            reject(error)
+        }
+
+        reader.readAsDataURL(file)
+    })
 }
 //#endregion
 
@@ -1247,10 +1257,20 @@ function sendMsg() {
     // sendCache = [{type:"face",id:11},{type:"at",qq:1007028430}]
     //               ^^^^^^^ 0 ^^^^^^^   ^^^^^^^^^^ 1 ^^^^^^^^^^
     // 在发送操作触发之后，将会解析此条字符串排列出最终需要发送的消息结构用于发送。
+
+    // 解析图片
+    for (let [key, base64data] of imgCache) {
+        sendCache[key] = new ImgSeg(
+            'base64://' +
+            base64data.substring(
+                base64data.indexOf('base64,') + 7,
+                base64data.length
+            )
+        )
+    }
     const msg = SendUtil.parseMsg(
         msgWhileSend.value,
         sendCache,
-        imgCache,
         msgWhileReply.value,
     )
     msgWhileReply.value = undefined
@@ -1261,7 +1281,7 @@ function sendMsg() {
     // 发送后事务
     msgWhileSend.value = ''
     sendCache.length = 0
-    imgCache.length = 0
+    imgCache.clear()
     cancelReply()
     checkNewLineFlag = true
     nextTick(async ()=>{

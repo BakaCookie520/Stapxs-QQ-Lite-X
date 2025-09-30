@@ -407,7 +407,7 @@ export function createIpc() {
         const session = Session.getSessionById(info.id)
         if (!session) return
         sendMsgRaw(session,
-            parseMsg(info.content, [], [], String(info.msg)))
+            parseMsg(info.content, [], String(info.msg)))
         // 去消息列表内寻找，去除新消息标记
         session.setRead()
     })
@@ -524,7 +524,7 @@ export async function loadMobile() {
                     if (!session) return
                     sendMsgRaw(
                         session,
-                        parseMsg(info.inputValue ?? '', [], [], String(notification.extra.msgId)),
+                        parseMsg(info.inputValue ?? '', [], String(notification.extra.msgId)),
                     )
                     // 去消息列表内寻找，去除新消息标记
                     session.setRead()

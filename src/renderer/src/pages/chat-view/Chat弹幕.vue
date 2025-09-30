@@ -385,8 +385,7 @@ import { defineComponent } from 'vue'
 
             sendMsg(event: KeyboardEvent) {
                 if (event.keyCode === 13 && this.msg != '') {
-                    const msg = parseMsg(
-                        this.msg, this.sendCache, this.imgCache)
+                    const msg = parseMsg(this.msg, this.sendCache)
                     sendMsgRaw(
                         this.chat,
                         msg,
@@ -431,21 +430,9 @@ import { defineComponent } from 'vue'
                         reader.onloadend = () => {
                             const base64data = reader.result as string
                             if (base64data !== null) {
-                                if (Option.get('close_chat_pic_pan') === true) {
-                                    // 在关闭图片插入面板的模式下将直接以 SQCode 插入输入框
-                                    const data = new ImgSeg(
-                                        'base64://' +
-                                        base64data.substring(
-                                            base64data.indexOf('base64,') + 7,
-                                            base64data.length
-                                        )
-                                    )
-                                    this.addSpecialSeg(data)
-                                } else {
-                                    // 记录图片信息
-                                    // 只要你内存够猛，随便 cache 图片，这边就不做限制了
-                                    this.imgCache.push(base64data)
-                                }
+                                // 记录图片信息
+                                // 只要你内存够猛，随便 cache 图片，这边就不做限制了
+                                this.imgCache.push(base64data)
                             }
                         }
                     } else {
