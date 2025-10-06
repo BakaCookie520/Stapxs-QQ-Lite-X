@@ -1791,6 +1791,7 @@ body.with-bar #base-app {
 
 .viewer-img.grab > div.scrollbar,
 .viewer-img.zooming > div.scrollbar,
+.viewer-img > div.scrollbar.dragging,
 .viewer-img > div.scrollbar:hover {
     opacity: 1;
 }
