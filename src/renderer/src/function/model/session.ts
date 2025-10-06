@@ -34,8 +34,11 @@ import { SystemNotice } from './notice'
 import { ProxyUrl } from './proxyUrl'
 import { BaseUser, IUser, Member, User } from './user'
 import { autoMarkRaw } from './utils'
+import { InputMsg } from './inputMsg'
 
 export type VoidReturn = void | Promise<void>
+
+export type SessionType = 'group' | 'user' | 'temp'
 
 /**
  * 会话基类
@@ -43,7 +46,7 @@ export type VoidReturn = void | Promise<void>
  */
 export abstract class Session {
     // 基本信息
-    abstract type: 'group' | 'user' | 'temp'
+    abstract type: SessionType
     abstract sessionClass: SessionClass
     id: number
     _name: Name
@@ -55,6 +58,8 @@ export abstract class Session {
     readonly _newMsg = shallowRef(0)
     headMsg?: Msg
     readonly _preMessage = shallowRef<undefined|Message>()
+    // 输入信息
+    inputMsg: InputMsg = new InputMsg()
     // 设置
     alwaysTop: boolean = false
     // 额外信息
@@ -135,6 +140,7 @@ export abstract class Session {
         this.loadHistoryLock.value = undefined
         this.lastLoadFailFlag.value = false
         this.canLoadMoreHistory.value = true
+        this.inputMsg.clear()
         Session.activeSessions.delete(this)
         this.runHook('afterUnactiveHook')
     }
@@ -175,9 +181,9 @@ export abstract class Session {
      * @param id 会话id
      * @param group_id 临时会话的群id
      */
-    static getSession(type: 'group' | 'user' | 'temp', id: number, group_id?: number): Session
+    static getSession(type: SessionType, id: number, group_id?: number): Session
     static getSession(
-        arg1: 'group' | 'user' | 'temp' | SessionData,
+        arg1: SessionType | SessionData,
         arg2?: number,
         arg3?: number
     ): Session {
@@ -189,7 +195,7 @@ export abstract class Session {
                 data.group_id
             )
         }
-        const type = arg1 as 'group' | 'user' | 'temp'
+        const type = arg1 as SessionType
         const id = arg2
         const group_id = arg3
         let session: Session | undefined

@@ -22,17 +22,24 @@
         <font-awesome-icon v-if="data.id == -10000" :icon="['fas', 'bell']" />
         <font-awesome-icon v-else-if="data.id == -10001" :icon="['fas', 'user-group']" />
         <img v-else loading="lazy" :title="data.showName"
+            :alt="data.showName"
             :src="data.face">
         <div>
             <div>
                 <p>{{ data.showName }}</p>
                 <div style="flex: 1" />
-                <a v-if="data.preMessage?.time" class="time">{{
-                    data.preMessage?.time.format('hour')
-                }}</a>
+                <a v-if="data.preMessage?.time" class="time">
+                    {{ data.preMessage?.time.format('hour') }}
+                </a>
             </div>
             <div>
-                <template v-if="from === 'message'">
+                <template v-if="from === 'message' && !data.inputMsg.isVoid">
+                    <a class="highlight">
+                        [{{ $t('草稿') }}]
+                    </a>
+                    <a>{{ data.inputMsg.content }}</a>
+                </template>
+                <template v-else-if="from === 'message'">
                     <a v-for="(item, index) in data.highlightInfo.slice(0, 2)"
                         :key="index"
                         class="highlight">

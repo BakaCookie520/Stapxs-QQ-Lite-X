@@ -17,7 +17,7 @@
         :class="{
             'chat-pan': true,
         }"
-        :style="{ '--input-line': msgWhileSend.split('\n').length }"
+        :style="{ '--input-line': chat.inputMsg.lines }"
         @v-move-right.prevent="exitWin()">
         <!-- 聊天基本信息 -->
         <div class="info">
@@ -136,7 +136,7 @@
             <!-- 表情面板 -->
             <Transition name="pan">
                 <FacePan v-show="details === 'face'"
-                    @add-special-seg="addSpecialSeg" @send-msg="sendMsg" />
+                    @send-msg="sendMsg" />
             </Transition>
             <!-- 精华消息 -->
             <Transition v-if="chat instanceof GroupSession" name="pan">
@@ -145,7 +145,7 @@
             </Transition>
             <Transition name="img-pan">
                 <!-- 图片指示器 -->
-                <div v-show="imgCache.size > 0"
+                <div v-show="chat.inputMsg.imgCache.size > 0"
                     :class="{
                         'img-pan': true,
                         'ss-card': true,
@@ -156,14 +156,14 @@
                             : ''
                     ">
                     <div class="imgs">
-                        <div v-for="[key, value] in imgCache"
+                        <div v-for="[key, value] in chat.inputMsg.imgCache"
                             :key="'imgCache-' + key">
                             <div class="img-btns">
                                 <div>
                                     <font-awesome-icon :icon="['fas', 'pencil']" />
                                 </div>
                                 <hr />
-                                <div @click="deleteImg(key)">
+                                <div @click="chat.inputMsg.rmImg(key)">
                                     <font-awesome-icon style="color: var(--color-red)" :icon="['fas', 'xmark']" />
                                 </div>
                             </div>
@@ -234,8 +234,8 @@
                     </div>
                     <div class="space" />
                     <div class="send"
-                        :class="{'disable': !canSendMsg}"
-                        :title="canSendMsg ? $t('发送消息') : $t('空消息不可以发送哦～')"
+                        :class="{'disable': chat.inputMsg.isVoid}"
+                        :title="chat.inputMsg.isVoid ? $t('空消息不可以发送哦～') : $t('发送消息')"
                         @click="sendMsg()">
                         <span>{{ $t('发送') }}</span>
                         <font-awesome-icon :icon="['fas', 'angle-right']" />
@@ -245,13 +245,11 @@
                 <!-- 回复指示器 -->
                 <div :class="{
                     'input-special-tag': true,
-                    'show': msgWhileReply
+                    'show': chat.inputMsg.reply
                 }">
                     <font-awesome-icon :icon="['fas', 'reply']" />
-                    <span>{{
-                        msgWhileReply?.preMsg
-                    }}</span>
-                    <div @click="cancelReply">
+                    <span>{{ chat.inputMsg.reply?.preMsg }}</span>
+                    <div @click="chat.inputMsg.rmReply()">
                         <font-awesome-icon :icon="['fas', 'xmark']" />
                     </div>
                 </div>
@@ -259,7 +257,7 @@
                 <div class="input">
                     <textarea
                         ref="main-input"
-                        v-model="msgWhileSend"
+                        v-model="chat.inputMsg.content"
                         type="text"
                         @paste="addImg"
                         @keydown="mainKey"
@@ -348,7 +346,8 @@
         <Menu ref="userMenu" name="chat-menu">
             <div class="ss-card msg-menu-body" @click.stop>
                 <div v-show="menuDisplay.at"
-                    @click="menuDisplay.menuSelectedUser ? addSpecialSeg(new AtSeg(menuDisplay.menuSelectedUser!.user_id)): '';
+                    @click="menuDisplay.menuSelectedUser ?
+                            chat.inputMsg.addSq(new AtSeg(menuDisplay.menuSelectedUser!.user_id)): '';
                             toMainInput();
                             closeUserMenu();">
                     <div><font-awesome-icon :icon="['fas', 'at']" /></div>
@@ -391,12 +390,11 @@ import {
 import { Time } from '@renderer/function/model/data'
 import Emoji from '@renderer/function/model/emoji'
 import { Msg, SelfMsg } from '@renderer/function/model/msg'
-import { AtSeg, FileSeg, ImgSeg, Seg, TxtSeg } from '@renderer/function/model/seg'
+import { AtSeg, FileSeg } from '@renderer/function/model/seg'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { BaseUser, IUser, Member } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
-import Option, { get } from '@renderer/function/option'
-import SendUtil from '@renderer/function/sender'
+import { get } from '@renderer/function/option'
 import { downloadFile, shouldAutoFocus } from '@renderer/function/utils/appUtil'
 import {
     closeSession,
@@ -417,7 +415,6 @@ import Info from '@renderer/pages/Info.vue'
 import { backend } from '@renderer/runtime/backend'
 import imageCompression from 'browser-image-compression'
 import {
-    computed,
     nextTick,
     onMounted,
     shallowReactive,
@@ -491,15 +488,8 @@ const tagsDefault = {
     isMultiselectMode: false,
 }
 const details = shallowRef<'face'|'essence'|undefined>()
-const sendCache = shallowReactive<Seg[]>([])
-const imgCache = shallowReactive<Map<number, string>>(new Map())
-const msgWhileSend = shallowRef<string>('')
 const tags = shallowReactive({...tagsDefault})
 const atFindList = shallowRef<Member[]|null>(null)
-const msgWhileReply = shallowRef<undefined | Msg>()
-const canSendMsg = computed(() => {
-    return msgWhileSend.value.trim() !== ''
-})
 //#endregion
 
 //#region == 初始化 ======================================================================
@@ -556,8 +546,6 @@ watch(() => runtimeData.watch.backTimes, () => {
 function init() {
     // 重置部分状态数据
     Object.assign(tags, tagsDefault)
-    sendCache.length = 0
-    imgCache.clear()
     details.value = undefined
     initMenuDisplay()
     // 聚焦输入框
@@ -628,7 +616,7 @@ function mainKey(event: KeyboardEvent) {
             break
     }
 
-    if (canSend && canSendMsg.value) sendMsg()
+    if (canSend && !chat.inputMsg.isVoid) sendMsg()
     else
     // 补加 enter
     // ctrl + enter
@@ -638,21 +626,22 @@ function mainKey(event: KeyboardEvent) {
     if (
         event.key === 'Enter' &&
         (event.ctrlKey || event.metaKey || event.altKey)
-    ) msgWhileSend.value += '\n'
+    ) chat.inputMsg.content += '\n'
 }
 function mainKeyUp(event: KeyboardEvent) {
     const logger = new Logger()
     // 发送完成后输入框会遗留一个换行，把它删掉 ……
     if (checkNewLineFlag){
         checkNewLineFlag = false
-        if (msgWhileSend.value == '\n'){
-            msgWhileSend.value = ''
+        if (chat.inputMsg.content == '\n'){
+            chat.inputMsg.content = ''
         }
     }
 
     if (event.key !== 'Enter') {
+        const content = chat.inputMsg.content
         // 获取最后一个输入的符号用于判定 at
-        const lastInput = msgWhileSend.value.at(-1)
+        const lastInput = content.at(-1)
         if (
             !tags.onAtFind &&
             lastInput == '@' &&
@@ -663,13 +652,13 @@ function mainKeyUp(event: KeyboardEvent) {
         }
         if (tags.onAtFind) {
             if (!(chat instanceof GroupSession)) return
-            if (msgWhileSend.value.lastIndexOf('@') < 0) {
+            if (content.lastIndexOf('@') < 0) {
                 logger.add(LogType.UI, '匹配群成员列表被打断 ……')
                 tags.onAtFind = false
                 atFindList.value = null
             } else {
-                const atInfo = msgWhileSend.value
-                    .substring(msgWhileSend.value.lastIndexOf('@') + 1)
+                const atInfo = content
+                    .substring(content.lastIndexOf('@') + 1)
                     .toLowerCase()
                 if (atInfo != '') {
                     atFindList.value = chat.memberList
@@ -694,24 +683,21 @@ function selectSQIn() {
     if (typeof mainInput.value.selectionStart === 'number') {
         cursorPosition = mainInput.value.selectionStart
     }
-    // 获取所有的 SQCode
-    const getSQCode = SendUtil.getSQList(msgWhileSend.value)
-    if (getSQCode != null) {
-        // 遍历寻找 SQCode 位置区间包括光标位置的 SQCode
-        getSQCode.forEach((item) => {
-            const start = msgWhileSend.value.indexOf(item)
-            const end = start + item.length
-            if (
-                start !== -1 &&
-                cursorPosition > start &&
-                cursorPosition < end
-            ) {
-                nextTick(() => {
-                    mainInput.value!.selectionStart = start
-                    mainInput.value!.selectionEnd = end
-                })
-            }
-        })
+
+    // 遍历寻找 SQCode 位置区间包括光标位置的 SQCode
+    for (const sq of chat.inputMsg.sqList) {
+        const start = chat.inputMsg.content.indexOf(sq)
+        const end = start + sq.length
+        if (
+            start !== -1 &&
+            cursorPosition > start &&
+            cursorPosition < end
+        ) {
+            nextTick(() => {
+                mainInput.value!.selectionStart = start
+                mainInput.value!.selectionEnd = end
+            })
+        }
     }
 }
 
@@ -722,24 +708,15 @@ function selectSQIn() {
 function choiceAt(id: number | undefined) {
     if (id != undefined) {
         // 删除输入框内的 At 文本
-        msgWhileSend.value = msgWhileSend.value.substring(0, msgWhileSend.value.lastIndexOf('@'))
+        chat.inputMsg.content = chat.inputMsg.content.substring(
+            0, chat.inputMsg.content.lastIndexOf('@')
+        )
         // 添加 at 信息
-        addSpecialSeg(new AtSeg(id))
+        chat.inputMsg.addSq(new AtSeg(id))
     }
     toMainInput()
     tags.onAtFind = false
     atFindList.value = null
-}
-
-/**
- * 添加特殊消息段
- * @param seg 特殊消息段
- */
-function addSpecialSeg(seg: Seg) {
-    const index = sendCache.length
-    sendCache.push(seg)
-    msgWhileSend.value += '[SQ:' + index + ']'
-    return index
 }
 //#endregion
 
@@ -917,25 +894,16 @@ function initMenuDisplay() {
  * 回复消息
  */
 function replyMsg(msg: Msg) {
-    if (msg.message_id) {
-        // 显示回复指示器
-        msgWhileReply.value = msg
-        // 聚焦输入框
-        toMainInput()
-    }else {
+    if (!msg.message_id) {
         new PopInfo().add(
             PopType.ERR,
             $t('无法回复该消息'),
             true,
         )
+        return
     }
-}
 
-/**
- * 取消回复消息
- */
-function cancelReply() {
-    msgWhileReply.value = undefined
+    chat.inputMsg.setReply(msg)
 }
 
 /**
@@ -1061,18 +1029,6 @@ function openChatInfoPan() {
 
 //#region == 图片处理 ==========================================
 /**
- * 根据 index 删除图片
- * @param { number } index 图片编号
- */
-function deleteImg(index: number) {
-    imgCache.delete(index)
-    msgWhileSend.value = msgWhileSend.value.replace(
-        '[SQ:' + index + ']',
-        '',
-    )
-}
-
-/**
  * 添加图片缓存
  * @param event 事件
  */
@@ -1147,12 +1103,7 @@ async function setImg(file: File | null) {
         return
     }
 
-    // sq 占位符
-    const id = sendCache.length
-    const data = new TxtSeg('[' + $t('图片') + ']')
-    addSpecialSeg(data)
-
-    imgCache.set(id, await fileToDataURL(file))
+    chat.inputMsg.addImg(await fileToDataURL(file))
 }
 
 /**
@@ -1250,7 +1201,7 @@ function sendMsg() {
     // 关闭所有其他的已打开的更多功能弹窗
     switchDetail(undefined)
     // 无消息不发送
-    if (!canSendMsg.value) return
+    if (chat.inputMsg.isVoid) return
     // 为了减少对于复杂图文排版页面显示上的工作量，对于非纯文本的消息依旧处理为纯文本，如：
     // "这是一段话 [SQ:0]，[SQ:1] 你要不要来试试 Stapxs QQ Lite？"
     // 其中 [SQ:n] 结构代表着这是特殊消息以及这个消息具体内容在消息缓存中的 index，像是这样：
@@ -1258,31 +1209,12 @@ function sendMsg() {
     //               ^^^^^^^ 0 ^^^^^^^   ^^^^^^^^^^ 1 ^^^^^^^^^^
     // 在发送操作触发之后，将会解析此条字符串排列出最终需要发送的消息结构用于发送。
 
-    // 解析图片
-    for (let [key, base64data] of imgCache) {
-        sendCache[key] = new ImgSeg(
-            'base64://' +
-            base64data.substring(
-                base64data.indexOf('base64,') + 7,
-                base64data.length
-            )
-        )
-    }
-    const msg = SendUtil.parseMsg(
-        msgWhileSend.value,
-        sendCache,
-        msgWhileReply.value,
-    )
-    msgWhileReply.value = undefined
     sendMsgRaw(
         chat,
-        msg,
+        chat.inputMsg.render(),
     )
     // 发送后事务
-    msgWhileSend.value = ''
-    sendCache.length = 0
-    imgCache.clear()
-    cancelReply()
+    chat.inputMsg.clear()
     checkNewLineFlag = true
     nextTick(async ()=>{
         await delay(100)

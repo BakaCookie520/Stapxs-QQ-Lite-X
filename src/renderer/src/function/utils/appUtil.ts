@@ -19,7 +19,6 @@ import {
 } from 'vue'
 import { GroupSession, Session, UserSession } from '../model/session'
 import { Notify } from '../notify'
-import { parseMsg } from '../sender'
 import { changeSession, sendMsgRaw } from './msgUtil'
 
 const popInfo = new PopInfo()
@@ -406,8 +405,10 @@ export function createIpc() {
         const info = data ?? event.payload
         const session = Session.getSessionById(info.id)
         if (!session) return
-        sendMsgRaw(session,
-            parseMsg(info.content, [], String(info.msg)))
+        sendMsgRaw(
+            session,
+            [new ReplySeg(String(info.msg)), new TxtSeg(info.content)]
+        )
         // 去消息列表内寻找，去除新消息标记
         session.setRead()
     })
@@ -524,7 +525,10 @@ export async function loadMobile() {
                     if (!session) return
                     sendMsgRaw(
                         session,
-                        parseMsg(info.inputValue ?? '', [], String(notification.extra.msgId)),
+                        [
+                            new ReplySeg(String(notification.extra.msgId)),
+                            new TxtSeg(info.inputValue ?? '')
+                        ]
                     )
                     // 去消息列表内寻找，去除新消息标记
                     session.setRead()
@@ -609,6 +613,7 @@ import { ProxyUrl } from '../model/proxyUrl'
 import { htmlPopBox, popBox } from './popBox'
 import UpdatePan from '@renderer/popboxes/UpdatePan.vue'
 import WelPan from '@renderer/popboxes/WelPan.vue'
+import { ReplySeg, TxtSeg } from '../model/seg'
 /**
 * 初始化快速连接信息
 * @param address 地址

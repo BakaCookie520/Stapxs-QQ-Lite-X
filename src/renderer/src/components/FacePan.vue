@@ -98,7 +98,6 @@ import BcTab from 'vue3-bcui/packages/bc-tab'
 import EmojiFace from './EmojiFace.vue'
 
 const emit = defineEmits<{
-    addSpecialSeg: [seg: Seg]
     sendMsg: []
 }>()
 
@@ -144,7 +143,7 @@ async function loadRomaingStamp() {
 }
 
 function addSpecialSeg(seg: Seg) {
-    emit('addSpecialSeg', seg)
+    runtimeData.nowChat?.inputMsg.addSq(seg)
 }
 function addBaseFace(id: number) {
     if (id < 5000)

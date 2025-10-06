@@ -306,7 +306,6 @@
 </template>
 
 <script lang="ts">
-    import Option from '@renderer/function/option'
 import vueDanmaku from 'vue3-danmaku'
 
     import { PopInfo, PopType } from '@renderer/function/base'
@@ -314,7 +313,6 @@ import { Msg } from '@renderer/function/model/msg'
 import { ImgSeg, Seg } from '@renderer/function/model/seg'
 import { Session } from '@renderer/function/model/session'
 import { runtimeData } from '@renderer/function/msg'
-import { parseMsg } from '@renderer/function/sender'
 import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
 import { getTrueLang } from '@renderer/function/utils/systemUtil'
 import { backend } from '@renderer/runtime/backend'
