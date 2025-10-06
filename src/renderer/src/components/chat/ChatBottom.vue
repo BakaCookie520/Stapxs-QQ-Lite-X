@@ -22,7 +22,7 @@
                     <div v-for="[key, value] in session.inputMsg.imgCache"
                         :key="'imgCache-' + key">
                         <div class="img-btns">
-                            <div>
+                            <div @click="editImg(key)">
                                 <font-awesome-icon :icon="['fas', 'pencil']" />
                             </div>
                             <hr />
@@ -146,9 +146,12 @@ import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
 import { delay } from '@renderer/function/utils/systemUtil'
 import { runtimeData } from '@renderer/function/msg'
 import { AtSeg, FileSeg } from '@renderer/function/model/seg'
-import { useTemplateRef, shallowRef, nextTick } from 'vue'
+import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef } from 'vue'
 import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { SelfMsg } from '@renderer/function/model/msg'
+import Viewer from '../Viewer.vue'
+
+const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
 const { session } = defineProps<{
     session: Session
@@ -467,6 +470,18 @@ function fileToDataURL(file: File): Promise<string> {
 
         reader.readAsDataURL(file)
     })
+}
+
+/**
+ * 编辑图片
+ * @param key 图片在缓存中的键
+ */
+async function editImg(key: number) {
+    const img = session.inputMsg.imgCache.get(key)
+    if (!img) return
+    if (!viewer.value) return
+    const dataurl = await viewer.value.edit(img)
+    session.inputMsg.imgCache.set(key, dataurl)
 }
 //#endregion
 
