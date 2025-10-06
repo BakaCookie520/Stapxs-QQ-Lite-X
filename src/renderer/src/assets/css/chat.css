@@ -112,7 +112,7 @@ body.with-bar .chat-pan {
     overflow-x: hidden;
     margin-left: 20px;
     padding-top: 90px;
-    padding-bottom: calc(121px + 15px + var(--input-line) * 1.1rem);
+    padding-bottom: var(--bottom-height);
     z-index: 1;
     flex: 1;
     height: 100%;
@@ -1723,7 +1723,7 @@ body.with-bar .msg-menu {
     border-radius: 7px;
     overflow: hidden;
     display: flex;
-    margin: 0 20px 10px 20px;
+    margin: 0 20px calc(var(--bottom-height) + 10px) 20px;
     margin-top: 20px;
     padding: 15px 10px;
     height: auto;
@@ -1741,13 +1741,10 @@ body.with-bar .msg-menu {
 @keyframes select-tag-appear {
     from {
         height: 0;
-        margin: 0 20px 10px 20px;
         padding: 0;
     }
 
     to {
-        margin: 0 20px 10px 20px;
-        margin-top: 20px;
         padding: 15px 10px;
         height: auto;
     }

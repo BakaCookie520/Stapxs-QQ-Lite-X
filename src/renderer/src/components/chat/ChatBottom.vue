@@ -10,8 +10,8 @@
             <EssenceMsgsPan v-show="details === 'essence'"
                 :session="session" :key="session.id" @close="switchDetail('essence')" />
         </Transition>
+        <!-- 图片指示器 -->
         <Transition name="img-pan">
-            <!-- 图片指示器 -->
             <div v-show="session.inputMsg.imgCache.size > 0"
                 :class="{
                     'img-pan': true,
@@ -38,8 +38,8 @@
                 </div>
             </div>
         </Transition>
+        <!-- 输入栏 -->
         <div class="input-pan ss-card">
-            <!-- 功能附加 -->
             <div>
                 <div>
                 </div>

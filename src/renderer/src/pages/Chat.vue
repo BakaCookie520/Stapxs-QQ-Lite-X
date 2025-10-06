@@ -19,7 +19,10 @@
         :class="{
             'chat-pan': true,
         }"
-        :style="{ '--input-line': chat.inputMsg.lines }"
+        :style="{
+            '--input-line': chat.inputMsg.lines,
+            '--bottom-height': bottomHeight + 'px',
+        }"
         @v-move-right.prevent="exitWin()">
 
         <!-- 聊天基本信息 -->
@@ -251,23 +254,22 @@ import {
     sendMsgRaw,
     singleForward,
 } from '@renderer/function/utils/msgUtil'
-import { ensurePopBox, popBox } from '@renderer/function/utils/popBox'
+import { ensurePopBox } from '@renderer/function/utils/popBox'
 import {
     copyToClipboard,
     getViewTime,
 } from '@renderer/function/utils/systemUtil'
 import { vHide, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
-import { useKeyboard } from '@renderer/function/utils/vuse'
+import { useInterval, useKeyboard } from '@renderer/function/utils/vuse'
 import app from '@renderer/main'
-import Info from '@renderer/pages/Info.vue'
 import { backend } from '@renderer/runtime/backend'
 import {
     nextTick,
     onMounted,
     shallowReactive,
-    shallowRef,
     useTemplateRef,
     watch,
+    shallowRef
 } from 'vue'
 //#region == 常量声明 ====================================================================
 const { chat } = defineProps<{chat: Session}>()
@@ -294,6 +296,7 @@ const userInfoPanData = shallowReactive<{
     x: 0,
     y: 0,
 })
+const bottomHeight = shallowRef(0)
 const userInfoPanFunc: UserInfoPan = {
     open: (user: IUser | number, x: number, y: number) => {
         userInfoPanData.user = user
@@ -365,6 +368,12 @@ Session.beforeNewMessageHook.push(async (session, _msg)=>{
         }, 100)
     })
 })
+
+useInterval(()=>{
+    if (!chatBottom.value?.$el) return
+    if (bottomHeight.value === (chatBottom.value.$el as HTMLDivElement).offsetHeight) return
+	bottomHeight.value = (chatBottom.value.$el as HTMLDivElement).offsetHeight
+}, 20)
 
 // ctrl+w 关闭聊天框
 useKeyboard('ctrl+w', ()=>{
