@@ -2201,3 +2201,6 @@ msgstr ""
 
 msgid "你可以使用其他组合键来换行"
 msgstr ""
+
+msgid "草稿"
+msgstr ""

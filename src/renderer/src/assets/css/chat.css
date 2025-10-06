@@ -43,6 +43,7 @@ body.with-bar .chat-pan {
     display: flex;
     padding: 15px;
     margin: 15px;
+    position: absolute;
 }
 
 .chat-pan > div.info > svg {
@@ -110,12 +111,11 @@ body.with-bar .chat-pan {
     overflow-y: scroll;
     overflow-x: hidden;
     margin-left: 20px;
-    margin-top: -90px;
     padding-top: 90px;
     padding-bottom: calc(121px + 15px + var(--input-line) * 1.1rem);
     z-index: 1;
     flex: 1;
-    height: calc(100% - var(--safe-area-bottom));
+    height: 100%;
 }
 
 .chat-pan > div.chat::-webkit-scrollbar {
