@@ -189,7 +189,6 @@ body.vibrancy {
     border: 1px solid var(--color-card);
     box-shadow: 0 0 15px var(--color-bg);
     backdrop-filter: blur(50px);
-    height: 100%;
 }
 
 .vibrancy .chat-info-base > div {
