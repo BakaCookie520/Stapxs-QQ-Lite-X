@@ -121,7 +121,8 @@
                                 :src="item.src"
                                 :alt="item.summary"
                                 @load="imageLoaded"
-                                @error="imgLoadFail">
+                                @error="imgLoadFail"
+                                @click="imgClick(item.imgData)">
                             <img v-else-if="item instanceof ImgSeg"
                                 :title="(!item.summary || item.summary == '') ? $t('预览图片') : item.summary"
                                 :alt="$t('图片')"
