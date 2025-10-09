@@ -799,6 +799,7 @@
 }
 
 .view-pan {
+    background: url(../assets/img/stars.svg);
     justify-content: center;
     display: flex;
     flex-direction: column;

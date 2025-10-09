@@ -174,7 +174,25 @@
                     <span>{{ $t('你可以使用其他组合键来换行') }}</span>
                 </div>
                 <div class="select-wrapper">
-                    <select v-model="runtimeData.sysConfig.send_key"
+                    <select v-if="backend.platform === 'darwin' || backend.platform === 'ios'" v-model="runtimeData.sysConfig.send_key"
+                        name="send_key" title="send_key" @change="save">
+                        <option value="none">
+                            Enter
+                        </option>
+                        <option value="shift">
+                            Shift + Enter (⇧)
+                        </option>
+                        <option value="ctrl">
+                            Control + Enter (⌃)
+                        </option>
+                        <option value="alt">
+                            Option + Enter (⌥)
+                        </option>
+                        <option value="meta">
+                            Command + Enter (⌘)
+                        </option>
+                    </select>
+                    <select v-else v-model="runtimeData.sysConfig.send_key"
                         name="send_key" title="send_key" @change="save">
                         <option value="none">
                             Enter
@@ -319,8 +337,9 @@
 <script lang="ts">
 import { runtimeData } from '@renderer/function/msg'
 import { checkDefault, runASWEvent as save } from '@renderer/function/option'
-import { noticePopBox, popBox } from '@renderer/function/utils/popBox'
+import { popBox } from '@renderer/function/utils/popBox'
 import UmamiInfoPan from '@renderer/popboxes/UmamiInfoPan.vue'
+import { backend } from '@renderer/runtime/backend'
 import { defineComponent } from 'vue'
 
     export default defineComponent({
@@ -332,6 +351,7 @@ import { defineComponent } from 'vue'
                 save: save,
                 ndt: 0,
                 ndv: false,
+                backend,
             }
         },
         methods: {
