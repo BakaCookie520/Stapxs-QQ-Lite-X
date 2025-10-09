@@ -140,6 +140,7 @@ export class MilkyAdapter implements AdapterInterface {
         this.segParsers['text'] = this.textParser.bind(this)
         this.segParsers['image'] = this.imageParser.bind(this)
         this.segParsers['face'] = this.faceParser.bind(this)
+        this.segParsers['market_face'] = this.marketFaceParser.bind(this)
         this.segParsers['mention'] = this.mentionParser.bind(this)
         this.segParsers['mention_all'] = this.mentionAllParser.bind(this)
         this.segParsers['video'] = this.videoParser.bind(this)
@@ -152,6 +153,7 @@ export class MilkyAdapter implements AdapterInterface {
         this.segSerializer['text'] = this.textSerializer.bind(this)
         this.segSerializer['image'] = this.imageSerializer.bind(this)
         this.segSerializer['face'] = this.faceSerializer.bind(this)
+        this.segSerializer['mface'] = this.mfaceSerializer.bind(this)
         this.segSerializer['at'] = this.atSerializer.bind(this)
         this.segSerializer['atall'] = this.atallSerializer.bind(this)
         this.segSerializer['video'] = this.videoSerializer.bind(this)
@@ -344,7 +346,7 @@ export class MilkyAdapter implements AdapterInterface {
     @api
     async getGroupAnnouncement(group: GroupSession): Promise<GroupAnnouncementData[]> {
         const data = await this.callApi(
-            'get_group_announcement_list',
+            'get_group_announcements',
             Api.GetGroupAnnouncementsInput.parse({
                 group_id: group.id,
             }),
@@ -352,7 +354,7 @@ export class MilkyAdapter implements AdapterInterface {
         )
         return data.announcements.map(item => ({
             content: item.content ?? undefined,
-            img_id: item.image_url ?? undefined,
+            img: item.image_url ?? undefined,
             time: item.time,
             sender: item.user_id,
         }))
@@ -858,6 +860,17 @@ export class MilkyAdapter implements AdapterInterface {
             type: 'image',
             url: Resource.fromUrl(data.data.temp_url, data.data.resource_id),
             isFace: data.data.sub_type === 'sticker',
+        }
+    }
+    async marketFaceParser(data: ISeg.MarketFaceSeg): Promise<MfaceSegData> {
+        // TODO: summary 有问题
+        return {
+            type: 'mface',
+            url: data.data.url,
+            summary: '[动画表情]',
+            packageId: 0,
+            id: '',
+            key: '',
         }
     }
     async faceParser(data: ISeg.FaceSeg): Promise<FaceSegData> {

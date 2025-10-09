@@ -23,9 +23,9 @@
                 style="margin-right: auto;margin-bottom: auto;"
                 @click="textClick"
                 v-html="parseText(data.content)" />
-            <img v-if="data.getImg()"
+            <img v-if="data.img"
                 :alt="'[' + $t('图片') + ']'"
-                :src="data.getImg()"
+                :src="data.img"
                 :class="{
                     img: true,
                     all: showAll,

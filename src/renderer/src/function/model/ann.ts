@@ -14,7 +14,7 @@ import { BaseUser, IUser } from './user'
 
 export class Ann {
     content: string
-    imgId?: string
+    img?: string
     time: Time
     sender: IUser
     session: GroupSession
@@ -24,18 +24,13 @@ export class Ann {
 
     constructor(data: GroupAnnouncementData, session: GroupSession) {
         this.content = data.content
-        this.imgId = data.img_id
+        this.img = data.img
         this.time = new Time(data.time)
         this.read = data.is_read
         this.readNum = data.read_num
         this.session = session
         this.sender = this.session.getUserById(data.sender) ?? new BaseUser(data.sender)
-        if (this.getImg()) this.imgData = new Img(this.getImg()!)
-    }
-
-    getImg(): string|undefined {
-        if (!this.imgId) return undefined
-        return `https://p.qlogo.cn/gdynamic/${this.imgId}/0/`
+        if (this.img) this.imgData = new Img(this.img)
     }
 
     match(search: string): boolean {

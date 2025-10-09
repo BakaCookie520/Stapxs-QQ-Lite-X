@@ -315,7 +315,7 @@ export interface MemberData {
  */
 export interface GroupAnnouncementData {
     content: string             // 公告内容
-    img_id?: string             // 图片ID
+    img?: string                // 图片url
     time: number                // 发布时间
     sender: number              // 发布者ID
     is_read?: boolean           // 是否已读

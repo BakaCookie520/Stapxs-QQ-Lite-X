@@ -93,7 +93,7 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
 
         const out = data.data.map(item => ({
             content: item.message.text,
-            img_id: item.message.images.at(0)?.id,
+            img: `https://p.qlogo.cn/gdynamic/${item.message.images.at(0)?.id}/0/`,
             time: item.publish_time,
             sender: item.sender_id,
         }))
@@ -295,7 +295,7 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
         return msg
     }
     async customForwardSerializer(seg: ForwardSeg): Promise<ObForwardNodeSeg[]> {
-        const msgs = seg.content as Msg[]
+        const msgs = seg.content
         const messagesList = await Promise.all(msgs.map(msg => this.serializeMsg(msg)))
         const out: ObForwardNodeSeg[] = []
         for (let i = 0;i < messagesList.length;i++) {
