@@ -63,6 +63,8 @@ export const optDefault = {
     self_msg_direction: 'right',
     side_bar_width: 400,
     auto_hide_side_bar: 'none',
+    hide_chat_head: false,
+    hide_chat_bottom: false,
     vibrancy: true,
     pure_color_background: true,
     // Function

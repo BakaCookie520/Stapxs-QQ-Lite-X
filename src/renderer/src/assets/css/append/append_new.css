@@ -140,20 +140,20 @@ body {
     font-size: 0.8rem;
 }
 
-.chat-pan > div.info {
+.chat-head > div.info {
     padding: 10px;
     width: calc(100% - 50px);
 }
 
-.chat-pan > div.info > div.info p {
+.chat-head > div.info > div.info p {
     font-size: 0.9rem;
 }
 
-.chat-pan > div.info > div.info span {
+.chat-head > div.info > div.info span {
     font-size: 0.75rem;
 }
 
-.chat-pan > div.info > img {
+.chat-head > div.info > img {
     width: 40px;
     height: 40px;
 }
@@ -162,13 +162,13 @@ body {
     margin-top: -80px;
 }
 
-.chat-pan > div.info > div.more {
+.chat-head > div.info > div.more {
     width: 35px;
     height: 35px;
     margin-right: 5px;
 }
 
-.chat-pan > div.info > div.more > svg {
+.chat-head > div.info > div.more > svg {
     width: 15px;
     height: 15px;
 }
@@ -393,7 +393,7 @@ body {
     margin-left: 0;
 }
 
-.chat-pan > div.info > svg {
+.chat-head > div.info > svg {
     width: 14px;
     height: 14px;
     padding: 14px;

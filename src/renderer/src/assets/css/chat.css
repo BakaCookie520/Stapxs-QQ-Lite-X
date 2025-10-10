@@ -32,21 +32,33 @@ body.with-bar .chat-pan {
     z-index: 2;
 }
 
-.chat-pan > div.info {
+.chat-head {
+    padding-top: 15px;
+    position: absolute;
+    width: calc(100% - 60px);
+    top: 0;
+    transition: transform 0.2s;
+}
+
+.chat-head.hide {
+    transform: translateY(-85px);
+}
+
+.chat-head > div.info {
     background: rgba(var(--color-card-1-rgb), 0.8);
     box-shadow: 0 0 1px var(--color-shader);
     backdrop-filter: blur(50px);
-    width: calc(100% - 60px);
     pointer-events: all;
     align-items: center;
     border-radius: 7px;
     display: flex;
     padding: 15px;
     margin: 15px;
-    position: absolute;
+    margin-top: 0;
+    width: 100%;
 }
 
-.chat-pan > div.info > svg {
+.chat-head > div.info > svg {
     background: var(--color-main);
     color: var(--color-font-r);
     margin-right: 10px;
@@ -58,7 +70,7 @@ body.with-bar .chat-pan {
     width: 20px;
 }
 
-.chat-pan > div.info > img {
+.chat-head > div.info > img {
     border: 2px solid var(--color-card-2);
     border-radius: 7px;
     margin-right: 10px;
@@ -67,24 +79,24 @@ body.with-bar .chat-pan {
     width: 50px;
 }
 
-.chat-pan > div.info > div.info p {
+.chat-head > div.info > div.info p {
     font-weight: bold;
     font-size: 1rem;
     margin: 0;
 }
 
-.chat-pan > div.info > div.info span {
+.chat-head > div.info > div.info span {
     font-size: 0.8rem;
     font-weight: 100;
     margin-top: 3px;
     display: block;
 }
 
-.chat-pan > div.info > div.space {
+.chat-head > div.info > div.space {
     flex: 1;
 }
 
-.chat-pan > div.info > div.more {
+.chat-head > div.info > div.more {
     background: var(--color-card-2);
     border-radius: 50%;
     cursor: pointer;
@@ -92,14 +104,14 @@ body.with-bar .chat-pan {
     width: 45px;
 }
 
-.chat-pan > div.info > div.more > svg {
+.chat-head > div.info > div.more > svg {
     color: var(--color-main);
     margin: 10px;
     height: 25px;
     width: 25px;
 }
 
-.chat-pan > div.info > div.more > svg.loading {
+.chat-head > div.info > div.more > svg.loading {
     opacity: 0.9;
     animation: rotate 1.5s linear infinite;
 }
@@ -111,11 +123,15 @@ body.with-bar .chat-pan {
     overflow-y: scroll;
     overflow-x: hidden;
     margin-left: 20px;
-    padding-top: 90px;
+    padding-top: var(--head-height);
     padding-bottom: var(--bottom-height);
     z-index: 1;
     flex: 1;
     height: 100%;
+}
+
+.chat-pan > div.chat > .custom-hr {
+	margin: 10px 30px 0 30px;
 }
 
 .chat-pan > div.chat::-webkit-scrollbar {
@@ -161,6 +177,11 @@ body.with-bar .chat-pan {
     position: absolute;
     width: 100%;
     bottom: 0px;
+    transition: transform 0.3s;
+}
+
+.chat-bottom.hide {
+    transform: translateY(calc(1.1rem * var(--input-line) + 105px));
 }
 
 .chat-bottom > .input-pan {
@@ -1715,39 +1736,27 @@ body.with-bar .msg-menu {
 }
 
 .select-tag {
+	position: absolute;
     background: var(--color-card-1);
     justify-content: space-evenly;
-    transition: all 0.3s;
+    transition: transform 0.3s;
     align-items: center;
     flex-direction: row;
     border-radius: 7px;
     overflow: hidden;
     display: flex;
-    margin: 0 20px calc(var(--bottom-height) + 10px) 20px;
-    margin-top: 20px;
+    margin: 20px;
     padding: 15px 10px;
     height: auto;
+	width: calc(100% - 60px);
+	bottom: 10px;
     pointer-events: all;
+	transform-origin: bottom;
 }
 
-.select-tag-enter-active {
-    animation: select-tag-appear 0.3s;
-}
-
-.select-tag-leave-active {
-    animation: select-tag-appear 0.3s reverse;
-}
-
-@keyframes select-tag-appear {
-    from {
-        height: 0;
-        padding: 0;
-    }
-
-    to {
-        padding: 15px 10px;
-        height: auto;
-    }
+.select-tag-enter-from,
+.select-tag-leave-to {
+	transform: scaleY(0);
 }
 
 .select-tag > div {

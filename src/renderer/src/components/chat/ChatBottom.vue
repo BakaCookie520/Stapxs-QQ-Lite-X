@@ -1,18 +1,22 @@
 <template>
-    <div class="chat-bottom">
+    <div class="chat-bottom"
+        :class="{ hide: hide }"
+        @mouseenter="hoverStart()"
+        @mouseleave="hoverEnd()">
         <!-- 表情面板 -->
         <Transition name="pan">
-            <FacePan v-show="details === 'face'"
+            <FacePan v-show="details === 'face' && !focusHide"
                 @send-msg="sendMsg" />
         </Transition>
         <!-- 精华消息 -->
         <Transition v-if="session instanceof GroupSession" name="pan">
-            <EssenceMsgsPan v-show="details === 'essence'"
+            <EssenceMsgsPan v-show="details === 'essence' && !focusHide"
                 :session="session" :key="session.id" @close="switchDetail('essence')" />
         </Transition>
+		<div id="chat-bottom-top" />
         <!-- 图片指示器 -->
         <Transition name="img-pan">
-            <div v-show="session.inputMsg.imgCache.size > 0"
+            <div v-show="session.inputMsg.imgCache.size > 0 && !focusHide"
                 :class="{
                     'img-pan': true,
                     'ss-card': true,
@@ -146,15 +150,16 @@ import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
 import { delay } from '@renderer/function/utils/systemUtil'
 import { runtimeData } from '@renderer/function/msg'
 import { AtSeg, FileSeg } from '@renderer/function/model/seg'
-import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef } from 'vue'
+import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef, computed } from 'vue'
 import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { SelfMsg } from '@renderer/function/model/msg'
 import Viewer from '../Viewer.vue'
 
 const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
-const { session } = defineProps<{
+const { session, focusHide = false } = defineProps<{
     session: Session
+	focusHide?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -165,6 +170,16 @@ const emit = defineEmits<{
 const atFindList = shallowRef<Member[]|undefined>()
 const details = shallowRef<'face'|'essence'|undefined>()
 const onAtFind = shallowRef(false)
+
+
+const hover = shallowRef(false)
+const hide = computed<boolean>(()=>{
+	if (focusHide) return true
+    if (!runtimeData.sysConfig.hide_chat_bottom) return false
+    if (!session.inputMsg.isVoid) return false
+    return !hover.value
+})
+
 
 const mainInput = useTemplateRef('main-input')
 const choicePic = useTemplateRef('choice-pic')
@@ -485,7 +500,6 @@ async function editImg(key: number) {
 }
 //#endregion
 
-
 //#region == 文件处理 ==========================================
 function runSelectFile() {
     choiceFile.value?.click()
@@ -543,8 +557,62 @@ async function sendFile(file: File, fileName: string | null) {
 }
 //#endregion
 
+//#region == 隐藏处理 ==========================================
+let hoverTimeout: ReturnType<typeof setTimeout> | undefined
+let staticTime: number | undefined
+/**
+ * 鼠标移入
+ * 可以指定多长时间，才允许鼠标移出后，侧边栏收起
+ * @param timeout
+ */
+function hoverStart(timeout: number = 500) {
+    if (!staticTime) {
+        hover.value = true
+        staticTime = Date.now() + timeout
+    }
+    clearTimeout(hoverTimeout)
+}
+/**
+ * 鼠标移出
+ * @param event 鼠标移除位置检测
+ */
+function hoverEnd(event?: MouseEvent) {
+    if (!staticTime) return
+    if (event?.relatedTarget instanceof HTMLElement) {
+        if (event.relatedTarget.closest('.menu-component')) return
+    }
+    const dTime = staticTime - Date.now()
+    if (dTime <= 0) {
+        hover.value = false
+        staticTime = undefined
+    }else {
+        hoverTimeout = setTimeout(() => {
+            hover.value = false
+            staticTime = undefined
+        }, dTime)
+    }
+}
+//#endregion
+
 defineExpose({
     init,
     toMainInput,
 })
 </script>
+
+<style scoped>
+    /* 更多功能面板动画 */
+    .pan-enter-active,
+    .pan-leave-active {
+        transition: opacity 0.3s;
+    }
+
+    .pan-enter-from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+
+    .pan-leave-to {
+        opacity: 0;
+    }
+</style>

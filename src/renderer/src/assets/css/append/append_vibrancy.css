@@ -136,7 +136,7 @@ body.vibrancy {
 .vibrancy .note-base,
 .vibrancy .chat-pan > .chat-bottom > .input-pan,
 .vibrancy .chat-pan > .chat-bottom > .img-pan,
-.vibrancy .chat-pan > div.info,
+.vibrancy .chat-head > div.info,
 .vibrancy .merge-pan > div.ss-card,
 .vibrancy .message-content > div.main {
     background: rgba(var(--color-card-1-rgb), 0.6);
@@ -228,7 +228,7 @@ body.vibrancy {
 }
 
 @media (max-width: 500px) {
-    .vibrancy .chat-pan > div.info {
+    .vibrancy .chat-head > div.info {
         margin-top: 35px;
     }
 }

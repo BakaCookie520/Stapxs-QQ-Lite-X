@@ -21,7 +21,7 @@
     <!-- 拖拽区域 -->
     <div v-if="backend.platform == 'darwin'" class="controller mac-controller"
         data-tauri-drag-region="true" />
-    <div id="base-app">
+    <div id="base-app" ref="base-app">
         <div class="main-body" :style="{'--side-bar-width': runtimeData.sysConfig.side_bar_width + 'px'}">
             <SideBar />
             <div class="main-box">
@@ -106,7 +106,7 @@ import GlobalSessionSearchBar from './components/GlobalSessionSearchBar.vue'
 import PopBox from './components/PopBox.vue'
 import Viewer from './components/Viewer.vue'
 import { vHide } from './function/utils/vcmd'
-import { useDailyDo, useKeyboard } from './function/utils/vuse'
+import { useDailyDo, useFrame, useInterval, useKeyboard } from './function/utils/vuse'
 import Chat from './pages/Chat.vue'
 import SideBar from './pages/SideBar.vue'
 import { backend } from './runtime/backend'
@@ -129,6 +129,14 @@ const fps = shallowReactive({
     value: 0,
 })
 const $t = i18n.global.t
+//#endregion
+
+//#region == 组件实例注册 ===============================================
+const friendMenu = useTemplateRef('friendMenu')
+const viewer = useTemplateRef('viewer')
+const baseApp = useTemplateRef('base-app')
+provide('friendMenu', friendMenu)
+provide('viewer', viewer)
 //#endregion
 
 //#region == 更新标题 ===================================================
@@ -169,6 +177,11 @@ window.runtimeData = runtimeData
 useKeyboard('f12', ()=>{
     if (!import.meta.env.DEV) return
     backend.call(undefined, 'win:openDevTools', false)
+})
+
+useFrame(()=>{
+    if (!baseApp.value) return
+    baseApp.value.scrollTop = 0
 })
 //#endregion
 
@@ -343,13 +356,6 @@ function rafLoop() {
     }
     requestAnimationFrame(rafLoop)
 }
-//#endregion
-
-//#region == 组件实例注册 ===============================================
-const friendMenu = useTemplateRef<InstanceType<typeof FriendMenu>>('friendMenu')
-const viewer = useTemplateRef<InstanceType<typeof Viewer>>('viewer')
-provide('friendMenu', friendMenu)
-provide('viewer', viewer)
 //#endregion
 </script>
 

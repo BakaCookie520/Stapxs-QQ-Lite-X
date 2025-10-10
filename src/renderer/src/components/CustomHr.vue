@@ -16,7 +16,7 @@
 .custom-hr {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: auto;
     --hr-color: var(--color-main);
     opacity: 0.8;
 }

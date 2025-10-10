@@ -224,6 +224,36 @@
                         px</span>
                 </div>
             </div>
+            <div class="opt-item">
+                <div :class="checkDefault('hide_chat_head')" />
+                <font-awesome-icon :icon="['fas', 'clapperboard']" />
+                <div>
+                    <span>{{ $t('隐藏聊天顶栏') }}</span>
+                    <span>{{ $t('把聊天信息都藏起来') }}</span>
+                </div>
+                <label class="ss-switch">
+                    <input v-model="runtimeData.sysConfig.hide_chat_head"
+                        type="checkbox" name="hide_chat_head" @change="save">
+                    <div>
+                        <div />
+                    </div>
+                </label>
+            </div>
+            <div class="opt-item">
+                <div :class="checkDefault('hide_chat_bottom')" />
+                <font-awesome-icon :icon="['fas', 'rectangle-list']" />
+                <div>
+                    <span>{{ $t('隐藏发送栏') }}</span>
+                    <span>{{ $t('简洁模式') }}</span>
+                </div>
+                <label class="ss-switch">
+                    <input v-model="runtimeData.sysConfig.hide_chat_bottom"
+                        type="checkbox" name="hide_chat_bottom" @change="save">
+                    <div>
+                        <div />
+                    </div>
+                </label>
+            </div>
         </div>
         <div class="ss-card">
             <header>{{ $t('页面') }}</header>

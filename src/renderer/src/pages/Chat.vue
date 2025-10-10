@@ -22,6 +22,7 @@
         :style="{
             '--input-line': chat.inputMsg.lines,
             '--bottom-height': bottomHeight + 'px',
+            '--head-height': headHeight + 'px',
         }"
         @v-move-right.prevent="exitWin()">
 
@@ -116,6 +117,7 @@
 
         <!-- 底部区域 -->
         <ChatBottom :session="chat" ref="bottom"
+            :focus-hide="tags.isMultiselectMode"
             @send-poke="sendPoke"
             @scroll-bottom="scrollBottom"/>
 
@@ -260,7 +262,7 @@ import {
     getViewTime,
 } from '@renderer/function/utils/systemUtil'
 import { vHide, vMove, VMoveOptions } from '@renderer/function/utils/vcmd'
-import { useInterval, useKeyboard } from '@renderer/function/utils/vuse'
+import { useFrame, useKeyboard, useViewportUnits } from '@renderer/function/utils/vuse'
 import app from '@renderer/main'
 import { backend } from '@renderer/runtime/backend'
 import {
@@ -275,6 +277,7 @@ import {
 const { chat } = defineProps<{chat: Session}>()
 
 const $t = app.config.globalProperties.$t
+const { vh } = useViewportUnits()
 
 //#region  == 模板引用 ======================================
 const msgBar = useTemplateRef('msgBar')
@@ -296,6 +299,7 @@ const userInfoPanData = shallowReactive<{
     x: 0,
     y: 0,
 })
+const headHeight = shallowRef(0)
 const bottomHeight = shallowRef(0)
 const userInfoPanFunc: UserInfoPan = {
     open: (user: IUser | number, x: number, y: number) => {
@@ -369,11 +373,25 @@ Session.beforeNewMessageHook.push(async (session, _msg)=>{
     })
 })
 
-useInterval(()=>{
-    if (!chatBottom.value?.$el) return
-    if (bottomHeight.value === (chatBottom.value.$el as HTMLDivElement).offsetHeight) return
-	bottomHeight.value = (chatBottom.value.$el as HTMLDivElement).offsetHeight
-}, 20)
+// 更新顶部高度
+useFrame(()=>{
+    const headBottom = document.getElementById('chat-head-bottom')
+    if (!headBottom) return
+    const headRect = headBottom.getBoundingClientRect()
+    const height = headRect.bottom
+    if (headHeight.value === height) return
+    headHeight.value = height
+})
+// 更新底部高度
+useFrame(()=>{
+    const bottomTop = document.getElementById('chat-bottom-top')
+    if (!bottomTop) return
+    const bottomRect = bottomTop.getBoundingClientRect()
+    let height = 100 * vh.value - bottomRect.top
+    if (tags.isMultiselectMode) height = Math.max(height, 140)
+    if (bottomHeight.value === height) return
+    bottomHeight.value = height
+})
 
 // ctrl+w 关闭聊天框
 useKeyboard('ctrl+w', ()=>{
@@ -1165,20 +1183,3 @@ function imgLoadedScroll(height: number) {
 }
 //#endregion
 </script>
-
-<style scoped>
-    /* 更多功能面板动画 */
-    .pan-enter-active,
-    .pan-leave-active {
-        transition: opacity 0.3s;
-    }
-
-    .pan-enter-from {
-        transform: translateX(20px);
-        opacity: 0;
-    }
-
-    .pan-leave-to {
-        opacity: 0;
-    }
-</style>
