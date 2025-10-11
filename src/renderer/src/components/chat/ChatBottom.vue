@@ -131,7 +131,9 @@
                     @paste="addImg"
                     @keydown="mainKey"
                     @keyup="mainKeyUp"
-                    @click="selectSQIn()" />
+                    @click="selectSQIn()"
+                    @compositionstart="handleCompositionStart"
+                    @compositionend="handleCompositionEnd" />
             </div>
         </div>
     </div>
@@ -222,6 +224,15 @@ function toMainInput() {
 
 //#region == 发送消息 ==========================================
 let checkNewLineFlag = false
+type SendState = 'READY' | 'REFUSE' | 'PASS'
+let sendState: SendState = 'REFUSE'
+function handleCompositionStart() {
+    sendState = 'REFUSE'
+}
+function handleCompositionEnd() {
+    sendState = 'PASS'
+    setTimeout(() => { sendState = 'READY' }, 50)
+}
 /**
  * 发送框按键事件
  * @param event 事件
@@ -255,17 +266,23 @@ function mainKey(event: KeyboardEvent) {
             break
     }
 
-    if (canSend && !session.inputMsg.isVoid) sendMsg()
-    else
     // 补加 enter
     // ctrl + enter
     // meta + enter
     // alt + enter
     // 上述组合不自带enter,需要手动补充
-    if (
-        event.key === 'Enter' &&
-        (event.ctrlKey || event.metaKey || event.altKey)
-    ) session.inputMsg.content += '\n'
+    if(canSend && !session.inputMsg.isVoid) {
+        sendState = 'READY'
+    }
+
+    if (sendState == 'READY' && !session.inputMsg.isVoid) {
+        sendMsg()
+    } else if(event.key === 'Enter' &&
+        (event.ctrlKey || event.metaKey || event.altKey)) {
+        // 否则触发回车逻辑，补充换行
+        session.inputMsg.content += '\n'
+    }
+    sendState = 'REFUSE'
 }
 function mainKeyUp(event: KeyboardEvent) {
     const logger = new Logger()
