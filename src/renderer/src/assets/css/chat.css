@@ -148,7 +148,7 @@ body.with-bar .chat-pan {
 .chat-pan > div.new-msg > div {
     position: absolute;
     right: 40px;
-    bottom: calc(176px + 1.1rem * var(--input-line));
+    bottom: calc(100px + var(--bottom-height));
     background: rgba(var(--color-card-1-rgb), 0.7);
     backdrop-filter: blur(50px);
     justify-content: center;
@@ -158,7 +158,6 @@ body.with-bar .chat-pan {
     margin-top: 10px;
     display: flex;
     padding: 0;
-    transition: bottom 0.3s;
 }
 
 .chat-pan > div.new-msg > div > svg {
