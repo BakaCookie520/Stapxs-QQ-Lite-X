@@ -17,6 +17,7 @@ export class InputMsg {
     private readonly _reply = shallowRef<Msg | undefined>()
     private readonly _content = shallowRef<string>('')
     private readonly _isVoid = computed<boolean>(()=>{
+        if (this.reply) return false
         return this.content.trim().length === 0
     })
     private readonly _sqList = computed(()=>{

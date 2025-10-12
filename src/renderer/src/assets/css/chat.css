@@ -181,7 +181,7 @@ body.with-bar .chat-pan {
 }
 
 .chat-bottom.hide {
-    transform: translateY(calc(1.1rem * var(--input-line) + 105px));
+    transform: translateY(calc(1.1rem * var(--input-line) + 105px + var(--open-reply) * 50px));
 }
 
 .chat-bottom > .input-pan {

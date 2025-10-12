@@ -1,6 +1,7 @@
 <template>
     <div class="chat-bottom"
         :class="{ hide: hide }"
+        :style="{ '--open-reply': session.inputMsg.reply ? '1' : '0' }"
         @mouseenter="hoverStart()"
         @mouseleave="hoverEnd()">
         <!-- 表情面板 -->
