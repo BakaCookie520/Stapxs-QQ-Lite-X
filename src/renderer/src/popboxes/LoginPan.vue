@@ -1,5 +1,9 @@
 <template>
     <div class="login-pan-card">
+        <div class="setting"
+            @click="openOptions">
+            <font-awesome-icon :icon="['fas', 'gear']" />
+        </div>
         <Icon animation />
         <p>{{ $t('连接到 协议端') }}</p>
         <form @submit.prevent @submit="connect">
@@ -69,6 +73,7 @@ import { i18n } from '@renderer/main'
 import { computed, shallowReactive, shallowRef } from 'vue'
 import Icon from '@renderer/components/Icon.vue'
 import HowToConnect from '@renderer/popboxes/doc/HowToConnect.vue'
+import Options from '@renderer/pages/Options.vue'
 const loginInfo = shallowReactive({
     savePassword: false,
     quickLoginSelect: '',
@@ -183,6 +188,15 @@ function howToConnect() {
                 text: $t('确定'),
             }
         ]
+    })
+}
+
+/**
+ * 打开设置
+ */
+function openOptions() {
+    popBox({
+        template: Options,
     })
 }
 

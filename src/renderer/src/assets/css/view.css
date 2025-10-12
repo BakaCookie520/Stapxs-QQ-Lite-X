@@ -505,6 +505,22 @@ body.with-bar #base-app {
     padding: 40px 30px;
     text-align: center;
     overflow: hidden;
+    position: relative;
+}
+
+.login-pan-card > .setting {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.login-pan-card > .setting > svg {
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.login-pan-card > .setting:hover > svg {
+    opacity: 1.0;
 }
 
 .login-pan-card > svg {
