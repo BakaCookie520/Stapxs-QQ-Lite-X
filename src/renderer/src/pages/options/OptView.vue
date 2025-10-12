@@ -129,7 +129,7 @@
                 <font-awesome-icon :icon="['fas', 'window-maximize']" />
                 <div>
                     <span>{{ $t('透明模式') }}</span>
-                    <span>{{ $t('毛玻璃，好好看，颜值翻倍') }}</span>
+                    <span>{{ $t('开启透明模式，颜值翻倍...就是有点吃性能') }}</span>
                 </div>
                 <label class="ss-switch">
                     <input v-model="runtimeData.sysConfig.vibrancy"

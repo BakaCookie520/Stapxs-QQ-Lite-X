@@ -65,7 +65,7 @@ export const optDefault = {
     auto_hide_side_bar: 'none',
     hide_chat_head: false,
     hide_chat_bottom: false,
-    vibrancy: true,
+    vibrancy: false,
     pure_color_background: true,
     // Function
     close_notice: false,

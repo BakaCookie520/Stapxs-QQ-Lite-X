@@ -2178,7 +2178,7 @@ msgstr ""
 msgid "更换背景"
 msgstr ""
 
-msgid "毛玻璃，好好看，颜值翻倍"
+msgid "开启透明模式，颜值翻倍...就是有点吃性能"
 msgstr ""
 
 msgid "占比小于 {per}% 的数据将不会展示在饼图中"
