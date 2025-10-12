@@ -109,7 +109,7 @@ export interface AdapterInterface {
      * 获取资源url
      * @param id
      */
-    getRessource?(id: string): Promise<string|undefined>
+    getResource?(id: string): Promise<string|undefined>
     //#endregion
 
     //#region == 群聊相关 ======================

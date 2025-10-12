@@ -395,6 +395,19 @@ export class MilkyAdapter implements AdapterInterface {
      */
     // @api
     async getCustomFace?(): Promise<string[] | undefined>
+    /**
+     * 获取资源url
+     * @param id 资源id
+     */
+    @api
+    async getResource(id: string): Promise<string|undefined> {
+        const data = await this.callApi(
+            'get_resource_temp_url',
+            Api.GetResourceTempUrlInput.parse({ resource_id: id }),
+            Api.GetResourceTempUrlOutput
+        )
+        return data.url
+    }
     //#endregion
 
     //#region == 群聊相关 ======================
@@ -1322,7 +1335,7 @@ export class MilkyAdapter implements AdapterInterface {
                 file_name: file.file_name,
                 size: file.file_size,
                 download_times: file.downloaded_times,
-                dead_time: file.expire_time,
+                dead_time: file.expire_time ?? undefined,
                 upload_time: file.uploaded_time,
                 uploader_id: file.uploader_id,
             })),
