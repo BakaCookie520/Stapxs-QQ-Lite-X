@@ -475,9 +475,14 @@ export class OneBotAdapter implements AdapterInterface {
         if (Array.isArray(data)) {
             return await Promise.all(data.map(d => this.parseSeg(d)))
         } else {
-            const parser = this.segParsers[data.type]
-            if (parser) return await parser(data)
-            return this.unknownParser(data)
+            try {
+                const parser = this.segParsers[data.type]
+                if (parser) return await parser(data)
+                return this.unknownParser(data)
+            }catch (err) {
+                logger.error(err as Error, '消息段解析失败:' + JSON.stringify(data))
+                return {type: 'error'}
+            }
         }
     }
     async textParser(data: ObTextSeg): Promise<TextSegData> {
@@ -522,6 +527,7 @@ export class OneBotAdapter implements AdapterInterface {
     async forwardParser(data: ObForwardSeg): Promise<ForwardSegData> {
         const id: string = data.data.id
         const nodes = await this.getForwardMsg(id)
+        if (!nodes) throw new Error('获取合并转发消息失败')
         return {
             type: 'forward',
             id,

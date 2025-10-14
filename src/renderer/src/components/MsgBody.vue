@@ -284,6 +284,9 @@
                                 <font-awesome-icon class="poke-hand" style="margin-right: 5px;" :icon="['fas', 'fa-hand-point-up']" />
                                 {{ $t('戳了戳你') }}
                             </div>
+                            <div v-else-if="item instanceof ErrorSeg" class="msg-unknown">
+                                ( {{ $t('加载失败') }} )
+                            </div>
                             <span v-else class="msg-unknown">{{ '( ' + $t('不支持的消息') + ': ' + item.type + ' )' }}</span>
                         </div>
                     </template>
@@ -450,6 +453,7 @@ import { ProxyUrl } from '@renderer/function/model/proxyUrl'
 import {
     AtAllSeg,
     AtSeg,
+    ErrorSeg,
     FaceSeg,
     FileSeg,
     ForwardSeg,

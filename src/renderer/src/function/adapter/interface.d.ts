@@ -590,6 +590,10 @@ export interface UnknownSegData extends SegData {
 	data: object                // 原始数据
 }
 
+export interface ErrorSegData extends SegData {
+    type: 'error'               // 消息段类型
+}
+
 /**
  * 合并转发节点
  */

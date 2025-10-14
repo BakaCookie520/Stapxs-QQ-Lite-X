@@ -1,6 +1,6 @@
 import app from '@renderer/main'
 import { toRaw } from 'vue'
-import type { AtAllSegData, AtSegData, FaceSegData, FileSegData, ForwardSegData, ImgSegData, JsonSegData, MdSegData, MfaceSegData, PokeSegData, ReplySegData, SegData, TextSegData, UnknownSegData, VideoSegData, XmlSegData } from '../adapter/interface'
+import type { AtAllSegData, AtSegData, ErrorSegData, FaceSegData, FileSegData, ForwardSegData, ImgSegData, JsonSegData, MdSegData, MfaceSegData, PokeSegData, ReplySegData, SegData, TextSegData, UnknownSegData, VideoSegData, XmlSegData } from '../adapter/interface'
 import { PopInfo, PopType } from '../base'
 import { downloadFile } from '../utils/appUtil'
 import { getSizeFromBytes } from '../utils/systemUtil'
@@ -580,6 +580,23 @@ export class JsonSeg extends Seg {
             type: 'json',
             data: this.data,
             id: this.id
+        }
+    }
+}
+
+@registerSegType
+@autoMarkRaw
+export class ErrorSeg extends Seg {
+    static readonly type = 'error'
+
+    plaintext(_?: Msg): string {
+        const { $t } = app.config.globalProperties
+        return $t('加载失败')
+    }
+
+    override serializeData(): ErrorSegData {
+        return {
+            type: 'error',
         }
     }
 }
