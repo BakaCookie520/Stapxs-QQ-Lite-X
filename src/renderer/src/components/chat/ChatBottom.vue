@@ -127,6 +127,7 @@
             <div class="input">
                 <textarea
                     ref="main-input"
+                    id="main-input"
                     v-model="session.inputMsg.content"
                     type="text"
                     @paste="addImg"

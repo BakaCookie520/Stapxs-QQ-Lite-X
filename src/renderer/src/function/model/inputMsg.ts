@@ -47,7 +47,19 @@ export class InputMsg {
     addSq(seg: Seg): number {
         const id = this.sqCache.length
         this.sqCache.push(seg)
-        this.content += `[SQ:${id}]`
+        const inputDom = document.getElementById('main-input') as HTMLTextAreaElement
+        if (
+            inputDom &&
+            inputDom.value === this.content &&
+            inputDom.selectionStart !== null &&
+            inputDom.selectionStart < this.content.length
+        ) {
+            const first = this.content.substring(0, inputDom.selectionStart)
+            const last = this.content.substring(inputDom.selectionStart, this.content.length)
+            this.content = first + '[SQ:' + id + ']' + last
+        } else {
+            this.content += `[SQ:${id}]`
+        }
         return id
     }
 
