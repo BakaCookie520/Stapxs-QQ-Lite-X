@@ -224,15 +224,12 @@ function toMainInput() {
 }
 
 //#region == 发送消息 ==========================================
-let checkNewLineFlag = false
-type SendState = 'READY' | 'REFUSE' | 'PASS'
-let sendState: SendState = 'REFUSE'
+let compositionTag = false
 function handleCompositionStart() {
-    sendState = 'REFUSE'
+    compositionTag = true
 }
 function handleCompositionEnd() {
-    sendState = 'PASS'
-    setTimeout(() => { sendState = 'READY' }, 50)
+    compositionTag = false
 }
 /**
  * 发送框按键事件
@@ -240,6 +237,7 @@ function handleCompositionEnd() {
  */
 function mainKey(event: KeyboardEvent) {
     if (event.key !== 'Enter') return
+    if (compositionTag) return      // 乱七八糟的输入法忽略
     let canSend = false
     switch (runtimeData.sysConfig.send_key) {
         case 'none':
@@ -273,28 +271,15 @@ function mainKey(event: KeyboardEvent) {
     // alt + enter
     // 上述组合不自带enter,需要手动补充
     if(canSend && !session.inputMsg.isVoid) {
-        sendState = 'READY'
-    }
-
-    if (sendState == 'READY' && !session.inputMsg.isVoid) {
         sendMsg()
     } else if(event.key === 'Enter' &&
         (event.ctrlKey || event.metaKey || event.altKey)) {
         // 否则触发回车逻辑，补充换行
         session.inputMsg.content += '\n'
     }
-    sendState = 'REFUSE'
 }
 function mainKeyUp(event: KeyboardEvent) {
     const logger = new Logger()
-    // 发送完成后输入框会遗留一个换行，把它删掉 ……
-    if (checkNewLineFlag){
-        checkNewLineFlag = false
-        if (session.inputMsg.content == '\n'){
-            session.inputMsg.content = ''
-        }
-    }
-
     if (event.key !== 'Enter') {
         const content = session.inputMsg.content
         // 获取最后一个输入的符号用于判定 at
@@ -346,7 +331,6 @@ function sendMsg() {
     )
     // 发送后事务
     session.inputMsg.clear()
-    checkNewLineFlag = true
     nextTick(async ()=>{
         await delay(100)
         emit('scrollBottom', true)
