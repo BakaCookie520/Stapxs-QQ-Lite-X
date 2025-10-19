@@ -158,39 +158,63 @@ export class InputMsg {
     }
 
     /**
-     * 将消息对象转为 JSON，这儿也会完成所有的发送前处理
-     * @param msg
-     * @param cache
+     * 解析输入消息成为消息段
      * @returns
      */
     private parseMsgToSegs(): Seg[] {
-        const back: Seg[] = []
-        let msg = this.content
-        // 处理消息文本
-        for (const sq of this.sqList) {
-            const index = Number(
-                sq.replace('[SQ:', '').replace(']', ''),
-            )
-            const regCut = RegExp('^[^\\[]*\\[SQ:' + index + '\\]', 'g')
-            // 处理内容
-            const cutList = regCut.exec(msg)
-            if (cutList !== null) {
-                const cutMsg = cutList[0].replace(sq, '')
-                // 添加前段文本
-                if (cutMsg !== '') {
-                    back.push(new TxtSeg(cutMsg))
+        const re: Seg[] = []
+
+        let cacheTxt: string = ''
+
+        for (let idx = 0; idx < this.content.length; ) {
+            const chr = this.content.charAt(idx)
+
+            // SQ码检测
+            if (chr === '[' && this.content.substring(idx).startsWith('[SQ:')) {
+                let sqId = ''
+                let isSqCode = true
+                let currentIdx = idx + 4
+                // SQ码 id 解析
+                while (currentIdx < this.content.length) {
+                    const currentChr = this.content.charAt(currentIdx)
+                    // 结束
+                    if (currentChr === ']') break
+                    // 非数字，非 SQ 码
+                    if (currentChr < '0' || currentChr > '9') {
+                        isSqCode = false
+                        break
+                    }
+                    sqId += currentChr
+                    currentIdx ++
                 }
-                // 添加后段特殊消息
-                if (this.sqCache.at(index)) back.push(this.sqCache.at(index)!)
-                // 去除内容
-                msg = msg.replace(cutList[0], '')
+                const segId = Number(sqId)
+                const seg = this.sqCache.at(segId)
+                if (!seg) isSqCode = false
+
+                // 是 SQ 码，处理缓存文本
+                if (isSqCode) {
+                    // 处理缓存文本
+                    if (cacheTxt.length > 0) {
+                        re.push(new TxtSeg(cacheTxt))
+                        cacheTxt = ''
+                    }
+                    // 添加 SQ 码消息段
+                    re.push(seg!)
+                    // 移动索引
+                    idx = currentIdx + sqId.length
+                    continue
+                }
             }
-        }
-        if (msg !== '') {
-            back.push(new TxtSeg(msg))
+
+            // 文本处理
+            cacheTxt += chr
+            idx ++
         }
 
-        // 返回
-        return back
+        if (cacheTxt.length > 0) {
+            re.push(new TxtSeg(cacheTxt))
+        }
+
+        return re
     }
 }
