@@ -411,9 +411,8 @@
             @v-long-hover-end="userInfoPan?.close()"
             @dblclick="$emit('senderDoubleClick', data.sender)">
         <div v-if="data.emojis"
-            :class="{
-                'emoji-like': true,
-            }">
+            class="emoji-like">
+            <div class="emoji-space"/>
             <div class="emoji-like-body">
                 <TransitionGroup name="emoji-like">
                     <template v-for="info, id in (data.emojis as { [key: string]: number[] })"
@@ -1169,75 +1168,6 @@ defineExpose({
     })
 </script>
 <style>
-    .emoji-like {
-        flex-direction: row;
-        display: flex;
-        width: 100%;
-    }
-    .emoji-like-body {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        max-width: 30%;
-        margin-left: 50px;
-        margin-top: 10px;
-    }
-    .emoji-like-body div {
-        background: var(--color-card-1);
-        display: flex;
-        height: 20px;
-        border-radius: 7px;
-        margin-right: 5px;
-        padding: 5px 10px;
-        margin-bottom: 5px;
-        transform-origin: left center;
-        transition: 0.3s;
-    }
-    .emoji-like-body div:hover {
-        background: var(--color-card-2);
-    }
-    .emoji-like-body span {
-        color: var(--color-font-2);
-        font-size: 0.8rem;
-        margin: auto;
-        margin-left: 10px;
-    }
-    .emoji-like-body .emoji-face {
-        width: 20px;
-        height: 20px;
-        font-size: 1rem;
-        margin: 0;
-    }
-    .emoji-like-body div.me-send{
-        background-color: var(--color-main);
-    }
-    .emoji-like-body div.me-send:hover {
-        background: var(--color-font);
-    }
-    .emoji-like-body > div.me-send span {
-        color: var(--color-font-r);
-    }
-
-    .emoji-like-enter-active {
-        animation: emoji-like-enter 0.3s ease-in-out;
-    }
-    .emoji-like-leave-active {
-        animation: emoji-like-enter 0.3s ease-in-out reverse;
-    }
-    .emoji-like-move {
-        transition: transform 0.3s all;
-    }
-    @keyframes emoji-like-enter {
-        from {
-            opacity: 0;
-            transform: scaleX(0);
-        }
-        to {
-            opacity: 1;
-            transform: scaleX(1);
-        }
-    }
-
     .link-view-bilibili {
         flex-direction: column;
         width: 100%;
