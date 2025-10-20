@@ -20,7 +20,6 @@
             'chat-pan': true,
         }"
         :style="{
-            '--input-line': chat.inputMsg.lines,
             '--bottom-height': bottomHeight + 'px',
             '--head-height': headHeight + 'px',
         }"

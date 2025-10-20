@@ -1,7 +1,10 @@
 <template>
     <div class="chat-bottom"
         :class="{ hide: hide }"
-        :style="{ '--open-reply': session.inputMsg.reply ? '1' : '0' }"
+        :style="{
+            '--open-reply': session.inputMsg.reply ? '1' : '0',
+            '--input-height': textAreaHeight + 'px'
+        }"
         @mouseenter="hoverStart()"
         @mouseleave="hoverEnd()">
         <!-- 表情面板 -->
@@ -154,7 +157,7 @@ import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
 import { delay } from '@renderer/function/utils/systemUtil'
 import { runtimeData } from '@renderer/function/msg'
 import { AtSeg, FileSeg } from '@renderer/function/model/seg'
-import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef, computed } from 'vue'
+import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef, computed, watchEffect } from 'vue'
 import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { SelfMsg } from '@renderer/function/model/msg'
 import Viewer from '../Viewer.vue'
@@ -175,15 +178,39 @@ const atFindList = shallowRef<Member[]|undefined>()
 const details = shallowRef<'face'|'essence'|undefined>()
 const onAtFind = shallowRef(false)
 
+const textAreaHeight = computed(()=>{
+    session.inputMsg.content
+    if (!mainInput.value) return 0
+    const dom = mainInput.value as HTMLTextAreaElement
+    dom.style.height = 'auto'
+    const height = dom.scrollHeight
+    dom.style.height = ''
+    return height
+})
 
 const hover = shallowRef(false)
+const sendTimeout = shallowRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 const hide = computed<boolean>(()=>{
 	if (focusHide) return true
     if (!runtimeData.sysConfig.hide_chat_bottom) return false
+    if (sendTimeout.value) return false
+    if (compositionTag.value) return false
     if (!session.inputMsg.isVoid) return false
     return !hover.value
 })
 
+let lastInputVoid = session.inputMsg.isVoid
+// 延迟1s隐藏
+watchEffect(()=>{
+    if (lastInputVoid === session.inputMsg.isVoid) return
+    lastInputVoid = session.inputMsg.isVoid
+    if (!session.inputMsg.isVoid) return
+
+    clearTimeout(sendTimeout.value)
+    sendTimeout.value = setTimeout(()=>{
+        sendTimeout.value = undefined
+    }, 500)
+})
 
 const mainInput = useTemplateRef('main-input')
 const choicePic = useTemplateRef('choice-pic')
@@ -225,12 +252,12 @@ function toMainInput() {
 }
 
 //#region == 发送消息 ==========================================
-let compositionTag = false
+const compositionTag = shallowRef(false)
 function handleCompositionStart() {
-    compositionTag = true
+    compositionTag.value = true
 }
 function handleCompositionEnd() {
-    compositionTag = false
+    compositionTag.value = false
 }
 /**
  * 发送框按键事件
@@ -238,7 +265,7 @@ function handleCompositionEnd() {
  */
 function mainKey(event: KeyboardEvent) {
     if (event.key !== 'Enter') return
-    if (compositionTag) return      // 乱七八糟的输入法忽略
+    if (compositionTag.value) return      // 乱七八糟的输入法忽略
     let canSend = false
     switch (runtimeData.sysConfig.send_key) {
         case 'none':

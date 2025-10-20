@@ -180,7 +180,7 @@ body.with-bar .chat-pan {
 }
 
 .chat-bottom.hide {
-    transform: translateY(calc(1.1rem * var(--input-line) + 105px + var(--open-reply) * 50px));
+    transform: translateY(calc(100% - 25px));
 }
 
 .chat-bottom > .input-pan {
@@ -212,7 +212,8 @@ body.with-bar .chat-pan {
     resize: none;
     border: 0;
     width: 100%;
-    height: calc(1.1rem * var(--input-line));
+    min-height: 1.1rem;
+    height: var(--input-height);
     max-height: 80vh;
     transition: height 0.3s;
 }
