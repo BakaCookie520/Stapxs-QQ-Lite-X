@@ -133,7 +133,7 @@
                 </div>
                 <label class="ss-switch">
                     <input v-model="runtimeData.sysConfig.vibrancy"
-                        type="checkbox" name="vibrancy" @change="save">
+                        type="checkbox" name="vibrancy" @change="gaVibrancy">
                     <div>
                         <div />
                     </div>
@@ -447,8 +447,8 @@ import { defineComponent, toRaw } from 'vue'
 import { runtimeData } from '../../function/msg'
 import Option, { checkDefault, get, runASWEvent as save } from '../../function/option'
 
-import { sendStatEvent } from '@renderer/function/utils/appUtil'
-import { closePopBox, textPopBox } from '@renderer/function/utils/popBox'
+import { sendIdentifyData } from '@renderer/function/utils/appUtil'
+import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { backend } from '@renderer/runtime/backend'
 import languages from '../../assets/l10n/_l10nconfig.json'
 
@@ -503,19 +503,30 @@ import languages from '../../assets/l10n/_l10nconfig.json'
         methods: {
             gaLanguage(event: Event) {
                 const sender = event.target as HTMLInputElement
-                sendStatEvent('use_language', { name: sender.value })
-            },
-
-            gaChatView(event: Event) {
-                const sender = event.target as HTMLInputElement
-                sendStatEvent('use_chatview', { name: sender.value })
+                sendIdentifyData({'use_language': sender.value})
             },
 
             gaColor(event: Event) {
                 const sender = event.target as HTMLInputElement
-                sendStatEvent('use_theme_color', {
-                    name: this.colors[Number(sender.dataset.id)],
-                })
+                sendIdentifyData({ use_theme_color: this.colors[Number(sender.dataset.id)] })
+            },
+
+            async gaVibrancy(event: Event) {
+                const sender = event.target as HTMLInputElement
+                if (sender.checked) {
+                    const re = await ensurePopBox(
+                        this.$t('开启透明模式将会对性能产生较为明显的影响，建议不要在性能较差的设备上使用此功能；此功能可能会降低元素可读性。',)
+                    )
+                    if (!re) {
+                        sender.checked = false
+                        return
+                    }
+                    save(event)
+                    sendIdentifyData({ use_transparent: true })
+                }else {
+                    save(event)
+                    sendIdentifyData({ use_transparent: false })
+                }
             },
 
             scaleSave(event: Event) {

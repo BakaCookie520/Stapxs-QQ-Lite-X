@@ -387,7 +387,7 @@ import Icon from '@renderer/components/Icon.vue'
 import { defineComponent } from 'vue'
 import { runtimeData } from '@renderer/function/msg'
 import { runASWEvent as save } from '@renderer/function/option'
-import { openLink, sendStatEvent } from '@renderer/function/utils/appUtil'
+import { openLink, sendIdentifyData } from '@renderer/function/utils/appUtil'
 
 const emit = defineEmits<{
     closePopBox: []
@@ -420,7 +420,7 @@ const emit = defineEmits<{
             },
             gaLanguage(event: Event) {
                 const sender = event.target as HTMLInputElement
-                sendStatEvent('use_language', { name: sender.value })
+                sendIdentifyData({'use_language': sender.value})
                 // TODO: 刷新菜单
             },
             setPage(name: string) {
