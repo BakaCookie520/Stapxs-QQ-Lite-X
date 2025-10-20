@@ -98,7 +98,7 @@
                     <template v-else-if="isSuperFaceMsg()">
                         <div class="msg-img face alone"
                             style="--width: 35vh">
-                            <Lottie :animation-link="(data.message[0] as FaceSeg).face!.superValue"
+                            <LazyLottie :animation-link="(data.message[0] as FaceSeg).face!.superValue!"
                                 :title="(data.message[0] as FaceSeg).face!.description" />
                         </div>
                     </template>
@@ -436,7 +436,6 @@
 import Option from '@renderer/function/option'
 import markdownit from 'markdown-it'
 
-import { Vue3Lottie as Lottie } from 'vue3-lottie'
 import EmojiFace from './EmojiFace.vue'
 import CardMessage from './msg-component/CardMessage.vue'
 import { UserInfoPan } from './UserInfoPan.vue'
@@ -493,6 +492,7 @@ import {
     useTemplateRef
 } from 'vue'
 import { MsgPrevPan } from './MsgPrevPan.vue'
+import LazyLottie from './LazyLottie.vue'
 
 //#region == 声明变量 ================================================================
 const {
