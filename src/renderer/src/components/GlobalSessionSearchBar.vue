@@ -67,6 +67,7 @@ import {
     watchEffect,
 } from 'vue'
 import TinySessionBody from './TinySessionBody.vue'
+import { fitScroll } from '@renderer/function/utils/appUtil'
 
 //#region == 常量声明 ====================================================================
 const show = shallowRef<boolean>(false)
@@ -92,7 +93,10 @@ watchEffect(()=>{
         selectId.value = 0
 
     // 出界滚动
-    scrollToSelected()
+    const container = sessionList.value
+    const item = sessionItems.value?.[selectId.value]?.$el
+    if (!container || !item) return
+    nextTick(()=>fitScroll(container, item))
 })
 //#endregion
 
@@ -170,35 +174,6 @@ function choiceSession(session: Session) {
 function choiceSessionById(id: number) {
     if (id < 0 || id >= showSessions.value.length) return
     choiceSession(showSessions.value[id])
-}
-
-/**
- * 滚动到选中的会话项
- */
-function scrollToSelected() {
-    nextTick(() => {
-        if (!sessionItems.value) return
-        const selectedElement = sessionItems.value[selectId.value]
-        const container = sessionList.value!
-
-        if (selectedElement && container) {
-            const containerRect = container.getBoundingClientRect()
-            const elementRect = selectedElement.$el.getBoundingClientRect()
-
-            // 计算相对于容器的位置
-            const elementTop = elementRect.top - containerRect.top + container.scrollTop
-            const elementBottom = elementTop + elementRect.height
-
-            // 如果元素在可见区域上方
-            if (elementTop < container.scrollTop) {
-                container.scrollTop = elementTop
-            }
-            // 如果元素在可见区域下方
-            else if (elementBottom > container.scrollTop + container.clientHeight) {
-                container.scrollTop = elementBottom - container.clientHeight
-            }
-        }
-    })
 }
 //#endregion
 

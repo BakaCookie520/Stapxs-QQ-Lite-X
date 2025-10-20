@@ -60,7 +60,7 @@ export class Member implements IUser {
         if (data.card) this._card = new Name(data.card)
         this.join_time = new Time(data.join_time)
         this.last_sent_time = new Time(data.last_sent_time)
-        this.level = parseInt(data.level, 10)
+        this.level = Number(data.level)
         this.user_id = data.user_id
         this.unfriendly = data.unfriendly
         if (data.nickname) this._nickname = new Name(data.nickname)

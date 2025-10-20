@@ -214,7 +214,7 @@ body.with-bar .chat-pan {
     width: 100%;
     min-height: 1.1rem;
     height: var(--input-height);
-    max-height: 80vh;
+    max-height: 40vh;
     transition: height 0.3s;
 }
 
@@ -1946,20 +1946,19 @@ body.with-bar .msg-menu {
 .at-tag {
     background: var(--color-card-1);
     transform-origin: bottom;
-    transform: scaleY(0);
     transition: all 0.3s;
     border-radius: 7px;
     overflow-y: scroll;
-    max-height: 25vh;
+    height: unset;
+    max-height: 0;
     padding: 0;
+    background-color: var(--color-card);
     margin: 0;
-    height: 0;
 }
 
 .at-tag.show {
-    margin: 20px 20px -5px 20px;
-    transform: scaleY(1);
-    height: unset;
+    max-height: 25vh;
+    margin: 0 0 10px 0;
 }
 
 .at-tag > div {
@@ -1968,20 +1967,34 @@ body.with-bar .msg-menu {
     cursor: pointer;
     padding: 10px;
     display: flex;
+    border-left: 3px solid transparent;
+    transition: background 0.3s;
 }
 
+.at-tag > div.selected,
 .at-tag > div:hover {
     background: var(--color-card-2);
+}
+
+.at-tag > div.selected {
+    border-left: 3px solid var(--color-main);
 }
 
 .at-tag > div > img {
     border-radius: 100%;
     margin-right: 10px;
-    height: 1rem;
+    height: 1.2rem;
+    width: 1.2rem;
+    object-fit: cover;
 }
 
-.at-tag > div > span {
+.at-tag > div > div {
     flex: 1;
+    display: flex;
+}
+
+.at-tag > div > div > span:first-child {
+    margin-right: 10px;
 }
 
 .at-tag > div > span.emp {

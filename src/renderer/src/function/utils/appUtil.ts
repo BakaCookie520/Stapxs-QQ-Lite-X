@@ -954,3 +954,26 @@ export function shouldAutoFocus(): boolean {
         return true
     }
 }
+
+/**
+ * 自动将指定元素滚动到容器可见区域内
+ * @param container 容器dom
+ * @param element 元素dom
+ */
+export function fitScroll(container: HTMLElement, element: HTMLElement) {
+    const containerRect = container.getBoundingClientRect()
+    const elementRect = element.getBoundingClientRect()
+
+    // 计算相对于容器的位置
+    const elementTop = elementRect.top - containerRect.top + container.scrollTop
+    const elementBottom = elementTop + elementRect.height
+
+    // 如果元素在可见区域上方
+    if (elementTop < container.scrollTop) {
+        container.scrollTop = elementTop
+    }
+    // 如果元素在可见区域下方
+    else if (elementBottom > container.scrollTop + container.clientHeight) {
+        container.scrollTop = elementBottom - container.clientHeight
+    }
+}

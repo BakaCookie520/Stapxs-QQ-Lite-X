@@ -126,6 +126,7 @@ body.vibrancy {
 }
 
 
+.vibrancy .chat-pan > .chat-bottom .at-tag,
 .vibrancy .chat-pan > .chat-bottom > .input-pan > .input-special-tag,
 .vibrancy .chat-pan > .chat-bottom > .input-pan > .input {
     background-color: rgba(var(--color-card-rgb), 0.6);

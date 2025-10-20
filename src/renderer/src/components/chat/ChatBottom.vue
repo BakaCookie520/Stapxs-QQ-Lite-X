@@ -48,29 +48,6 @@
         </Transition>
         <!-- 输入栏 -->
         <div class="input-pan ss-card">
-            <div>
-                <div>
-                </div>
-                <!-- At 指示器 -->
-                <div
-                    :class="{
-                        'at-tag': true,
-                        'show': atFindList != null
-                    }"
-                    contenteditable="true"
-                    @blur="choiceAt(undefined)">
-                    <div v-for="item in atFindList != null ? atFindList : []"
-                        :key="'atFind-' + item.user_id"
-                        @click="choiceAt(item.user_id)">
-                        <img :src="item.face" :alt="item.name">
-                        <span>{{ item.name }}</span>
-                        <a>{{ item.user_id }}</a>
-                    </div>
-                    <div v-if="atFindList?.length == 0" class="emp">
-                        <span>{{ $t('没有找到匹配的群成员') }}</span>
-                    </div>
-                </div>
-            </div>
             <!-- 更多功能 -->
             <div class="more-detail">
                 <div
@@ -113,6 +90,43 @@
                 </div>
             </div>
             <hr />
+            <!-- At 指示器 -->
+            <div
+                class="at-tag"
+                :class="{
+                    'show': atFindMode
+                }"
+                ref="find-bar">
+                <div v-for="item, id in atFindList"
+                    :key="'atFind-' + item.user_id"
+                    :class="{selected: atSelected === id}"
+                    ref="at-find-items"
+                    @click="choiceAt(id)">
+                    <img :src="item.face" :alt="item.name">
+                    <div>
+                        <span>{{ item.name }}</span>
+                        <span v-if="item.role !== Role.User || item.title"
+                            v-user-role="item.role">
+                            <template v-if="item.title">
+                                {{ item.title }}
+                            </template>
+                            <template v-else-if="item.role === Role.Bot">
+                                <font-awesome-icon :icon="['fas', 'robot']" />
+                            </template>
+                            <template v-else-if="item.role === Role.Owner">
+                                {{ $t('群主') }}
+                            </template>
+                            <template v-else-if="item.role === Role.Admin">
+                                {{ $t('管理员') }}
+                            </template>
+                        </span>
+                    </div>
+                    <a>{{ item.user_id }}</a>
+                </div>
+                <div v-if="atFindList.length == 0" class="emp">
+                    <span>{{ $t('没有找到匹配的群成员') }}</span>
+                </div>
+            </div>
             <!-- 回复指示器 -->
             <div :class="{
                 'input-special-tag': true,
@@ -161,6 +175,9 @@ import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef, computed, wa
 import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { SelfMsg } from '@renderer/function/model/msg'
 import Viewer from '../Viewer.vue'
+import { Role } from '@renderer/function/adapter/enmu'
+import { vUserRole } from '@renderer/function/utils/vcmd'
+import { fitScroll } from '@renderer/function/utils/appUtil'
 
 const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
@@ -174,7 +191,9 @@ const emit = defineEmits<{
     scrollBottom: [smooth: boolean],
 }>()
 
-const atFindList = shallowRef<Member[]|undefined>()
+const atFindMode = shallowRef(false)
+const atFindList = shallowRef<Member[]>([])
+const atSelected = shallowRef<number>(0)
 const details = shallowRef<'face'|'essence'|undefined>()
 const onAtFind = shallowRef(false)
 
@@ -199,6 +218,16 @@ const hide = computed<boolean>(()=>{
     return !hover.value
 })
 
+const mainInput = useTemplateRef('main-input')
+const choicePic = useTemplateRef('choice-pic')
+const choiceFile = useTemplateRef('choice-file')
+const atFindBar = useTemplateRef('find-bar')
+const atFindItems = useTemplateRef('at-find-items')
+
+function $t(key: string): string {
+    return app.config.globalProperties.$t(key)
+}
+
 let lastInputVoid = session.inputMsg.isVoid
 // 延迟1s隐藏
 watchEffect(()=>{
@@ -212,19 +241,11 @@ watchEffect(()=>{
     }, 500)
 })
 
-const mainInput = useTemplateRef('main-input')
-const choicePic = useTemplateRef('choice-pic')
-const choiceFile = useTemplateRef('choice-file')
-
-function $t(key: string): string {
-    return app.config.globalProperties.$t(key)
-}
-
 /**
  * 初始化
  */
 function init() {
-    onAtFind.value = false
+    endChoiceAt()
     details.value = undefined
 }
 
@@ -264,6 +285,13 @@ function handleCompositionEnd() {
  * @param event 事件
  */
 function mainKey(event: KeyboardEvent) {
+    // 处理 At 查找
+    if (keyCheck(event)) {
+        event.preventDefault()
+        event.stopPropagation()
+        return
+    }
+
     if (event.key !== 'Enter') return
     if (compositionTag.value) return      // 乱七八糟的输入法忽略
     let canSend = false
@@ -318,23 +346,7 @@ function mainKeyUp(event: KeyboardEvent) {
             session instanceof GroupSession
         ) {
             logger.add(LogType.UI, '开始匹配群成员列表 ……')
-            onAtFind.value = true
-        }
-        if (onAtFind.value) {
-            if (!(session instanceof GroupSession)) return
-            if (content.lastIndexOf('@') < 0) {
-                logger.add(LogType.UI, '匹配群成员列表被打断 ……')
-                onAtFind.value = false
-                atFindList.value = undefined
-            } else {
-                const atInfo = content
-                    .substring(content.lastIndexOf('@') + 1)
-                    .toLowerCase()
-                if (atInfo != '') {
-                    atFindList.value = session.memberList
-                            .filter((item) => { return item.match(atInfo) })
-                }
-            }
+            atFindMode.value = true
         }
     }
 }
@@ -396,23 +408,109 @@ function selectSQIn() {
         }
     }
 }
+//#endregion
+
+//#region == At相关 ============================================
+// 搜索at信息
+watchEffect(()=>{
+    if (!atFindMode.value) return
+
+    const content = session.inputMsg.content
+    const s = session as GroupSession
+    // 获取最后一个输入的符号用于判定 at
+    const lastAtIndex = content.lastIndexOf('@')
+    if (lastAtIndex === -1) {
+        atFindList.value = []
+        atFindMode.value = false
+        return
+    }
+    const search = content.substring(lastAtIndex + 1)
+
+    if (search === '') {
+        atFindList.value = s.memberList
+        return
+    }
+
+    // 搜索过滤
+    const members = (session as GroupSession).memberList
+    atFindList.value = members.filter(m=>m.match(search))
+    // 重置选择位置
+    if (atSelected.value >= atFindList.value.length) {
+        atSelected.value = atFindList.value.length - 1
+    }
+})
+// 限制选择的范围
+watchEffect(()=>{
+    if (atSelected.value < 0)
+        atSelected.value = atFindList.value.length - 1
+    if (atSelected.value >= atFindList.value.length)
+        atSelected.value = 0
+
+    // 出界滚动
+    const container = atFindBar.value
+    const item = atFindItems.value?.[atSelected.value]
+    if (!container || !item) return
+    nextTick(()=>fitScroll(container, item))
+})
+function keyCheck(event: KeyboardEvent): boolean {
+    if (!atFindMode.value) return false
+    if (
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey
+    ) return false
+    switch (event.key) {
+        case 'ArrowDown':
+            // 下移
+            atSelected.value++
+            if (atSelected.value >= atFindList.value.length) {
+                atSelected.value = 0
+            }
+            return true
+        case 'ArrowUp':
+            // 上移
+            atSelected.value--
+            if (atSelected.value < 0) {
+                atSelected.value = atFindList.value.length - 1
+            }
+            return true
+        case 'Enter':
+            // 选择
+            choiceAt(atSelected.value)
+            return true
+        case 'Escape':
+            // 取消
+            endChoiceAt()
+        default:
+            return false
+    }
+}
 
 /**
  * 选择 At
  * @param id QQ 号
  */
-function choiceAt(id: number | undefined) {
-    if (id != undefined) {
-        // 删除输入框内的 At 文本
-        session.inputMsg.content = session.inputMsg.content.substring(
-            0, session.inputMsg.content.lastIndexOf('@')
-        )
-        // 添加 at 信息
-        session.inputMsg.addSq(new AtSeg(id))
-    }
+function choiceAt(id: number) {
+    const member = atFindList.value.at(id)
+    if (!member) return
+
+    // 删除输入框内的 At 文本
+    console.log(session.inputMsg.content.lastIndexOf('@'))
+    session.inputMsg.content = session.inputMsg.content.substring(
+        0, session.inputMsg.content.lastIndexOf('@')
+    )
+    // 添加 at 信息
+    session.inputMsg.addSq(new AtSeg(member.user_id))
+
     toMainInput()
+    endChoiceAt()
+}
+function endChoiceAt() {
     onAtFind.value = false
-    atFindList.value = undefined
+    atFindList.value = []
+    atFindMode.value = false
+    atSelected.value = 0
 }
 //#endregion
 
