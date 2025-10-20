@@ -189,6 +189,10 @@
                         <div><font-awesome-icon :icon="['fas', 'xmark']" /></div>
                         <a>{{ $t('撤回') }}</a>
                     </div>
+                    <div @click="deleteMsg">
+                        <div><font-awesome-icon :icon="['fas', 'fa-trash']" style="color: var(--color-red)" /></div>
+                        <a>{{ $t('删除') }}</a>
+                    </div>
                     <div v-show="menuDisplay.dev" @click="consoleLogMsg">
                         <div><font-awesome-icon :icon="['fas', 'screwdriver-wrench']" /></div>
                         <a>{{ $t('调试信息') }}</a>
@@ -941,6 +945,17 @@ async function recallMsg() {
 
     await runtimeData.nowAdapter.recallMsg(msg as Msg)
 }
+/**
+ * 删除消息
+ */
+async function deleteMsg() {
+    const msg = menuDisplay.menuSelectedMsg
+    if (!msg) return
+
+    chat.removeMsg(msg)
+
+    closeMsgMenu()
+}
 function consoleLogMsg() {
     // eslint-disable-next-line no-console
     console.log(menuDisplay.menuSelectedMsg)
@@ -975,11 +990,15 @@ function sendSingleForward(){
 /**
  * 删除消息
  */
-function delMsgs() {
-    new PopInfo().add(
-        PopType.INFO,
-        $t('欸嘿，这个按钮只是用来占位置的'),
-    )
+async function delMsgs() {
+    if (!msgBar.value) return
+    const msgList = [...msgBar.value.getMultiselectList()]
+
+    closeMultiselect()
+
+    for (const msg of msgList) {
+        await chat.removeMsg(msg)
+    }
 }
 /**
  * 复制消息
