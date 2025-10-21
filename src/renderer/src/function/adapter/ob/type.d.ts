@@ -872,7 +872,7 @@ export interface NcObPokeEvent extends ObPokeEvent {
         {txt: string}
     ]
 }
-export interface NcObGroupMsgEmojiLikeEvent extends ObNoticeEvent{
+export interface NcObGroupMsgEmojiLikeEvent extends ObNoticeEvent {
     notice_type: 'group_msg_emoji_like'
     likes: [{
         emoji_id: string
@@ -882,4 +882,10 @@ export interface NcObGroupMsgEmojiLikeEvent extends ObNoticeEvent{
     group_id: number
     message_id: number
 }
+export type NcObUploadGroupFile = ObResponse<{
+    file_id: string,
+}>
+export type NcObUploadPrivateFile = ObResponse<{
+    file_id: string,
+}>
 //#endregion

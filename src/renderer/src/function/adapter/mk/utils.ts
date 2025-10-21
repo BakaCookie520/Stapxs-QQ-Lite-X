@@ -44,3 +44,15 @@ export function createSender(user_id: number, nickname?: string): SenderData {
         sex: Gender.Unknown,
     }
 }
+
+/**
+ * 文件转二进制文件
+ * @param file
+ * @returns
+ */
+export async function fileToBase64(file: File): Promise<string> {
+    const arrayBuffer = await file.arrayBuffer()
+    const bytes = new Uint8Array(arrayBuffer)
+    const binary = bytes.reduce((acc, byte) => acc + String.fromCodePoint(byte), '')
+    return btoa(binary)
+}

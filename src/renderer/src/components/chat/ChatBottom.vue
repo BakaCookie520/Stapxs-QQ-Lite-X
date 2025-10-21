@@ -172,12 +172,13 @@ import { delay } from '@renderer/function/utils/systemUtil'
 import { runtimeData } from '@renderer/function/msg'
 import { AtSeg, FileSeg } from '@renderer/function/model/seg'
 import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef, computed, watchEffect } from 'vue'
-import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/popBox'
+import { closePopBox, ensurePopBox, noticePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import { SelfMsg } from '@renderer/function/model/msg'
 import Viewer from '../Viewer.vue'
 import { Role } from '@renderer/function/adapter/enmu'
 import { vUserRole } from '@renderer/function/utils/vcmd'
 import { fitScroll } from '@renderer/function/utils/appUtil'
+import { FileSender } from '@renderer/function/utils/fileSender'
 
 const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
@@ -638,50 +639,25 @@ function runSelectFile() {
  */
 async function selectFile(event: Event) {
     const sender = event.target as HTMLInputElement
-    if (sender.files != null) {
-        const file = sender.files[0]
-        const fileName = file.name
-        const size = file.size
-        // 如果文件大于 1G，提醒一下
-        if (size > 1073741824) {
-            const ensure = await ensurePopBox(
-                $t('文件大于 1GB。发送速度可能会非常缓慢；确认要发送吗？'),
-                $t('发送')
-            )
-            if (!ensure) return
-        }
+    if (!sender.files) return
 
-        sendFile(file, fileName)
-
-        // 清空 input
-        sender.value = ''
-    }
-}
-
-async function sendFile(file: File, fileName: string | null) {
-    const arrayBuffer = await file.arrayBuffer()
-    const bytes = new Uint8Array(arrayBuffer)
-    const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '')
-    const base64 = btoa(binary)
-
-    const message = [new FileSeg(
-        base64,
-        fileName ?? $t('未知文件'),
-        file.size
-    )]
-
-    const selfMsg = SelfMsg.create(
-        message,
-        session,
-    )
+    const file = sender.files[0]
+    sender.value = ''
+    if (!file) return
 
     // 提示
     const popId = textPopBox($t('正在发送文件中……'), {
         title: $t('提醒'),
         allowAutoClose: false,
     })
-    await selfMsg.send()
+
+    const reMsg = await FileSender.sendFile(file, session as GroupSession | UserSession)
+
     closePopBox(popId)
+    console.log('捕获到消息:', reMsg)
+    if (!reMsg) return
+
+    session.addMessage(reMsg)
 }
 //#endregion
 

@@ -1,4 +1,4 @@
-import { GroupFile } from '@renderer/function/model/file'
+import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
 import { Msg } from '@renderer/function/model/msg'
 import { Resource } from '@renderer/function/model/ressource'
 import { FileSeg, ForwardSeg, ImgSeg, MdSeg, MfaceSeg } from '@renderer/function/model/seg'
@@ -7,8 +7,8 @@ import { Member } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
 import { EssenceData, EssenceSeg, FilesData, FileSegData, ForwardNodeData, ForwardSegData, FriendData, GroupAnnouncementData, ImgSegData, ImplInfo, JsonSegData, MdSegData, MsgData, PokeEventData, ResponseEventData, UserData } from '../interface'
 import { api, OneBotAdapter } from './adapter'
-import { NcForwardData, NcObFetchCustomFace, NcObFileSeg, NcObForwardSeg, NcObGetEssenceMsgList, NcObGetFileUrl, NcObGetForwardMsg, NcObGetFriendsWithCategory, NcObGetGroupFile, NcObGetGroupNotices, NcObGetHistoryMsg, NcObGetStrangerInfo, NcObGroupMsgEmojiLikeEvent, NcObImgSeg, NcObMdSeg, NcObMfaceSeg, NcObPokeEvent, ObForwardNodeSeg, ObForwardSeg, ObGetVersionInfo, ObJsonSeg, ObMsg, ObSendMsg } from './type'
-import { createSender, getGender, ObConnector } from './utils'
+import { NcForwardData, NcObFetchCustomFace, NcObFileSeg, NcObForwardSeg, NcObGetEssenceMsgList, NcObGetFileUrl, NcObGetForwardMsg, NcObGetFriendsWithCategory, NcObGetGroupFile, NcObGetGroupNotices, NcObGetHistoryMsg, NcObGetStrangerInfo, NcObGroupMsgEmojiLikeEvent, NcObImgSeg, NcObMdSeg, NcObMfaceSeg, NcObPokeEvent, NcObUploadGroupFile, NcObUploadPrivateFile, ObForwardNodeSeg, ObForwardSeg, ObGetVersionInfo, ObJsonSeg, ObMsg, ObSendMsg } from './type'
+import { createSender, fileToBase64, getGender, ObConnector } from './utils'
 
 export default class NapCapOneBot extends OneBotAdapter {
     override name = 'NapCap OneBot'
@@ -258,6 +258,36 @@ export default class NapCapOneBot extends OneBotAdapter {
         })
 
         return data.data.url
+    }
+    /**
+     * 发送文件到群里
+     * @param group
+     * @param file
+     * @param fold
+     */
+    @api
+    async sendGroupFile(group: GroupSession, file: File, fold?: GroupFileFolder): Promise<string|undefined> {
+        const data: NcObUploadGroupFile = await this.connector.send('upload_group_file', {
+            group_id: group.id,
+            file: `base64://${await fileToBase64(file)}`,
+            name: file.name,
+            folder_id: fold?.id,
+        })
+        return data.data.file_id
+    }
+    /**
+     * 发送文件到私聊
+     * @param session
+     * @param file
+     */
+    @api
+    async sendPrivateFile(session: UserSession, file: File): Promise<string|undefined> {
+        const data: NcObUploadPrivateFile = await this.connector.send('upload_private_file', {
+            user_id: session.id,
+            file: `base64://${await fileToBase64(file)}`,
+            name: file.name,
+        })
+        return data.data.file_id
     }
     //#endregion
     //#region == 个人信息 ======================

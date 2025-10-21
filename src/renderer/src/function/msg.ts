@@ -44,6 +44,7 @@ import { ProxyUrl } from './model/proxyUrl'
 import { Session } from './model/session'
 import { Notify } from './notify'
 import { htmlPopBox } from './utils/popBox'
+import { FileSender } from './utils/fileSender'
 
 // 其他 tag
 const logger = new Logger()
@@ -157,6 +158,7 @@ export async function newMsg(msg: Msg) {
     // 自己发送消息拦截 ============================================
     if (sender === loginId) {
         if (await SelfMsg.isSendMsg(msg)) return
+        if (await FileSender.isSendFile(msg)) return
     }
 
     // 添加消息

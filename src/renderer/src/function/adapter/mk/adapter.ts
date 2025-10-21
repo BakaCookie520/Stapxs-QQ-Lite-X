@@ -1,5 +1,5 @@
 import driver from '@renderer/function/driver'
-import { GroupFile } from '@renderer/function/model/file'
+import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
 import { Msg } from '@renderer/function/model/msg'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { Member } from '@renderer/function/model/user'
@@ -63,7 +63,7 @@ import z from 'zod'
 import * as ISeg from './incomeSeg'
 import MkInfo from './MkInfo.vue'
 import * as OSeg from './outgoingSeg'
-import { $t, createSender, getGender, getRole } from './utils'
+import { $t, createSender, fileToBase64, getGender, getRole } from './utils'
 
 
 // 提取输出类型的工具类型
@@ -760,6 +760,44 @@ export class MilkyAdapter implements AdapterInterface {
 
         return data.download_url
     }
+    /**
+     * 发送文件到群里
+     * @param group
+     * @param file
+     * @param fold
+     */
+    @api
+    async sendGroupFile(group: GroupSession, file: File, fold?: GroupFileFolder): Promise<string|undefined> {
+        const data = await this.callApi(
+            'upload_group_file',
+            Api.UploadGroupFileInput.parse({
+                group_id: group.id,
+                parent_folder_id: fold?.id ?? '/',
+                file_uri: `base64://${await fileToBase64(file)}`,
+                file_name: file.name,
+            }),
+            Api.UploadGroupFileOutput
+        )
+        return data.file_id
+    }
+    /**
+     * 发送文件到私聊
+     * @param session
+     * @param file
+     */
+    @api
+    async sendPrivateFile(session: UserSession, file: File): Promise<string|undefined> {
+        const data = await this.callApi(
+            'upload_private_file',
+            Api.UploadPrivateFileInput.parse({
+                user_id: session.id,
+                file_uri: `base64://${await fileToBase64(file)}`,
+                file_name: file.name,
+            }),
+            Api.UploadPrivateFileOutput
+        )
+        return data.file_id
+    }
     //#endregion
     //#region == 个人信息 ======================
     /**
@@ -957,7 +995,6 @@ export class MilkyAdapter implements AdapterInterface {
                 )
                 url = re.download_url
             }else if (msg?.message_scene === 'friend') {
-                console.log('get friend file url')
                 const re = await this.callApi(
                     'get_private_file_download_url',
                     Api.GetPrivateFileDownloadUrlInput.parse({
@@ -972,7 +1009,6 @@ export class MilkyAdapter implements AdapterInterface {
                 url = ''
             }
         }catch (e) {
-            console.error('获取文件下载链接失败:', e)
             url = ''
         }
         return {

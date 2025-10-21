@@ -6,7 +6,7 @@
  * @Description: 定义适配器的基本接口，所有适配器应当实现这个的接口。
  */
 import { type Component } from 'vue'
-import { GroupFile } from '../model/file'
+import { GroupFile, GroupFileFolder } from '../model/file'
 import { Msg } from '../model/msg'
 import { Resource } from '../model/ressource'
 import { GroupSession, Session, UserSession } from '../model/session'
@@ -223,6 +223,19 @@ export interface AdapterInterface {
      * @param file 要下载的文件
      */
     getGroupFileUrl?(file: GroupFile): Promise<string | undefined>
+    /**
+     * 发送文件到群里
+     * @param group
+     * @param file
+     * @param fold
+     */
+    sendGroupFile?(group: GroupSession, file: File, fold?: GroupFileFolder): Promise<string|undefined>
+    /**
+     * 发送文件到私聊
+     * @param session
+     * @param file
+     */
+    sendPrivateFile?(session: UserSession, file: File): Promise<string|undefined>
     //#endregion
     //#region == 个人信息 ======================
     /**

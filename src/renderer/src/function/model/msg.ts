@@ -480,7 +480,6 @@ export class EssenceMsg extends Msg {
  */
 @autoMarkRaw
 export class ForwardMsg extends Msg {
-    declare sender: ForwardSender
     constructor(data: ForwardNodeData) {
         const sender = new ForwardSender(data.sender)
         const message = Msg.parseSegs(data.content)
@@ -492,6 +491,13 @@ export class ForwardMsg extends Msg {
             sender: this.sender.serializeData(),
             content: this.message.map(seg => seg.serializeData()),
         }
+    }
+
+    get sender(): ForwardSender {
+        return super.sender as ForwardSender
+    }
+    set sender(user: ForwardSender) {
+        super.sender = user
     }
 
     override copy(): typeof this {
