@@ -14,6 +14,7 @@ import {
     EventData,
     FaceSegData,
     FilesData,
+    FileSegData,
     ForwardNodeData,
     ForwardSegData,
     FriendData,
@@ -146,6 +147,7 @@ export class MilkyAdapter implements AdapterInterface {
         this.segParsers['video'] = this.videoParser.bind(this)
         this.segParsers['forward'] = this.forwardParser.bind(this)
         this.segParsers['reply'] = this.replyParser.bind(this)
+        this.segParsers['file'] = this.fileParser.bind(this)
         // this.segParsers['poke'] = this.pokeParser.bind(this)
         this.segParsers['xml'] = this.xmlParser.bind(this)
         this.segParsers['light_app'] = this.lightAppParser.bind(this)
@@ -782,7 +784,7 @@ export class MilkyAdapter implements AdapterInterface {
      * @returns 标准消息数据
      */
     async parseMsg(data: IncomingMessage): Promise<MsgData> {
-        const message = await this.parseSeg(data.segments)
+        const message = await this.parseSeg(data.segments, data)
 
         // 组装发送者信息
         let sender: SenderData
@@ -850,37 +852,37 @@ export class MilkyAdapter implements AdapterInterface {
         return await Promise.all(msg.message.map(seg => this.serializeSeg(seg)))
     }
     //#region == 反序列化 ===========================
-    segParsers: Record<string, ((data: any)=>Promise<SegData>)> = {}
-    async parseSeg(data: IncomingSegment): Promise<SegData>
-    async parseSeg(data: IncomingSegment[]): Promise<SegData[]>
-    async parseSeg(data: IncomingSegment | IncomingSegment[]): Promise<SegData | SegData[]> {
+    segParsers: Record<string, ((data: any, msg?: IncomingMessage)=>Promise<SegData>)> = {}
+    async parseSeg(data: IncomingSegment, msg?: IncomingMessage): Promise<SegData>
+    async parseSeg(data: IncomingSegment[], msg?: IncomingMessage): Promise<SegData[]>
+    async parseSeg(data: IncomingSegment | IncomingSegment[], msg?: IncomingMessage): Promise<SegData | SegData[]> {
         if (Array.isArray(data)) {
-            return await Promise.all(data.map(d => this.parseSeg(d)))
+            return await Promise.all(data.map(d => this.parseSeg(d, msg)))
         } else {
             try {
                 const parser = this.segParsers[data.type]
-                if (parser) return await parser(data)
-                return this.unknownParser(data)
+                if (parser) return await parser(data, msg)
+                return this.unknownParser(data, msg)
             } catch (err) {
                 logger.error(err as Error, '消息段解析失败:' + JSON.stringify(data))
                 return {type: 'error'}
             }
         }
     }
-    async textParser(data: ISeg.TextSeg): Promise<TextSegData> {
+    async textParser(data: ISeg.TextSeg, _?: IncomingMessage): Promise<TextSegData> {
         return {
             type: 'text',
             text: data.data.text
         }
     }
-    async imageParser(data: ISeg.ImageSeg): Promise<ImgSegData> {
+    async imageParser(data: ISeg.ImageSeg, _?: IncomingMessage): Promise<ImgSegData> {
         return {
             type: 'image',
             url: Resource.fromUrl(data.data.temp_url, data.data.resource_id),
             isFace: data.data.sub_type === 'sticker',
         }
     }
-    async marketFaceParser(data: ISeg.MarketFaceSeg): Promise<MfaceSegData> {
+    async marketFaceParser(data: ISeg.MarketFaceSeg, _?: IncomingMessage): Promise<MfaceSegData> {
         // TODO: summary 有问题
         return {
             type: 'mface',
@@ -891,31 +893,31 @@ export class MilkyAdapter implements AdapterInterface {
             key: '',
         }
     }
-    async faceParser(data: ISeg.FaceSeg): Promise<FaceSegData> {
+    async faceParser(data: ISeg.FaceSeg, _?: IncomingMessage): Promise<FaceSegData> {
         return {
             type: 'face',
             id: Number(data.data.face_id),
         }
     }
-    async mentionParser(data: ISeg.MentionSeg): Promise<AtSegData> {
+    async mentionParser(data: ISeg.MentionSeg, _?: IncomingMessage): Promise<AtSegData> {
         return {
             type: 'at',
             user_id: data.data.user_id,
         }
     }
-    async mentionAllParser(_: ISeg.MentionAllSeg): Promise<AtAllSegData> {
+    async mentionAllParser(_data: ISeg.MentionAllSeg, _?: IncomingMessage): Promise<AtAllSegData> {
         return {
             type: 'atall',
         }
     }
-    async videoParser(data: ISeg.VideoSeg): Promise<VideoSegData> {
+    async videoParser(data: ISeg.VideoSeg, _?: IncomingMessage): Promise<VideoSegData> {
         return {
             type: 'video',
             file: $t('[视频]'),
             url: Resource.fromUrl(data.data.temp_url, data.data.resource_id),
         }
     }
-    async forwardParser(data: ISeg.ForwardSeg): Promise<ForwardSegData> {
+    async forwardParser(data: ISeg.ForwardSeg, _?: IncomingMessage): Promise<ForwardSegData> {
         const id: string = data.data.forward_id
         const nodes = await this.getForwardMsg(id)
         if (!nodes) throw new Error('获取合并转发消息失败')
@@ -925,13 +927,13 @@ export class MilkyAdapter implements AdapterInterface {
             content: nodes,
         }
     }
-    async replyParser(data: ISeg.ReplySeg): Promise<ReplySegData> {
+    async replyParser(data: ISeg.ReplySeg, _?: IncomingMessage): Promise<ReplySegData> {
         return {
             type: 'reply',
             id: data.data.message_seq.toString(),
         }
     }
-    async mfaceParser(data: ISeg.MarketFaceSeg): Promise<MfaceSegData> {
+    async mfaceParser(data: ISeg.MarketFaceSeg, _?: IncomingMessage): Promise<MfaceSegData> {
         return {
             type: 'mface',
             url: data.data.url,
@@ -941,26 +943,57 @@ export class MilkyAdapter implements AdapterInterface {
             key: '',
         }
     }
-    // async fileParser(data: ISe): Promise<FileSegData> {
-    //     return {
-    //         type: 'file',
-    //         name: data.data.file_name,
-    //         size: 0,
-    //         url: data.data.url,
-    //         file_id: data.data.file_id,
-    //     }
-    // }
+    async fileParser(data: ISeg.FileSeg, msg?: IncomingMessage): Promise<FileSegData> {
+        let url: string
+        try {
+            if (msg?.message_scene === 'group') {
+                const re = await this.callApi(
+                    'get_group_file_download_url',
+                    Api.GetGroupFileDownloadUrlInput.parse({
+                        group_id: msg.peer_id,
+                        file_id: data.data.file_id,
+                    }),
+                    Api.GetGroupFileDownloadUrlOutput
+                )
+                url = re.download_url
+            }else if (msg?.message_scene === 'friend') {
+                console.log('get friend file url')
+                const re = await this.callApi(
+                    'get_private_file_download_url',
+                    Api.GetPrivateFileDownloadUrlInput.parse({
+                        user_id: msg.peer_id,
+                        file_id: data.data.file_id,
+                        file_hash: data.data.file_hash,
+                    }),
+                    Api.GetPrivateFileDownloadUrlOutput
+                )
+                url = re.download_url
+            }else {
+                url = ''
+            }
+        }catch (e) {
+            console.error('获取文件下载链接失败:', e)
+            url = ''
+        }
+        return {
+            type: 'file',
+            name: data.data.file_name,
+            size: data.data.file_size,
+            url: url,
+            file_id: data.data.file_id,
+        }
+    }
     // async pokeParser(_: ObPokeSeg): Promise<PokeSegData> {
     //     return { type: 'poke' }
     // }
-    async xmlParser(data: ISeg.XmlSeg): Promise<XmlSegData> {
+    async xmlParser(data: ISeg.XmlSeg, _?: IncomingMessage): Promise<XmlSegData> {
         return {
             type: 'xml',
             data: data.data.xml_payload,
             id: data.data.service_id.toString(),
         }
     }
-    async lightAppParser(data: ISeg.LightAppSeg): Promise<JsonSegData> {
+    async lightAppParser(data: ISeg.LightAppSeg, _?: IncomingMessage): Promise<JsonSegData> {
         return {
             type: 'json',
             data: data.data.json_payload,
@@ -968,14 +1001,14 @@ export class MilkyAdapter implements AdapterInterface {
         }
     }
 
-    unknownParser(data: IncomingSegment): UnknownSegData {
+    unknownParser(data: IncomingSegment, _?: IncomingMessage): UnknownSegData {
         return {
             type: 'unknown',
             segType: data.type,
             data: data
         }
     }
-    async nodeParser(data: IncomingForwardedMessage): Promise<ForwardNodeData> {
+    async nodeParser(data: IncomingForwardedMessage, _?: IncomingMessage): Promise<ForwardNodeData> {
         return {
             sender: {
                 nickname: data.sender_name,

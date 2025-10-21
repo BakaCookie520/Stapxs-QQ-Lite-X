@@ -328,7 +328,7 @@ export class FileSeg extends Seg {
             this.ext = name.split('.').pop() || 'unknown'
             this.size = size
         } else {
-            const data = arg1 as FileSegData
+            const data = arg1
             if (!data.file_id) throw new Error('文件ID缺失')
             this.file_id = data.file_id
             this.name = data.name
@@ -370,8 +370,8 @@ export class FileSeg extends Seg {
 
     download(): void {
         const { $t } = app.config.globalProperties
-        if (!this.url) {
-            new PopInfo().add(PopType.INFO, $t('文件信息还没加载完呢，你是拿铁丝上网的吗？'))
+        if (this.url === '') {
+            new PopInfo().add(PopType.INFO, $t('url加载失败，无法下载'))
             return
         }
         if (this.download_percent !== undefined) {
