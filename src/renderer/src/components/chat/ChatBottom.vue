@@ -52,17 +52,13 @@
             <div class="more-detail">
                 <div
                     :title="$t('图片')"
-                    @click="runSelectImg">
+                    @click="selectImg">
                     <font-awesome-icon :icon="['fas', 'image']" />
-                    <input ref="choice-pic" type="file" style="display: none"
-                        @change="selectImg">
                 </div>
                 <div
                     :title="$t('文件')"
-                    @click="runSelectFile">
+                    @click="selectFile">
                     <font-awesome-icon :icon="['fas', 'folder']" />
-                    <input ref="choice-file" type="file"
-                        style="display: none" @change="selectFile">
                 </div>
                 <div
                     :title="$t('表情')"
@@ -170,15 +166,15 @@ import app from '@renderer/main'
 import { sendMsgRaw } from '@renderer/function/utils/msgUtil'
 import { delay } from '@renderer/function/utils/systemUtil'
 import { runtimeData } from '@renderer/function/msg'
-import { AtSeg, FileSeg } from '@renderer/function/model/seg'
+import { AtSeg } from '@renderer/function/model/seg'
 import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef, computed, watchEffect } from 'vue'
-import { closePopBox, ensurePopBox, noticePopBox, textPopBox } from '@renderer/function/utils/popBox'
-import { SelfMsg } from '@renderer/function/model/msg'
+import { closePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import Viewer from '../Viewer.vue'
 import { Role } from '@renderer/function/adapter/enmu'
 import { vUserRole } from '@renderer/function/utils/vcmd'
 import { fitScroll } from '@renderer/function/utils/appUtil'
 import { FileSender } from '@renderer/function/utils/fileSender'
+import { uploadFile } from '@renderer/function/input'
 
 const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
@@ -220,8 +216,6 @@ const hide = computed<boolean>(()=>{
 })
 
 const mainInput = useTemplateRef('main-input')
-const choicePic = useTemplateRef('choice-pic')
-const choiceFile = useTemplateRef('choice-file')
 const atFindBar = useTemplateRef('find-bar')
 const atFindItems = useTemplateRef('at-find-items')
 
@@ -532,35 +526,31 @@ function addImg(event: ClipboardEvent) {
     ) {
         const item = event.clipboardData.items[i]
         if (item.kind === 'file') {
-            setImg(item.getAsFile())
+            const file = item.getAsFile()
+            if (!file) continue
+            if (!file.type.startsWith('image/')) continue
+            setImg(file)
             // 阻止默认行为
             event.preventDefault()
         }
     }
 }
 
-function runSelectImg() {
-    choicePic.value?.click()
-}
-
 /**
  * 手动选择图片
  */
-function selectImg(event: Event) {
-    const sender = event.target as HTMLInputElement
-    if (sender && sender.files) {
-        setImg(sender.files[0])
-    }
+async function selectImg() {
+    const img = await uploadFile('image/*')
+    if (!img) return
+    setImg(img)
 }
 
 /**
  * 将图片转换为 base64 并缓存
  * @param file 文件对象
  */
-async function setImg(file: File | null) {
+async function setImg(file: File) {
     const popInfo = new PopInfo()
-    if (!file) return
-    if (!file.type.includes('image/')) return
     if (file.size === 0) return
 
     // 图片太大
@@ -630,19 +620,11 @@ async function editImg(key: number) {
 //#endregion
 
 //#region == 文件处理 ==========================================
-function runSelectFile() {
-    choiceFile.value?.click()
-}
-
 /**
  * 发送文件
  */
-async function selectFile(event: Event) {
-    const sender = event.target as HTMLInputElement
-    if (!sender.files) return
-
-    const file = sender.files[0]
-    sender.value = ''
+async function selectFile() {
+    const file = await uploadFile()
     if (!file) return
 
     // 提示

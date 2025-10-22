@@ -68,3 +68,19 @@ export function mousemoveMask(process: (event: MouseEvent) => void, removeHook?:
     document.body.appendChild(mask)
     return promise
 }
+
+
+export function uploadFile(accept: string = '*/*'): Promise<File|undefined> {
+    const dom = document.createElement('input')
+    dom.type = 'file'
+    dom.accept = accept
+    dom.style.display = 'none'
+    document.body.appendChild(dom)
+    return new Promise<File | undefined>((resolve) => {
+        dom.onchange = () => {
+            resolve(dom.files?.[0] ?? undefined)
+            dom.remove()
+        }
+        dom.click()
+    })
+}
