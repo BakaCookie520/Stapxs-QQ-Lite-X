@@ -43,6 +43,17 @@ export const vUserRole: Directive<HTMLSpanElement, Role> = {
         }
     }
 }
+let skipMenu = false
+if (import.meta.env.DEV) {
+    addEventListener('keydown', (event) => {
+        if (event.key === 'Control')
+            skipMenu = true
+    }, {capture: true})
+    addEventListener('keyup', (event) => {
+        if (event.key === 'Control')
+            skipMenu = false
+    }, {capture: true})
+}
 /**
  * 创建一个右键菜单指令
  * 用于闭包公用停留事件控制器
@@ -82,10 +93,11 @@ function createVMenu(): Directive<HTMLElement, (event: MenuEventData) => void> {
             const options = { signal: controller.signal }
 
             // 修复由于 touch 阻断 click 事件冒泡的问题
-            let toushStartTime = 0
+            let touchStartTime = 0
 
             // 添加监听
             el.addEventListener('contextmenu', (event) => {
+                if (skipMenu) return
                 if (prevent) event.preventDefault()
                 if (stop) event.stopPropagation()
                 const data: MenuEventData = {
@@ -99,7 +111,7 @@ function createVMenu(): Directive<HTMLElement, (event: MenuEventData) => void> {
                 if (prevent) event.preventDefault()
                 if (stop) event.stopPropagation()
                 menuTouchHandle(event, binding)
-                toushStartTime = Date.now()
+                touchStartTime = Date.now()
             }, options)
             el.addEventListener('touchmove', (event) => {
                 if (prevent) event.preventDefault()
@@ -112,7 +124,7 @@ function createVMenu(): Directive<HTMLElement, (event: MenuEventData) => void> {
                 menuTouchEnd(event)
 
                 // 快速点击则触发点击事件
-                if (Date.now() - toushStartTime < 200)
+                if (Date.now() - touchStartTime < 200)
                     event.target?.['click']?.()
             }, options)
 
