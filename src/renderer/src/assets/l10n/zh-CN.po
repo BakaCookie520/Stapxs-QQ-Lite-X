@@ -2225,3 +2225,31 @@ msgstr ""
 
 msgid "简洁模式"
 msgstr ""
+
+msgid "上传文件"
+msgstr ""
+
+msgid "新建文件夹"
+msgstr ""
+
+msgid "上传"
+msgstr ""
+
+msgid "请输入文件夹名称"
+msgstr ""
+
+msgid "文件夹不为空，确认删除？"
+msgstr ""
+
+msgid "刷新"
+msgstr ""
+
+msgid "下载"
+msgstr ""
+
+msgid "重命名"
+msgstr ""
+
+msgid "请输入新的文件名称"
+msgstr ""
+

@@ -236,6 +236,34 @@ export interface AdapterInterface {
      * @param file
      */
     sendPrivateFile?(session: UserSession, file: File): Promise<string|undefined>
+    /**
+     * 创建群文件夹
+     * @param group
+     * @param folderName
+     */
+    createFileFolder?(group: GroupSession, folderName: string): Promise<string|undefined>
+    /**
+     * 删除群文件
+     * @param file
+     */
+    deleteGroupFile?(file: GroupFile): Promise<true|undefined>
+    /**
+     * 删除群文件夹
+     * @param folder
+     */
+    deleteGroupFileFolder?(folder: GroupFileFolder): Promise<true|undefined>
+    /**
+     * 重命名群文件
+     * @param file
+     * @param newName
+     */
+    renameGroupFile?(file: GroupFile, newName: string): Promise<true|undefined>
+    /**
+     * 重命名群文件夹
+     * @param folder
+     * @param newName
+     */
+    renameGroupFileFolder?(folder: GroupFileFolder, newName: string): Promise<true|undefined>
     //#endregion
     //#region == 个人信息 ======================
     /**

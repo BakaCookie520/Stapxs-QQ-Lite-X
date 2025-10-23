@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { h, markRaw } from 'vue'
 import { PopBoxData } from '../elements/information'
 import { runtimeData } from '../msg'
+import InputPopBox from '@renderer/popboxes/InputPopBox.vue'
 
 /**
  * 关闭一个弹窗
@@ -137,4 +138,39 @@ export async function noticePopBox(text: string, buttonName?: string): Promise<v
         ]
     })
     return promise
+}
+
+export async function inputPopBox(config: {
+    title?: string,
+    svg?: string,
+    placeholder?: string,
+    value?: string,
+}): Promise<string|undefined> {
+    const { $t } = app.config.globalProperties
+    config.title = config.title ?? $t('输入')
+    config.value = config.value ?? ''
+    return new Promise(resolve => {
+        popBox({
+            title: config.title,
+            svg: config.svg,
+            template: InputPopBox,
+            templateValue: {
+                placeholder: config.placeholder,
+                complete: resolve
+            },
+            templateModel: markRaw(config),
+            button: [{
+                text: $t('确定'),
+                master: true,
+                fun: () => {
+                    resolve(config.value)
+                }
+            }, {
+                text: $t('取消'),
+                fun: () => {
+                    resolve(undefined)
+                }
+            }]
+        })
+    })
 }

@@ -76,6 +76,7 @@
 
         <!-- 菜单 -->
         <FriendMenu ref="friendMenu" />
+        <FileMenu ref="fileMenu" />
         <div id="mobile-css" />
     </div>
     <div class="bg-blur" :style="{ backdropFilter: `blur(${runtimeData.sysConfig.background_img_blur}px)` }" />
@@ -106,11 +107,12 @@ import GlobalSessionSearchBar from './components/GlobalSessionSearchBar.vue'
 import PopBox from './components/PopBox.vue'
 import Viewer from './components/Viewer.vue'
 import { vHide } from './function/utils/vcmd'
-import { useDailyDo, useFrame, useInterval, useKeyboard } from './function/utils/vuse'
+import { useDailyDo, useFrame, useKeyboard } from './function/utils/vuse'
 import Chat from './pages/Chat.vue'
 import SideBar from './pages/SideBar.vue'
 import { backend } from './runtime/backend'
 import win from './runtime/win'
+import FileMenu from './components/FileMenu.vue'
 
 //#region == 定义变量 ===================================================
 type PageType = 'Home' | 'Options' | 'Friends' | 'Messages' | 'Boxes'
@@ -135,8 +137,10 @@ const $t = i18n.global.t
 const friendMenu = useTemplateRef('friendMenu')
 const viewer = useTemplateRef('viewer')
 const baseApp = useTemplateRef('base-app')
-provide('friendMenu', friendMenu)
+const fileMenu = useTemplateRef('fileMenu')
 provide('viewer', viewer)
+provide('friendMenu', friendMenu)
+provide('fileMenu', fileMenu)
 //#endregion
 
 //#region == 更新标题 ===================================================

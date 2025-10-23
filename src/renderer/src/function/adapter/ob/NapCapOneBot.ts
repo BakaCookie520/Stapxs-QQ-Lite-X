@@ -7,8 +7,10 @@ import { Member } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
 import { EssenceData, EssenceSeg, FilesData, FileSegData, ForwardNodeData, ForwardSegData, FriendData, GroupAnnouncementData, ImgSegData, ImplInfo, JsonSegData, MdSegData, MsgData, PokeEventData, ResponseEventData, UserData } from '../interface'
 import { api, OneBotAdapter } from './adapter'
-import { NcForwardData, NcObFetchCustomFace, NcObFileSeg, NcObForwardSeg, NcObGetEssenceMsgList, NcObGetFileUrl, NcObGetForwardMsg, NcObGetFriendsWithCategory, NcObGetGroupFile, NcObGetGroupNotices, NcObGetHistoryMsg, NcObGetStrangerInfo, NcObGroupMsgEmojiLikeEvent, NcObImgSeg, NcObMdSeg, NcObMfaceSeg, NcObPokeEvent, NcObUploadGroupFile, NcObUploadPrivateFile, ObForwardNodeSeg, ObForwardSeg, ObGetVersionInfo, ObJsonSeg, ObMsg, ObSendMsg } from './type'
+import { NcForwardData, NcObCreateGroupFileFolder, NcObFetchCustomFace, NcObFileSeg, NcObForwardSeg, NcObGetEssenceMsgList, NcObGetFileUrl, NcObGetForwardMsg, NcObGetFriendsWithCategory, NcObGetGroupFile, NcObGetGroupNotices, NcObGetHistoryMsg, NcObGetStrangerInfo, NcObGroupMsgEmojiLikeEvent, NcObImgSeg, NcObMdSeg, NcObMfaceSeg, NcObPokeEvent, NcObUploadGroupFile, NcObUploadPrivateFile, ObForwardNodeSeg, ObForwardSeg, ObGetVersionInfo, ObJsonSeg, ObMsg, ObSendMsg } from './type'
 import { createSender, fileToBase64, getGender, ObConnector } from './utils'
+
+import { compareVersions } from 'compare-versions'
 
 export default class NapCapOneBot extends OneBotAdapter {
     override name = 'NapCap OneBot'
@@ -18,6 +20,14 @@ export default class NapCapOneBot extends OneBotAdapter {
         this.connector = connector
         this.botInfo.value = botInfo
         connector.setOnMessageHook(this.onmessage.bind(this))
+
+        // 低版本适配
+        if (!botInfo) return
+        const UPLOAD_FILE_MIN_VERSION = '4.8.123'
+        if (compareVersions(botInfo.data.app_version, UPLOAD_FILE_MIN_VERSION) === -1) {
+            this.sendGroupFile = undefined as any
+            this.sendPrivateFile = undefined as any
+        }
     }
 
     static match(implInfo: ImplInfo): boolean {
@@ -232,7 +242,7 @@ export default class NapCapOneBot extends OneBotAdapter {
     //#endregion
     //#region == 文件相关 ======================
     @api
-    async getGroupFile?(group: GroupSession): Promise<FilesData> {
+    async getGroupFile(group: GroupSession): Promise<FilesData> {
         const data: NcObGetGroupFile = await this.connector.send('get_group_root_files', {
             group_id: group.id,
             file_count: 1000
@@ -288,6 +298,43 @@ export default class NapCapOneBot extends OneBotAdapter {
             name: file.name,
         })
         return data.data.file_id
+    }
+    /**
+     * 创建群文件夹
+     * @param group
+     * @param folderName
+     */
+    @api
+    async createFileFolder(group: GroupSession, folderName: string): Promise<string|undefined> {
+        const data: NcObCreateGroupFileFolder = await this.connector.send('create_group_file_folder', {
+            group_id: group.id,
+            folder_name: folderName,
+        })
+        return data.data.groupItem.folderInfo.folderId
+    }
+    /**
+     * 删除群文件
+     * @param file
+     */
+    @api
+    async deleteGroupFile(file: GroupFile): Promise<true|undefined> {
+        await this.connector.send('delete_group_file', {
+            group_id: file.group.id,
+            file_id: file.id,
+        })
+        return true
+    }
+    /**
+     * 删除群文件夹
+     * @param folder
+     */
+    @api
+    async deleteGroupFileFolder(folder: GroupFileFolder): Promise<true|undefined> {
+        await this.connector.send('delete_group_folder', {
+            group_id: folder.group.id,
+            folder_id: folder.id,
+        })
+        return true
     }
     //#endregion
     //#region == 个人信息 ======================
@@ -505,6 +552,7 @@ export default class NapCapOneBot extends OneBotAdapter {
                 dead_time: file.dead_time,
                 upload_time: file.upload_time,
                 uploader_name: file.uploader_name,
+                uploader_id: file.uploader,
             })),
             folders: data.data.folders.map(folder => ({
                 folder_id: folder.folder_id,
@@ -512,6 +560,7 @@ export default class NapCapOneBot extends OneBotAdapter {
                 count: folder.total_file_count,
                 create_time: folder.create_time,
                 creater_name: folder.creator_name,
+                creater_id: folder.creator,
             }))
         }
     }

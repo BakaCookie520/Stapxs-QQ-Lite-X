@@ -888,4 +888,11 @@ export type NcObUploadGroupFile = ObResponse<{
 export type NcObUploadPrivateFile = ObResponse<{
     file_id: string,
 }>
+export type NcObCreateGroupFileFolder = ObResponse<{
+    groupItem: {
+        folderInfo: {
+            folderId: string
+        }
+    }
+}>
 //#endregion

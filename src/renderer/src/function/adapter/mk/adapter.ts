@@ -798,6 +798,90 @@ export class MilkyAdapter implements AdapterInterface {
         )
         return data.file_id
     }
+    /**
+     * 创建群文件夹
+     * @param group
+     * @param folderName
+     */
+    @api
+    async createFileFolder(group: GroupSession, folderName: string): Promise<string|undefined> {
+        const data = await this.callApi(
+            'create_group_folder',
+            Api.CreateGroupFolderInput.parse({
+                group_id: group.id,
+                folder_name: folderName,
+            }),
+            Api.CreateGroupFolderOutput
+        )
+        return data.folder_id
+    }
+    /**
+     * 删除群文件
+     * @param file
+     */
+    @api
+    async deleteGroupFile(file: GroupFile): Promise<true|undefined>{
+        await this.callApi(
+            'delete_group_file',
+            Api.DeleteGroupFileInput.parse({
+                group_id: file.group.id,
+                file_id: file.id,
+            })
+        )
+        return true
+    }
+    /**
+     * 删除群文件夹
+     * @param folder
+     */
+    @api
+    async deleteGroupFileFolder(folder: GroupFileFolder): Promise<true|undefined>{
+        await this.callApi(
+            'delete_group_folder',
+            Api.DeleteGroupFolderInput.parse({
+                group_id: folder.group.id,
+                folder_id: folder.id,
+            })
+        )
+        return true
+    }
+    /**
+     * 重命名群文件
+     * @param file
+     * @param newName
+     */
+    @api
+    async renameGroupFile(file: GroupFile, newName: string): Promise<true|undefined> {
+        await this.callApi(
+            'rename_group_file',
+            Api.RenameGroupFileInput.parse({
+                group_id: file.group.id,
+                file_id: file.id,
+                parent_folder_id: file.folder?.id ?? '/',
+                new_file_name: newName,
+            })
+        )
+
+        return true
+    }
+    /**
+     * 重命名群文件夹
+     * @param folder
+     * @param newName
+     */
+    @api
+    async renameGroupFileFolder(folder: GroupFileFolder, newName: string): Promise<true|undefined> {
+        await this.callApi(
+            'rename_group_folder',
+            Api.RenameGroupFolderInput.parse({
+                group_id: folder.group.id,
+                folder_id: folder.id,
+                new_folder_name: newName,
+            })
+        )
+
+        return true
+    }
     //#endregion
     //#region == 个人信息 ======================
     /**

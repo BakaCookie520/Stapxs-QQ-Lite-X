@@ -1,13 +1,14 @@
 import { i18n } from '@renderer/main'
-import { GroupSession, Session, UserSession } from '../model/session'
+import { GroupSession, UserSession } from '../model/session'
 import { Msg } from '../model/msg'
 import { runtimeData } from '../msg'
 import { PopInfo, PopType } from '../base'
-import { noticePopBox } from './popBox'
+import { closePopBox, noticePopBox, textPopBox } from './popBox'
 import { TimeoutSet } from '../model/data'
 import { GroupFileFolder } from '../model/file'
 import { FileSegData } from '../adapter/interface'
 import { FileSeg } from '../model/seg'
+import { uploadFile } from '../input'
 
 export class FileSender {
     private static lock: number = 0
@@ -15,11 +16,10 @@ export class FileSender {
 
     static async sendFile(file: File, target: UserSession | GroupSession): Promise<undefined|Msg>
     static async sendFile(file: File, target: GroupSession, path?: GroupFileFolder): Promise<undefined|Msg>
-    static async sendFile(file: File, target: Session, fold?: GroupFileFolder): Promise<undefined|Msg> {
+    static async sendFile(file: File, target: GroupSession | UserSession, fold?: GroupFileFolder): Promise<undefined|Msg> {
         const $t = i18n.global.t
 
         // 检测
-        if (target.type === 'temp') return
         if (!runtimeData.nowAdapter?.getHistoryMsg) {
             new PopInfo().add(PopType.ERR, $t('当前适配器不支持发送文件！'))
             return
@@ -43,9 +43,9 @@ export class FileSender {
         this.lock++
         let re: string | undefined
         if (target.type === 'group') {
-            re = await runtimeData.nowAdapter.sendGroupFile!(target as GroupSession, file, fold)
+            re = await runtimeData.nowAdapter.sendGroupFile!(target, file, fold)
         } else {
-            re = await runtimeData.nowAdapter.sendPrivateFile!(target as UserSession, file)
+            re = await runtimeData.nowAdapter.sendPrivateFile!(target, file)
         }
         if (re) this.sendIds.add(re)
         this.lock--
@@ -101,5 +101,43 @@ export class FileSender {
             return true
         }
         return false
+    }
+
+    /**
+     * 发生图片并且添加消息到会话
+     */
+    static async sendFileAndAddMsg(file: File, target: GroupSession | UserSession): Promise<void>
+    static async sendFileAndAddMsg(file: File, target: GroupSession, fold: GroupFileFolder): Promise<void>
+    static async sendFileAndAddMsg(file: File, target: GroupSession | UserSession, fold?: GroupFileFolder): Promise<void> {
+        let reMsg: Msg | undefined
+        if (fold) {
+            reMsg = await FileSender.sendFile(file, target as GroupSession, fold)
+        } else {
+            reMsg = await FileSender.sendFile(file, target)
+        }
+
+        if (!reMsg) return
+
+        target.addMessage(reMsg)
+    }
+
+    static async autoUploadFile(target: GroupSession | UserSession): Promise<void>
+    static async autoUploadFile(target: GroupSession, fold: GroupFileFolder): Promise<void>
+    static async autoUploadFile(target: GroupSession | UserSession, fold?: GroupFileFolder): Promise<void> {
+        const file = await uploadFile()
+        if (!file) return
+
+        const $t = i18n.global.t
+
+        // 提示
+        const popId = textPopBox($t('正在发送文件中……'), {
+            title: $t('提醒'),
+            allowAutoClose: false,
+        })
+
+        if (fold) await this.sendFileAndAddMsg(file, target as GroupSession, fold)
+        else await this.sendFileAndAddMsg(file, target)
+
+        closePopBox(popId)
     }
 }

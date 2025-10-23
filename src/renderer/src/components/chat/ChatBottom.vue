@@ -55,7 +55,7 @@
                     @click="selectImg">
                     <font-awesome-icon :icon="['fas', 'image']" />
                 </div>
-                <div
+                <div v-if="!(session instanceof TempSession)"
                     :title="$t('文件')"
                     @click="selectFile">
                     <font-awesome-icon :icon="['fas', 'folder']" />
@@ -159,7 +159,7 @@ import EssenceMsgsPan from '@renderer/components/EssenceMsgsPan.vue'
 import FacePan from '@renderer/components/FacePan.vue'
 
 import { IUser, Member } from '@renderer/function/model/user'
-import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
+import { GroupSession, Session, TempSession, UserSession } from '@renderer/function/model/session'
 import { Logger, LogType, PopInfo, PopType } from '@renderer/function/base'
 import imageCompression from 'browser-image-compression'
 import app from '@renderer/main'
@@ -168,7 +168,6 @@ import { delay } from '@renderer/function/utils/systemUtil'
 import { runtimeData } from '@renderer/function/msg'
 import { AtSeg } from '@renderer/function/model/seg'
 import { useTemplateRef, shallowRef, nextTick, inject, TemplateRef, computed, watchEffect } from 'vue'
-import { closePopBox, textPopBox } from '@renderer/function/utils/popBox'
 import Viewer from '../Viewer.vue'
 import { Role } from '@renderer/function/adapter/enmu'
 import { vUserRole } from '@renderer/function/utils/vcmd'
@@ -624,22 +623,7 @@ async function editImg(key: number) {
  * 发送文件
  */
 async function selectFile() {
-    const file = await uploadFile()
-    if (!file) return
-
-    // 提示
-    const popId = textPopBox($t('正在发送文件中……'), {
-        title: $t('提醒'),
-        allowAutoClose: false,
-    })
-
-    const reMsg = await FileSender.sendFile(file, session as GroupSession | UserSession)
-
-    closePopBox(popId)
-    console.log('捕获到消息:', reMsg)
-    if (!reMsg) return
-
-    session.addMessage(reMsg)
+    await FileSender.autoUploadFile(session as GroupSession | UserSession)
 }
 //#endregion
 

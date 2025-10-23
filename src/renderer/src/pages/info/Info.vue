@@ -55,7 +55,7 @@
                 <div class="outher">
                     <span v-if="userInfo.birthday_year">{{ $t('生日') }}:
                         <span>
-                            {{ Intl.DateTimeFormat(trueLang, {
+                            {{ Intl.DateTimeFormat(getTrueLang(), {
                                 year: 'numeric',
                                 month: 'short',
                                 day: 'numeric',
@@ -92,10 +92,17 @@
             class="chat-info-tab">
             <div :name="$t('成员')">
                 <div class="chat-info-tab-member">
-                    <input
-                        v-search="userSearchInfo!"
-                        class="search-view"
-                        :placeholder="$t('搜索 ……')">
+                    <header>
+                        <input
+                            v-search="userSearchInfo!"
+                            class="search-view"
+                            :placeholder="$t('搜索 ……')">
+                        <button
+                            :title="$t('刷新')"
+                            @click="refreshUsers">
+                            <font-awesome-icon :icon="['fas', 'rotate-right']" />
+                        </button>
+                    </header>
                     <div v-if="(userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList).length > 0">
                         <div v-for="member in userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList"
                             :key="'chatinfomlist-' + member.user_id" class="edit">
@@ -120,14 +127,21 @@
             </div>
             <div :name="$t('公告')">
                 <div class="bulletins">
-                    <template v-if="anns">
-                        <input
-                            v-search="annSearchInfo!"
-                            class="search-view"
-                            :placeholder="$t('搜索 ……')">
-                        <div v-if="(annSearchInfo!.isSearch ? annSearchInfo!.query : anns).length > 0">
+                    <template v-if="chat.annsLoaded">
+                        <header>
+                            <input
+                                v-search="annSearchInfo!"
+                                class="search-view"
+                                :placeholder="$t('搜索 ……')">
+                            <button
+                                :title="$t('刷新')"
+                                @click="refreshAnns">
+                                <font-awesome-icon :icon="['fas', 'rotate-right']" />
+                            </button>
+                        </header>
+                        <div v-if="(annSearchInfo!.isSearch ? annSearchInfo!.query : chat.anns).length > 0">
                             <BulletinBody
-                                v-for="(item, index) in annSearchInfo!.isSearch ? annSearchInfo!.query : anns"
+                                v-for="(item, index) in annSearchInfo!.isSearch ? annSearchInfo!.query : chat.anns"
                                 :key="'bulletins-' + index"
                                 :data="item"
                                 :index="index" />
@@ -144,29 +158,7 @@
                 </div>
             </div>
             <div :name="$t('文件')">
-                <div class="group-files">
-                    <template v-if="fileInfo">
-                        <input
-                            v-search="fileSearchInfo!"
-                            class="search-view"
-                            :placeholder="$t('搜索 ……')">
-                        <div v-if="(fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo)?.length > 0"
-                            class="file-list">
-                            <div v-for="item in fileSearchInfo!.isSearch ? fileSearchInfo!.query : fileInfo"
-                                :key="'file-' + item.id">
-                                <FileBody :item="markRaw(item)" />
-                            </div>
-                        </div>
-                        <div v-else class="null">
-                            <font-awesome-icon :icon="['fas', 'inbox']" />
-                            {{ $t('空空如也') }}
-                        </div>
-                    </template>
-                    <div v-else class="loading" style="opacity: 0.9;">
-                        <font-awesome-icon :icon="['fas', 'spinner']" />
-                        {{ $t('加载中') }}
-                    </div>
-                </div>
+                <FileInfo :chat="chat" />
             </div>
             <div :name="$t('设置')">
                 <div style="padding: 0 20px">
@@ -246,15 +238,13 @@
 
 <script setup lang="ts">
 import BulletinBody from '@renderer/components/BulletinBody.vue'
-import FileBody from '@renderer/components/FileBody.vue'
 import app from '@renderer/main'
 import BcTab from 'vue3-bcui/packages/bc-tab'
-import OptInfo from './options/OptInfo.vue'
+import OptInfo from '@renderer/pages/options/OptInfo.vue'
 
 import { Role } from '@renderer/function/adapter/enmu'
 import { PopInfo, PopType } from '@renderer/function/base'
 import { Ann } from '@renderer/function/model/ann'
-import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { Member, User } from '@renderer/function/model/user'
 import { runtimeData } from '@renderer/function/msg'
@@ -263,13 +253,13 @@ import { closePopBox, ensurePopBox, textPopBox } from '@renderer/function/utils/
 import { copyToClipboard, delay, getTrueLang } from '@renderer/function/utils/systemUtil'
 import { vSearch } from '@renderer/function/utils/vcmd'
 import {
-    markRaw,
     nextTick,
     shallowReactive,
     shallowRef,
     ShallowRef,
     watchEffect,
 } from 'vue'
+import FileInfo from './FileInfo.vue'
 
 const { chat } = defineProps<{
     chat: Session
@@ -280,13 +270,8 @@ const emit = defineEmits<{
 const userInfo: ShallowRef<User | undefined> = (
     chat instanceof UserSession ? chat.useUserInfo() : shallowRef(undefined)
 )
-const anns: ShallowRef<Ann[]> = (
-    chat instanceof GroupSession ? chat.useAnn() : shallowRef([])
-)
-const fileInfo: ShallowRef<(GroupFileFolder | GroupFile)[] | undefined> = (
-    chat instanceof GroupSession ? chat.useFile() : shallowRef(undefined)
-)
 
+//#region == 注册查询 =================================================
 const userSearchInfo =  chat instanceof GroupSession ? shallowReactive({
     originList: chat.memberList,
     query: shallowReactive([] as Member[]),
@@ -299,24 +284,25 @@ const annSearchInfo =  chat instanceof GroupSession ? shallowReactive({
     isSearch: false,
 }) : undefined
 
-const fileSearchInfo =  chat instanceof GroupSession ? shallowReactive({
-    originList: [] as (GroupFileFolder | GroupFile)[],
-    query: shallowReactive([] as (GroupFileFolder | GroupFile)[]),
-    isSearch: false,
-}) : undefined
-
 watchEffect(() => {
     if (!(chat instanceof GroupSession)) return
-    fileSearchInfo!.originList = fileInfo.value ?? []
-    annSearchInfo!.originList = anns.value ?? []
+    annSearchInfo!.originList = chat.anns ?? []
 })
+//#endregion
 
+//#region == 声明便利 =================================================
 const configMember = shallowRef<Member | undefined>(undefined)
 const configTitle = shallowRef<string>('')
 const configCard = shallowRef<string>('')
 const configBanMin = shallowRef<number>(0)
+//#endregion
 
-const trueLang = getTrueLang()
+//#region == 初始化 ===================================================
+if (chat instanceof GroupSession) {
+    chat.loadAnns()
+    chat.loadFiles()
+}
+//#endregion
 
 function $t(key: string, option: {[key: string]: string}={}) {
     return app.config.globalProperties.$t(key, option)
@@ -459,19 +445,21 @@ async function checkSetMemInfoResult() {
     closePopBox(popId)
 }
 
+/**
+ * 刷新群成员
+ */
+async function refreshUsers(): Promise<void> {
+    await (chat as GroupSession).reloadUserList(false)
+}
+
+/**
+ * 刷新群公告
+ */
+async function refreshAnns(): Promise<void> {
+    await (chat as GroupSession).loadAnns(false)
+}
+
 defineExpose({
     openMoreConfig
 })
 </script>
-
-<style scoped>
-    .search-view {
-        width: calc(100% - 20px);
-        background: var(--color-card-1);
-        border-radius: 7px;
-        margin-bottom: 10px;
-        padding: 0 10px;
-        min-height: 35px;
-        border: 0;
-    }
-</style>

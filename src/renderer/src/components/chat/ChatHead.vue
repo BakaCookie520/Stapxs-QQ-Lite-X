@@ -49,7 +49,7 @@ import { GroupSession, Session } from '@renderer/function/model/session';
 import { runtimeData } from '@renderer/function/msg';
 import { popBox } from '@renderer/function/utils/popBox';
 import app from '@renderer/main';
-import Info from '@renderer/pages/Info.vue';
+import Info from '@renderer/pages/info/Info.vue';
 import { computed, shallowRef } from 'vue';
 
 const { session } = defineProps<{

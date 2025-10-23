@@ -742,6 +742,16 @@ body.with-bar .msg-menu {
     flex-direction: column;
 }
 
+.chat-info-pan input.search-view {
+    width: calc(100% - 20px);
+    background: var(--color-card-1);
+    border-radius: 7px;
+    margin-bottom: 10px;
+    padding: 0 10px;
+    min-height: 35px;
+    border: 0;
+}
+
 .chat-info-base {
     background: var(--color-card-1);
     border-radius: 7px;
@@ -1232,49 +1242,78 @@ body.with-bar .msg-menu {
     height: 100%;
 }
 
+.chat-info-pan header {
+    display: flex;
+}
+
+.chat-info-pan header > button {
+    margin: 0 0 10px 10px;
+    width: 35px;
+    background-color: var(--color-card-1);
+    border: none;
+    border-radius: 7px;
+    transition: background-color 0.3s;
+}
+
+.chat-info-pan header > button:hover {
+    background-color: var(--color-card-2)
+}
+
+.chat-info-pan header > button > svg {
+    color: var(--color-font);
+    opacity: 0.7;
+}
+
 .group-files > div {
     overflow-y: scroll;
     overflow-x: hidden;
 }
 
-.file-list > div > div {
+.file {
+    transition: all 0.3s;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+}
+
+.file.folder {
+    cursor: pointer;
+}
+
+.file.folder.open {
+    background: var(--color-card-1);
+}
+
+.file.menu,
+.file:hover {
+    background: var(--color-card-1);
+}
+
+.file-main {
     transition: background 0.3s;
     align-items: center;
-    border-radius: 7px;
     flex-wrap: wrap;
     padding: 10px;
     display: flex;
     margin: 5px;
 }
 
-.file-list > div > div.folder {
-    cursor: pointer;
-}
-
-.file-list > div > div.folder.open {
-    background: var(--color-card-1);
-}
-
-.file-list > div > div:hover {
-    background: var(--color-card-1);
-}
-
-.file-list > div > div > svg {
+.file-main > svg {
     color: var(--color-font);
     margin: 0 15px 0 10px;
     height: 1.2rem;
 }
 
-.file-list > div > div > div.main {
+.file-main > div.info {
     margin-right: 20px;
     flex: 1;
 }
 
-.file-list > div > div > div.main span {
+.file-main > div.info span {
     overflow-wrap: anywhere;
 }
 
-.file-list > div > div > div.download {
+.file-main > div.download {
     background: var(--color-card-2);
     border-radius: 100%;
     cursor: pointer;
@@ -1282,29 +1321,34 @@ body.with-bar .msg-menu {
     width: 1.9rem;
 }
 
-.file-list > div > div > div.download > svg {
+.file-main > div.download > svg {
     color: var(--color-font);
     height: 0.8rem;
     margin: 10px;
 }
 
-.file-list > div > div > div > div > span {
+.file-main > div.info > div > span {
     color: var(--color-font-1);
     font-size: 0.8rem;
 }
 
-.file-list > div > div > div > div > span:first-child {
+.file-main > div.info > div > span:first-child {
     color: var(--color-main);
 }
 
-.file-list > div > div > div > div > span::after {
+.file-main > div.info > div > span::after {
     color: var(--color-font-1);
     content: '\2022';
     margin-left: 5px;
 }
 
-.file-list > div > div > div > div > span:last-child::after {
+.file-main > div.info > div > span:last-child::after {
     content: '';
+}
+
+.file > div.file-list {
+    margin-left: 30px;
+    padding: 5px;
 }
 
 .info-pan-set {

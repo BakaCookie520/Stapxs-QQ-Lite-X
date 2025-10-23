@@ -786,7 +786,7 @@ export class GroupSession extends Session {
                 newMemberList.push(newData)
             }
         }
-        this.memberList = newMemberList.sort((a, b) => {
+        this.memberList = newMemberList.toSorted((a, b) => {
             if (a.role === Role.Owner) return -1
             if (b.role === Role.Owner) return 1
             if (a.role === Role.Admin && b.role !== Role.Admin) return -1
@@ -804,7 +804,10 @@ export class GroupSession extends Session {
 
     override prepareUnactive(): void {
         this.memberList = new Array(this.memberList.length).fill(null)
-        this.annCache = undefined
+        this.annsLoaded = false
+        this.anns.length = 0
+        this.filesLoaded = false
+        this.files.length = 0
         this.essenceCache = undefined
         this.me = null
     }
@@ -877,14 +880,27 @@ export class GroupSession extends Session {
         option.save('notice_group', noticeInfo)
     }
 
-    private annCache?: Ann[]
+    private readonly _annsLoaded = shallowRef(false)
+    readonly anns = shallowReactive<Ann[]>([])
+    private annsLoadLocker = false
     /**
      * 获得群公告
      */
-    async getAnn(useCache: boolean = true): Promise<Ann[]> {
-        if (useCache && this.annCache !== undefined) return this.annCache
+    async loadAnns(useCache: boolean = true): Promise<void> {
+        if (useCache && this.annsLoaded) return
+        if (this.annsLoadLocker) return
+        this.annsLoadLocker = true
+        this.annsLoaded = false
 
-        if (!runtimeData.nowAdapter?.getGroupAnnouncement) return []
+        if (!runtimeData.nowAdapter?.getGroupAnnouncement) {
+            new PopInfo().add(
+                PopType.ERR,
+                app.config.globalProperties.$t('当前适配器不支持获取群公告'),
+            )
+            this.annsLoaded = true
+            this.annsLoadLocker = false
+            return
+        }
 
         const data = await runtimeData.nowAdapter.getGroupAnnouncement(this)
         if (!data) {
@@ -892,10 +908,11 @@ export class GroupSession extends Session {
                 PopType.ERR,
                 app.config.globalProperties.$t('获取群公告失败'),
             )
-            return []
+            this.annsLoaded = true
+            this.annsLoadLocker = false
+            return
         }
         const anns = data.map(item => new Ann(item, this))
-        this.annCache = anns
         // 拼接图片
         let tail: Img | undefined
         for (const ann of anns) {
@@ -903,28 +920,44 @@ export class GroupSession extends Session {
             tail?.insertNext(ann.imgData)
             tail = ann.imgData
         }
-        // 拼接图片列表
-        return anns
+        // 保存群公告
+        this.anns.length = 0
+        this.anns.push(...anns)
+        this.annsLoaded = true
+        this.annsLoadLocker = false
     }
-    /**
-     * 对 getAnn 的封装
-     */
-    useAnn(useCache: boolean = true): ShallowRef<Ann[]> {
-        const annList = shallowRef<Ann[]>([])
-        this.getAnn(useCache).then(data => {
-            annList.value = data
-        })
-        return annList
+
+    get annsLoaded(): boolean {
+        return this._annsLoaded.value
     }
-    private fileCache?: (GroupFile | GroupFileFolder)[]
+
+    set annsLoaded(flag: boolean) {
+        this._annsLoaded.value = flag
+    }
+
+    private readonly _filesLoaded = shallowRef(false)
+    readonly files = shallowReactive<(GroupFile | GroupFileFolder)[]>([])
+    private filesLoadLocker = false
     /**
      * 获取群文件
      * @param useCache 是否使用缓存
      */
-    async getFile(useCache: boolean = true): Promise<(GroupFile | GroupFileFolder)[]> {
-        if (useCache && this.fileCache) return this.fileCache
+    async loadFiles(useCache: boolean = true): Promise<void> {
+        if (useCache && this.filesLoaded) return
+        if (this.filesLoadLocker) return
 
-        if (!runtimeData.nowAdapter?.getGroupFile) return []
+        this.filesLoadLocker = true
+        this.filesLoaded = false
+
+        if (!runtimeData.nowAdapter?.getGroupFile) {
+            new PopInfo().add(
+                PopType.ERR,
+                app.config.globalProperties.$t('当前适配器不支持获取群文件'),
+            )
+            this.filesLoaded = true
+            this.filesLoadLocker = false
+            return
+        }
 
         const data = await runtimeData.nowAdapter?.getGroupFile(this)
         if (!data) {
@@ -932,7 +965,9 @@ export class GroupSession extends Session {
                 PopType.ERR,
                 app.config.globalProperties.$t('获取群文件失败'),
             )
-            return []
+            this.filesLoaded = true
+            this.filesLoadLocker = false
+            return
         }
         const { files: fileData, folders: folderData } = data
 
@@ -946,19 +981,20 @@ export class GroupSession extends Session {
         const folders = folderData.map(item => new GroupFileFolder(item, this)).sort(sort)
 
         const out = [...folders, ...files]
-        this.fileCache = out
-        return out
+        this.files.length = 0
+        this.files.push(...out)
+        this.filesLoaded = true
+        this.filesLoadLocker = false
     }
-    /**
-     * 对 getFile 的封装
-     */
-    useFile(): ShallowRef<(GroupFile | GroupFileFolder)[] | undefined> {
-        const fileList = shallowRef<(GroupFile | GroupFileFolder)[] | undefined>(undefined)
-        this.getFile().then(data => {
-            fileList.value = data
-        })
-        return fileList
+
+    get filesLoaded(): boolean {
+        return this._filesLoaded.value
     }
+
+    set filesLoaded(flag: boolean) {
+        this._filesLoaded.value = flag
+    }
+
     private essenceCache?: EssenceMsg[]
     /**
      * 获取群精华消息

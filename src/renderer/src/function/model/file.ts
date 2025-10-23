@@ -15,6 +15,7 @@ import { downloadFile } from '../utils/appUtil'
 import { getSizeFromBytes } from '../utils/systemUtil'
 import { Name, Time } from './data'
 import { GroupSession } from './session'
+import { BaseUser, IUser } from './user'
 
 export class GroupFile {
     type: string = 'file'
@@ -25,21 +26,25 @@ export class GroupFile {
     size: number
     downloadTimes: number
     deadTime?: number
-    _createrName: Name
+    creator: IUser
     createTime?: Time
     url?: string
+    folder?: GroupFileFolder
 
     downloadPercent: ShallowRef<number|undefined> = shallowRef()
 
-    constructor(data: GroupFileData, group: GroupSession) {
+    constructor(data: GroupFileData, group: GroupSession, folder?: GroupFileFolder) {
         this.id = data.file_id
         this._name = new Name(data.file_name)
         this.size = data.size
         this.downloadTimes = data.download_times
+        this.folder = folder
         if(data.dead_time) this.deadTime = data.dead_time
-        if (data.uploader_id) this._createrName = new Name(getSenderName(data.uploader_id, group))
-        else if (data.uploader_name) this._createrName = new Name(data.uploader_name)
-        else throw new Error('文件上传者信息错误')
+        let user: IUser | undefined
+        if (data.uploader_id)
+            user = group.getUserById(data.uploader_id)
+        user ??= new BaseUser(data.uploader_id ?? 0, data.uploader_name)
+        this.creator = user
         if(data.upload_time) this.createTime = new Time(data.upload_time)
         this.group = group
     }
@@ -103,7 +108,7 @@ export class GroupFile {
     match(search: string): boolean {
         search = search.trim().toLowerCase()
         if (this._name.matchStr(search)) return true
-        if (this._createrName.matchStr(search)) return true
+        if (this.creator.match(search)) return true
         return false
     }
 
@@ -124,15 +129,6 @@ export class GroupFile {
         if (typeof name === 'string') this._name = new Name(name)
         else this._name = name
     }
-
-    get createrName(): string {
-        return this._createrName.toString()
-    }
-
-    set createrName(name: string | Name) {
-        if (typeof name === 'string') this._createrName = new Name(name)
-        else this._createrName = name
-    }
 }
 
 export class GroupFileFolder {
@@ -143,23 +139,24 @@ export class GroupFileFolder {
     _name: Name
     count: number
     createTime?: Time
-    _createrName: Name
+    creator: IUser
 
     items: ShallowRef<(GroupFile | GroupFileFolder)[] | undefined> = shallowRef(undefined)
-    isOpen: ShallowRef<boolean> = shallowRef(false)
+    private readonly _isOpen: ShallowRef<boolean> = shallowRef(false)
     constructor(data: GroupFolderData, group: GroupSession) {
         this.id = data.folder_id
         this._name = new Name(data.folder_name)
         this.count = data.count
         if(data.create_time) this.createTime = new Time(data.create_time)
-        if (data.creater_id) this._createrName = new Name(getSenderName(data.creater_id, group))
-        else if (data.creater_name) this._createrName = new Name(data.creater_name)
-        else throw new Error('文件夹创建者信息错误')
+        let user: IUser | undefined
+        if (data.creater_id) user = group.getUserById(data.creater_id)
+        user ??= new BaseUser(data.creater_id ?? 0, data.creater_name)
+        this.creator = user
         this.group = group
     }
 
     async open(): Promise<boolean> {
-        this.isOpen.value = !this.isOpen.value
+        this.isOpen = !this.isOpen
 
         if (this.items.value !== undefined) return true
 
@@ -181,7 +178,7 @@ export class GroupFileFolder {
 
         const out: (GroupFile | GroupFileFolder)[] = [
             ...data.folders.map(folder => new GroupFileFolder(folder, this.group)).sort(sort),
-            ...data.files.map(file => new GroupFile(file, this.group)).sort(sort),
+            ...data.files.map(file => new GroupFile(file, this.group, this)).sort(sort),
         ]
 
         this.items.value = out
@@ -192,7 +189,7 @@ export class GroupFileFolder {
     match(search: string): boolean {
         search = search.trim().toLowerCase()
         if (this._name.matchStr(search)) return true
-        if (this._createrName.matchStr(search)) return true
+        if (this.creator.match(search)) return true
 
         if (this.items.value) {
             for (const item of this.items.value) {
@@ -212,20 +209,11 @@ export class GroupFileFolder {
         else this._name = name
     }
 
-    get createrName(): string {
-        return this._createrName.toString()
+    get isOpen(): boolean {
+        return this._isOpen.value
     }
 
-    set createrName(name: string | Name) {
-        if (typeof name === 'string') this._createrName = new Name(name)
-        else this._createrName = name
+    set isOpen(open: boolean) {
+        this._isOpen.value = open
     }
-}
-
-function getSenderName(id: number, session: GroupSession): string {
-    const { $t } = app.config.globalProperties
-    const member = session.getUserById(id)
-    if (member) return member.name
-
-    return $t('已退群( {userId} )', { userId: id })
 }

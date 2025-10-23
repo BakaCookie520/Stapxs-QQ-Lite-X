@@ -2104,3 +2104,11 @@ body.with-bar #base-app {
         transform: scaleY(1);
     }
 }
+
+input.input-pop-box {
+    background-color: var(--color-card-1);
+    padding: 5px;
+    border: none;
+    border-radius: 7px;
+    margin-bottom: 10px;
+}
