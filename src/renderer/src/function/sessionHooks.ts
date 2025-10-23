@@ -92,12 +92,6 @@ Session.afterNewMessageHook.push((session: Session, msg: Message) => {
 
     session.loadFiles(false)
 })
-Session.afterRmMessageHook.push((session: Session, msg: Message) => {
-    if (!(session instanceof GroupSession)) return
-    if (!isFileMsg(msg)) return
-
-    session.loadFiles(false)
-})
 //#endregion
 
 // 本人无苹果设备,不保证可以用

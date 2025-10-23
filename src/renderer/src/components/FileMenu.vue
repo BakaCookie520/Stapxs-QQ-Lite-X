@@ -176,9 +176,9 @@ async function renameFolder() {
     await runtimeData.nowAdapter.renameGroupFileFolder(folder, newName)
 }
 async function deleteFile(): Promise<void> {
-    close()
     const file = currentFile.value
     if (!file) return
+    close()
     if (file instanceof GroupFile) {
         if (!runtimeData.nowAdapter?.deleteGroupFile) {
             new PopInfo().add(PopType.INFO, $t('当前适配器不支持删除文件'))
@@ -195,9 +195,8 @@ async function deleteFile(): Promise<void> {
             if (!re) return
         }
         await runtimeData.nowAdapter.deleteGroupFileFolder(file)
-
-        await file.group.loadFiles(false)
     }
+    await file.group.loadFiles(false)
 }
 //#endregion
 </script>
