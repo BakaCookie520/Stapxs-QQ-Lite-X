@@ -106,7 +106,7 @@ const roamingState = shallowRef<
     | 'ok'
     | 'err'
     | 'no-support'
->('loading')
+>('no-support')
 
 // 初次加载漫游表情
 initRoamingStamp()
@@ -115,16 +115,16 @@ initRoamingStamp()
 async function initRoamingStamp() {
     if (runtimeData.stickerCache) return
 
-    await loadRomaingStamp()
+    await loadRoamingStamp()
 }
 async function reloadRoamingStamp() {
     if (roamingState.value === 'loading') return
     runtimeData.stickerCache = undefined
 
-    await loadRomaingStamp()
+    await loadRoamingStamp()
 }
 
-async function loadRomaingStamp() {
+async function loadRoamingStamp() {
     if (roamingState.value === 'loading') return
     roamingState.value = 'loading'
     if (!runtimeData.nowAdapter?.getCustomFace) {
