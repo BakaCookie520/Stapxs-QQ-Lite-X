@@ -332,18 +332,9 @@ function mainKey(event: KeyboardEvent) {
 }
 function mainKeyUp(event: KeyboardEvent) {
     const logger = new Logger()
-    if (event.key !== 'Enter') {
-        const content = inputMsg.value.content
-        // 获取最后一个输入的符号用于判定 at
-        const lastInput = content.at(-1)
-        if (
-            !onAtFind.value &&
-            lastInput == '@' &&
-            session instanceof GroupSession
-        ) {
-            logger.add(LogType.UI, '开始匹配群成员列表 ……')
-            atFindMode.value = true
-        }
+    if (event.key === '@' && !onAtFind.value && session instanceof GroupSession) {
+        logger.add(LogType.UI, '开始匹配群成员列表 ……')
+        atFindMode.value = true
     }
 }
 /**
