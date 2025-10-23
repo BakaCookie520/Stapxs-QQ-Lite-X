@@ -92,36 +92,42 @@
             class="chat-info-tab">
             <div :name="$t('成员')">
                 <div class="chat-info-tab-member">
-                    <header>
-                        <input
-                            v-search="userSearchInfo!"
-                            class="search-view"
-                            :placeholder="$t('搜索 ……')">
-                        <button
-                            :title="$t('刷新')"
-                            @click="refreshUsers">
-                            <font-awesome-icon :icon="['fas', 'rotate-right']" />
-                        </button>
-                    </header>
-                    <div v-if="(userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList).length > 0">
-                        <div v-for="member in userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList"
-                            :key="'chatinfomlist-' + member.user_id" class="edit">
-                            <img alt="nk" loading="lazy"
-                                :src="member.face">
-                            <div>
-                                <a @click="startChat(member)">{{ member.name }}</a>
-                                <font-awesome-icon v-if="member.role === 'owner'" :icon="['fas', 'crown']" />
-                                <font-awesome-icon v-if="member.role === 'admin'" :icon="['fas', 'star']" />
+                    <template v-if="chat.memsLoaded">
+                        <header>
+                            <input
+                                v-search="userSearchInfo!"
+                                class="search-view"
+                                :placeholder="$t('搜索 ……')">
+                            <button
+                                :title="$t('刷新')"
+                                @click="refreshUsers">
+                                <font-awesome-icon :icon="['fas', 'rotate-right']" />
+                            </button>
+                        </header>
+                        <div v-if="(userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList).length > 0">
+                            <div v-for="member in userSearchInfo!.isSearch ? userSearchInfo!.query : chat.memberList"
+                                :key="'chatinfomlist-' + member.user_id" class="edit">
+                                <img alt="nk" loading="lazy"
+                                    :src="member.face">
+                                <div>
+                                    <a @click="startChat(member)">{{ member.name }}</a>
+                                    <font-awesome-icon v-if="member.role === 'owner'" :icon="['fas', 'crown']" />
+                                    <font-awesome-icon v-if="member.role === 'admin'" :icon="['fas', 'star']" />
+                                </div>
+                                <!-- 在手机端戳 id 就能触发 -->
+                                <span @click="clickMember(member)">{{ member.user_id }}</span>
+                                <font-awesome-icon v-if="canEditMember(member.role)" :icon="['fas', 'wrench']" @click="clickMember(member)" />
+                                <font-awesome-icon v-else :icon="['fas', 'copy']" @click="clickMember(member)" />
                             </div>
-                            <!-- 在手机端戳 id 就能触发 -->
-                            <span @click="clickMember(member)">{{ member.user_id }}</span>
-                            <font-awesome-icon v-if="canEditMember(member.role)" :icon="['fas', 'wrench']" @click="clickMember(member)" />
-                            <font-awesome-icon v-else :icon="['fas', 'copy']" @click="clickMember(member)" />
                         </div>
-                    </div>
-                    <div v-else class="null">
-                        <font-awesome-icon :icon="['fas', 'inbox']" />
-                        {{ $t('空空如也') }}
+                        <div v-else class="null">
+                            <font-awesome-icon :icon="['fas', 'inbox']" />
+                            {{ $t('空空如也') }}
+                        </div>
+                    </template>
+                    <div v-else class="loading" style="opacity: 0.9;">
+                        <font-awesome-icon :icon="['fas', 'spinner']" />
+                        {{ $t('加载中') }}
                     </div>
                 </div>
             </div>

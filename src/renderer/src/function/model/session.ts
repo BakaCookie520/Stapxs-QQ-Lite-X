@@ -758,10 +758,26 @@ export class GroupSession extends Session {
         this.refreshPreMsg()
     }
 
+    private readonly _memsLoaded = shallowRef(false)
+    private memsLoadLocker = false
+    get memsLoaded(): boolean {
+        return this._memsLoaded.value
+    }
+    set memsLoaded(flag: boolean) {
+        this._memsLoaded.value = flag
+    }
     async reloadUserList(useCache: boolean = true): Promise<void> {
+        if (useCache && this.memsLoaded) return
+        if (this.memsLoadLocker) return
+        this.memsLoadLocker = true
+        this.memsLoaded = false
         // 获取新数据
         const memData = await runtimeData.nowAdapter?.getMemberList(this, useCache)
-        if (!memData) throw new Error('获取群成员列表失败')
+        if (!memData) {
+            this.memsLoadLocker = false
+            this.memsLoaded = true
+            throw new Error('获取群成员列表失败')
+        }
 
         const newDataMap = new Map<number, Member>()
         for (const item of memData) {
@@ -800,6 +816,8 @@ export class GroupSession extends Session {
         for (const item of oldDataMap.values())
             item.leave = true
 
+        this.memsLoadLocker = false
+        this.memsLoaded = true
     }
 
     override prepareUnactive(): void {
