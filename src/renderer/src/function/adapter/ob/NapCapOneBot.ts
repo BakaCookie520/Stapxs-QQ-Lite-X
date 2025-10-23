@@ -102,7 +102,7 @@ export default class NapCapOneBot extends OneBotAdapter {
 
         const out = data.data.map(item => ({
             content: item.message.text,
-            img: `https://p.qlogo.cn/gdynamic/${item.message.image.at(0)?.id}/0/`,
+            img: item.message.image.at(0) ? `https://p.qlogo.cn/gdynamic/${item.message.image.at(0)!.id}/0/`: undefined,
             time: item.publish_time,
             sender: item.sender_id,
         }))

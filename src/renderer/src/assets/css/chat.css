@@ -1218,6 +1218,7 @@ body.with-bar .msg-menu {
     border: 2px solid var(--color-card);
     border-radius: 100%;
     width: 20px;
+    height: 20px;
 }
 
 .bulletins > div > div.base > div.info > a {
