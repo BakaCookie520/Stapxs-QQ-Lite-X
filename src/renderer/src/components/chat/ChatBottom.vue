@@ -2,7 +2,7 @@
     <div class="chat-bottom"
         :class="{ hide: hide }"
         :style="{
-            '--open-reply': session.inputMsg.reply ? '1' : '0',
+            '--open-reply': inputMsg.reply ? '1' : '0',
             '--input-height': textAreaHeight + 'px'
         }"
         @mouseenter="hoverStart()"
@@ -15,31 +15,31 @@
         <!-- 精华消息 -->
         <Transition v-if="session instanceof GroupSession" name="pan">
             <EssenceMsgsPan v-show="details === 'essence' && !focusHide"
-                :session="session" :key="session.id" @close="switchDetail('essence')" />
+                :key="session.id" :session="session" @close="switchDetail('essence')" />
         </Transition>
-		<div id="chat-bottom-top" />
+        <div id="chat-bottom-top" />
         <!-- 图片指示器 -->
         <Transition name="img-pan">
-            <div v-show="session.inputMsg.imgCache.size > 0 && !focusHide"
+            <div v-show="inputMsg.imgCache.size > 0 && !focusHide"
                 :class="{
                     'img-pan': true,
                     'ss-card': true,
                 }"
                 @wheel="($event.currentTarget as HTMLElement).scrollLeft += $event.deltaY">
                 <div class="imgs">
-                    <div v-for="[key, value] in session.inputMsg.imgCache"
+                    <div v-for="[key, value] in inputMsg.imgCache"
                         :key="'imgCache-' + key">
                         <div class="img-btns">
                             <div @click="editImg(key)">
                                 <font-awesome-icon :icon="['fas', 'pencil']" />
                             </div>
-                            <hr />
-                            <div @click="session.inputMsg.rmImg(key)">
+                            <hr>
+                            <div @click="inputMsg.rmImg(key)">
                                 <font-awesome-icon style="color: var(--color-red)" :icon="['fas', 'xmark']" />
                             </div>
                         </div>
                         <div class="img">
-                            <img :src="value" :alt="`[SQ:${key}]`"/>
+                            <img :src="value" :alt="`[SQ:${key}]`">
                         </div>
                         <span>[SQ:{{ key }}]</span>
                     </div>
@@ -78,25 +78,25 @@
                 </div>
                 <div class="space" />
                 <div class="send"
-                    :class="{'disable': session.inputMsg.isVoid}"
-                    :title="session.inputMsg.isVoid ? $t('空消息不可以发送哦～') : $t('发送消息')"
+                    :class="{'disable': inputMsg.isVoid}"
+                    :title="inputMsg.isVoid ? $t('空消息不可以发送哦～') : $t('发送消息')"
                     @click="sendMsg()">
                     <span>{{ $t('发送') }}</span>
                     <font-awesome-icon :icon="['fas', 'angle-right']" />
                 </div>
             </div>
-            <hr />
+            <hr>
             <!-- At 指示器 -->
             <div
+                ref="find-bar"
                 class="at-tag"
                 :class="{
                     'show': atFindMode
-                }"
-                ref="find-bar">
+                }">
                 <div v-for="item, id in atFindList"
                     :key="'atFind-' + item.user_id"
-                    :class="{selected: atSelected === id}"
                     ref="at-find-items"
+                    :class="{selected: atSelected === id}"
                     @click="choiceAt(id)">
                     <img :src="item.face" :alt="item.name">
                     <div>
@@ -126,22 +126,22 @@
             <!-- 回复指示器 -->
             <div :class="{
                 'input-special-tag': true,
-                'show': session.inputMsg.reply
+                'show': inputMsg.reply
             }">
                 <font-awesome-icon :icon="['fas', 'reply']" />
                 <span>
-                    {{ session.inputMsg.reply?.preMsg }}
+                    {{ inputMsg.reply?.preMsg }}
                 </span>
-                <div @click="session.inputMsg.rmReply()">
+                <div @click="inputMsg.rmReply()">
                     <font-awesome-icon :icon="['fas', 'xmark']" />
                 </div>
             </div>
             <!-- 消息发送框 -->
             <div class="input">
                 <textarea
-                    ref="main-input"
                     id="main-input"
-                    v-model="session.inputMsg.content"
+                    ref="main-input"
+                    v-model="inputMsg.content"
                     type="text"
                     @paste="addImg"
                     @keydown="mainKey"
@@ -174,6 +174,7 @@ import { vUserRole } from '@renderer/function/utils/vcmd'
 import { fitScroll } from '@renderer/function/utils/appUtil'
 import { FileSender } from '@renderer/function/utils/fileSender'
 import { uploadFile } from '@renderer/function/input'
+import { InputMsg } from '@renderer/function/model/inputMsg'
 
 const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
@@ -181,6 +182,7 @@ const { session, focusHide = false } = defineProps<{
     session: Session
 	focusHide?: boolean
 }>()
+const inputMsg = defineModel<InputMsg>({ required: true })
 
 const emit = defineEmits<{
     sendPoke: [user: IUser],
@@ -194,7 +196,7 @@ const details = shallowRef<'face'|'essence'|undefined>()
 const onAtFind = shallowRef(false)
 
 const textAreaHeight = computed(()=>{
-    session.inputMsg.content
+    inputMsg.value.content
     if (!mainInput.value) return 0
     const dom = mainInput.value as HTMLTextAreaElement
     dom.style.height = 'auto'
@@ -210,7 +212,7 @@ const hide = computed<boolean>(()=>{
     if (!runtimeData.sysConfig.hide_chat_bottom) return false
     if (sendTimeout.value) return false
     if (compositionTag.value) return false
-    if (!session.inputMsg.isVoid) return false
+    if (!inputMsg.value.isVoid) return false
     return !hover.value
 })
 
@@ -222,12 +224,12 @@ function $t(key: string): string {
     return app.config.globalProperties.$t(key)
 }
 
-let lastInputVoid = session.inputMsg.isVoid
+let lastInputVoid = inputMsg.value.isVoid
 // 延迟1s隐藏
 watchEffect(()=>{
-    if (lastInputVoid === session.inputMsg.isVoid) return
-    lastInputVoid = session.inputMsg.isVoid
-    if (!session.inputMsg.isVoid) return
+    if (lastInputVoid === inputMsg.value.isVoid) return
+    lastInputVoid = inputMsg.value.isVoid
+    if (!inputMsg.value.isVoid) return
 
     clearTimeout(sendTimeout.value)
     sendTimeout.value = setTimeout(()=>{
@@ -255,7 +257,7 @@ function switchDetail(detail: 'face'|'essence' | undefined) {
         // 等待消失动画
         setTimeout(() => {
             details.value = detail
-        }, 300);
+        }, 300)
     }
 }
 
@@ -320,18 +322,18 @@ function mainKey(event: KeyboardEvent) {
     // meta + enter
     // alt + enter
     // 上述组合不自带enter,需要手动补充
-    if(canSend && !session.inputMsg.isVoid) {
+    if(canSend && !inputMsg.value.isVoid) {
         sendMsg()
     } else if(event.key === 'Enter' &&
         (event.ctrlKey || event.metaKey || event.altKey)) {
         // 否则触发回车逻辑，补充换行
-        session.inputMsg.content += '\n'
+        inputMsg.value.content += '\n'
     }
 }
 function mainKeyUp(event: KeyboardEvent) {
     const logger = new Logger()
     if (event.key !== 'Enter') {
-        const content = session.inputMsg.content
+        const content = inputMsg.value.content
         // 获取最后一个输入的符号用于判定 at
         const lastInput = content.at(-1)
         if (
@@ -351,7 +353,7 @@ function sendMsg() {
     // 关闭所有其他的已打开的更多功能弹窗
     switchDetail(undefined)
     // 无消息不发送
-    if (session.inputMsg.isVoid) return
+    if (inputMsg.value.isVoid) return
     // 为了减少对于复杂图文排版页面显示上的工作量，对于非纯文本的消息依旧处理为纯文本，如：
     // "这是一段话 [SQ:0]，[SQ:1] 你要不要来试试 Stapxs QQ Lite？"
     // 其中 [SQ:n] 结构代表着这是特殊消息以及这个消息具体内容在消息缓存中的 index，像是这样：
@@ -361,10 +363,10 @@ function sendMsg() {
 
     sendMsgRaw(
         session,
-        session.inputMsg.render(),
+        inputMsg.value.render(),
     )
     // 发送后事务
-    session.inputMsg.clear()
+    inputMsg.value.clear()
     nextTick(async ()=>{
         await delay(100)
         emit('scrollBottom', true)
@@ -387,8 +389,8 @@ function selectSQIn() {
     }
 
     // 遍历寻找 SQCode 位置区间包括光标位置的 SQCode
-    for (const sq of session.inputMsg.sqList) {
-        const start = session.inputMsg.content.indexOf(sq)
+    for (const sq of inputMsg.value.sqList) {
+        const start = inputMsg.value.content.indexOf(sq)
         const end = start + sq.length
         if (
             start !== -1 &&
@@ -409,7 +411,7 @@ function selectSQIn() {
 watchEffect(()=>{
     if (!atFindMode.value) return
 
-    const content = session.inputMsg.content
+    const content = inputMsg.value.content
     const s = session as GroupSession
     // 获取最后一个输入的符号用于判定 at
     const lastAtIndex = content.lastIndexOf('@')
@@ -476,6 +478,7 @@ function keyCheck(event: KeyboardEvent): boolean {
         case 'Escape':
             // 取消
             endChoiceAt()
+            return true
         default:
             return false
     }
@@ -490,12 +493,11 @@ function choiceAt(id: number) {
     if (!member) return
 
     // 删除输入框内的 At 文本
-    console.log(session.inputMsg.content.lastIndexOf('@'))
-    session.inputMsg.content = session.inputMsg.content.substring(
-        0, session.inputMsg.content.lastIndexOf('@')
+    inputMsg.value.content = inputMsg.value.content.substring(
+        0, inputMsg.value.content.lastIndexOf('@')
     )
     // 添加 at 信息
-    session.inputMsg.addSq(new AtSeg(member.user_id))
+    inputMsg.value.addSq(new AtSeg(member.user_id))
 
     toMainInput()
     endChoiceAt()
@@ -580,7 +582,7 @@ async function setImg(file: File) {
         return
     }
 
-    session.inputMsg.addImg(await fileToDataURL(file))
+    inputMsg.value.addImg(await fileToDataURL(file))
 }
 
 /**
@@ -610,11 +612,11 @@ function fileToDataURL(file: File): Promise<string> {
  * @param key 图片在缓存中的键
  */
 async function editImg(key: number) {
-    const img = session.inputMsg.imgCache.get(key)
+    const img = inputMsg.value.imgCache.get(key)
     if (!img) return
     if (!viewer.value) return
     const dataurl = await viewer.value.edit(img)
-    session.inputMsg.imgCache.set(key, dataurl)
+    inputMsg.value.imgCache.set(key, dataurl)
 }
 //#endregion
 

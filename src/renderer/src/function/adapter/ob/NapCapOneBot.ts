@@ -1,6 +1,6 @@
 import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
 import { Msg } from '@renderer/function/model/msg'
-import { Resource } from '@renderer/function/model/ressource'
+import { Resource } from '@renderer/function/model/resource'
 import { FileSeg, ForwardSeg, ImgSeg, MdSeg, MfaceSeg } from '@renderer/function/model/seg'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { Member } from '@renderer/function/model/user'
@@ -559,8 +559,8 @@ export default class NapCapOneBot extends OneBotAdapter {
                 folder_name: folder.folder_name,
                 count: folder.total_file_count,
                 create_time: folder.create_time,
-                creater_name: folder.creator_name,
-                creater_id: folder.creator,
+                creator_name: folder.creator_name,
+                creator_id: folder.creator,
             }))
         }
     }

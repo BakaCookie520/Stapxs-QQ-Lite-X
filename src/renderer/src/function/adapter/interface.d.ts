@@ -8,7 +8,7 @@
 import { type Component } from 'vue'
 import { GroupFile, GroupFileFolder } from '../model/file'
 import { Msg } from '../model/msg'
-import { Resource } from '../model/ressource'
+import { Resource } from '../model/resource'
 import { GroupSession, Session, UserSession } from '../model/session'
 import { Member } from '../model/user'
 import { Gender, Role } from './enmu'
@@ -385,8 +385,8 @@ export interface GroupFolderData {
     folder_name: string         // 文件夹名称
     count: number               // 文件数量
     create_time: number         // 创建时间GroupFile
-    creater_name?: string       // 创建者名称
-    creater_id?: number         // 创建者ID
+    creator_name?: string       // 创建者名称
+    creator_id?: number         // 创建者ID
 }
 
 export type FilesData = {files: GroupFileData[], folders: GroupFolderData[]}
@@ -501,7 +501,7 @@ export interface JoinEventData extends MessageEventData {
     type: 'join'                    // 事件类型
     user: SenderData                // 加入的用户信息
     operator?: SenderData           // 操作员信息
-    invitor?: SenderData            // 邀请者信息
+    inviter?: SenderData            // 邀请者信息
 }
 /**
  * 群成员离开事件

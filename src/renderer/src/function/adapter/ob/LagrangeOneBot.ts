@@ -1,6 +1,6 @@
 import { GroupFile } from '@renderer/function/model/file'
 import { Msg } from '@renderer/function/model/msg'
-import { Resource } from '@renderer/function/model/ressource'
+import { Resource } from '@renderer/function/model/resource'
 import { ForwardSeg, MdSeg, ImgSeg, MfaceSeg, FileSeg } from '@renderer/function/model/seg'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
 import { Member } from '@renderer/function/model/user'
@@ -425,7 +425,7 @@ export default class LagrangeOneBot extends OneBotAdapter implements AdapterInte
                 folder_name: folder.folder_name,
                 count: folder.total_file_count,
                 create_time: folder.create_time,
-                creater_name: folder.create_name,
+                creator_name: folder.create_name,
             }))
         }
     }

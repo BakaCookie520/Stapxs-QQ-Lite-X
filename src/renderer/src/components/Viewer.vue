@@ -522,7 +522,7 @@ function editExit() {
 
     // 如果是编辑模式打开的图片，返回结果
     if (currentImgInfo.value?.editMode) {
-        currentImgInfo.value.editPromise(currentImg.value?.src!)
+        currentImgInfo.value.editPromise(currentImg.value!.src!)
         close()
     }
 }

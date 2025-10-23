@@ -192,10 +192,10 @@ export class JoinNotice extends ReceivedNotice {
     declare session: GroupSession
     user!: IUser
     operator?: IUser
-    invitor?: IUser
+    inviter?: IUser
     private readonly user_info: SenderData
     private readonly operator_info?: SenderData
-    private readonly invitor_info?: SenderData
+    private readonly inviter_info?: SenderData
     constructor(data: JoinEventData) {
         super(data)
         this.user_info = data.user
@@ -207,10 +207,10 @@ export class JoinNotice extends ReceivedNotice {
             this.operator = this.getUser(this.operator_info)
             this.users.push(this.operator)
         }
-        if (data.invitor) {
-            this.invitor_info = data.invitor
-            this.invitor = this.getUser(this.invitor_info)
-            this.users.push(this.invitor)
+        if (data.inviter) {
+            this.inviter_info = data.inviter
+            this.inviter = this.getUser(this.inviter_info)
+            this.users.push(this.inviter)
         }
     }
 
@@ -228,8 +228,8 @@ export class JoinNotice extends ReceivedNotice {
         let out = ''
         if (this.operator)
             out += this.operator.name + $t('通过了')
-        if (this.invitor)
-            out += this.invitor.name + $t('邀请')
+        if (this.inviter)
+            out += this.inviter.name + $t('邀请')
         out += this.user.name + $t('加入了群聊')
         return out
     }

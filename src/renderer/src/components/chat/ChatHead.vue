@@ -40,17 +40,17 @@
                     :icon="['fas', 'spinner']" class="loading" />
             </div>
         </div>
-		<div id="chat-head-bottom"/>
+        <div id="chat-head-bottom" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { GroupSession, Session } from '@renderer/function/model/session';
-import { runtimeData } from '@renderer/function/msg';
-import { popBox } from '@renderer/function/utils/popBox';
-import app from '@renderer/main';
-import Info from '@renderer/pages/info/Info.vue';
-import { computed, shallowRef } from 'vue';
+import { GroupSession, Session } from '@renderer/function/model/session'
+import { runtimeData } from '@renderer/function/msg'
+import { popBox } from '@renderer/function/utils/popBox'
+import app from '@renderer/main'
+import Info from '@renderer/pages/info/Info.vue'
+import { computed, shallowRef } from 'vue'
 
 const { session } = defineProps<{
     session: Session

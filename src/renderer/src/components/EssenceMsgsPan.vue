@@ -54,15 +54,14 @@
                     </div>
                 </div>
             </template>
-
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { FaceSeg, ImgSeg, TxtSeg } from '@renderer/function/model/seg';
-import { GroupSession } from '@renderer/function/model/session';
-import EmojiFace from './EmojiFace.vue';
+import { FaceSeg, ImgSeg, TxtSeg } from '@renderer/function/model/seg'
+import { GroupSession } from '@renderer/function/model/session'
+import EmojiFace from './EmojiFace.vue'
 
 const { session } = defineProps<{
     session: GroupSession

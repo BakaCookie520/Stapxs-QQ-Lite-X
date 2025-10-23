@@ -16,7 +16,7 @@ export class FileSender {
 
     static async sendFile(file: File, target: UserSession | GroupSession): Promise<undefined|Msg>
     static async sendFile(file: File, target: GroupSession, path?: GroupFileFolder): Promise<undefined|Msg>
-    static async sendFile(file: File, target: GroupSession | UserSession, fold?: GroupFileFolder): Promise<undefined|Msg> {
+    static async sendFile(file: File, target: GroupSession | UserSession, folder?: GroupFileFolder): Promise<undefined|Msg> {
         const $t = i18n.global.t
 
         // 检测
@@ -43,7 +43,7 @@ export class FileSender {
         this.lock++
         let re: string | undefined
         if (target.type === 'group') {
-            re = await runtimeData.nowAdapter.sendGroupFile!(target, file, fold)
+            re = await runtimeData.nowAdapter.sendGroupFile!(target, file, folder)
         } else {
             re = await runtimeData.nowAdapter.sendPrivateFile!(target, file)
         }
@@ -107,11 +107,11 @@ export class FileSender {
      * 发生图片并且添加消息到会话
      */
     static async sendFileAndAddMsg(file: File, target: GroupSession | UserSession): Promise<void>
-    static async sendFileAndAddMsg(file: File, target: GroupSession, fold: GroupFileFolder): Promise<void>
-    static async sendFileAndAddMsg(file: File, target: GroupSession | UserSession, fold?: GroupFileFolder): Promise<void> {
+    static async sendFileAndAddMsg(file: File, target: GroupSession, folder: GroupFileFolder): Promise<void>
+    static async sendFileAndAddMsg(file: File, target: GroupSession | UserSession, folder?: GroupFileFolder): Promise<void> {
         let reMsg: Msg | undefined
-        if (fold) {
-            reMsg = await FileSender.sendFile(file, target as GroupSession, fold)
+        if (folder) {
+            reMsg = await FileSender.sendFile(file, target as GroupSession, folder)
         } else {
             reMsg = await FileSender.sendFile(file, target)
         }
@@ -122,8 +122,8 @@ export class FileSender {
     }
 
     static async autoUploadFile(target: GroupSession | UserSession): Promise<void>
-    static async autoUploadFile(target: GroupSession, fold: GroupFileFolder): Promise<void>
-    static async autoUploadFile(target: GroupSession | UserSession, fold?: GroupFileFolder): Promise<void> {
+    static async autoUploadFile(target: GroupSession, folder: GroupFileFolder): Promise<void>
+    static async autoUploadFile(target: GroupSession | UserSession, folder?: GroupFileFolder): Promise<void> {
         const file = await uploadFile()
         if (!file) return
 
@@ -135,7 +135,7 @@ export class FileSender {
             allowAutoClose: false,
         })
 
-        if (fold) await this.sendFileAndAddMsg(file, target as GroupSession, fold)
+        if (folder) await this.sendFileAndAddMsg(file, target as GroupSession, folder)
         else await this.sendFileAndAddMsg(file, target)
 
         closePopBox(popId)

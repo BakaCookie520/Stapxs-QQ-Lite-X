@@ -28,6 +28,7 @@
                 <Chat
                     v-if="driver.isConnected() && runtimeData.nowChat"
                     ref="chat"
+                    v-model="runtimeData.nowChat.inputMsg"
                     :chat="runtimeData.nowChat" />
                 <!-- 背景 -->
                 <div v-if="!runtimeData.tags.vibrancy || !runtimeData.nowChat"

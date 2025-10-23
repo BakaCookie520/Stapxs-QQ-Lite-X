@@ -412,7 +412,7 @@
             @dblclick="$emit('senderDoubleClick', data.sender)">
         <div v-if="data.emojis"
             class="emoji-like">
-            <div class="emoji-space"/>
+            <div class="emoji-space" />
             <div class="emoji-like-body">
                 <TransitionGroup name="emoji-like">
                     <template v-for="info, id in (data.emojis as { [key: string]: number[] })"

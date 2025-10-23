@@ -9,7 +9,7 @@ import { Img } from './img'
 import { ForwardMsg, Msg } from './msg'
 import { MsgBodyFuns } from './msg-body'
 import { ProxyUrl } from './proxyUrl'
-import { Resource } from './ressource'
+import { Resource } from './resource'
 import { autoMarkRaw } from './utils'
 
 export const segType = {}

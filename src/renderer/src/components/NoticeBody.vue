@@ -60,8 +60,8 @@
                     <NoticeUser :user="data.operator" :user-info-pan="userInfoPan" />
                     <span>{{ $t('通过了') }}</span>
                 </template>
-                <template v-if="data.invitor">
-                    <NoticeUser :user="data.invitor" :user-info-pan="userInfoPan" />
+                <template v-if="data.inviter">
+                    <NoticeUser :user="data.inviter" :user-info-pan="userInfoPan" />
                     <span>{{ $t('邀请') }}</span>
                 </template>
                 <NoticeUser :user="data.user" :user-info-pan="userInfoPan" />

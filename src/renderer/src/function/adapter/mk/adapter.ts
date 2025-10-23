@@ -46,7 +46,7 @@ import {
 
 import { Logger } from '@renderer/function/base'
 import { handleEvent } from '@renderer/function/event'
-import { Resource } from '@renderer/function/model/ressource'
+import { Resource } from '@renderer/function/model/resource'
 import { AtAllSeg, AtSeg, FaceSeg, ForwardSeg, ImgSeg, JsonSeg, MfaceSeg, ReplySeg, Seg, TxtSeg, UnknownSeg, VideoSeg, XmlSeg } from '@renderer/function/model/seg'
 import { queueWait } from '@renderer/function/utils/systemUtil'
 import * as MilkyType from '@saltify/milky-types'
@@ -1331,7 +1331,7 @@ export class MilkyAdapter implements AdapterInterface {
             },
             user: createSender(data.user_id),
             operator: data.operator_id ? createSender(data.operator_id) : undefined,
-            invitor: data.invitor_id ? createSender(data.invitor_id) : undefined,
+            inviter: data.invitor_id ? createSender(data.invitor_id) : undefined,
             time: event.time,
         }
     }
@@ -1503,7 +1503,7 @@ export class MilkyAdapter implements AdapterInterface {
                 folder_name: folder.folder_name,
                 count: folder.file_count,
                 create_time: folder.created_time,
-                creater_id: folder.creator_id,
+                creator_id: folder.creator_id,
             })),
         }
     }

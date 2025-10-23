@@ -1,6 +1,6 @@
 import { handleEvent } from '@renderer/function/event'
 import { Msg } from '@renderer/function/model/msg'
-import { Resource } from '@renderer/function/model/ressource'
+import { Resource } from '@renderer/function/model/resource'
 import {
     AtAllSeg,
     AtSeg,
@@ -772,7 +772,7 @@ export class OneBotAdapter implements AdapterInterface {
         const user = event.user_id
         const eventOperator = event.operator_id === event.user_id ? undefined : event.operator_id
         const operator = event.sub_type === 'approve' ? eventOperator : undefined
-        const invitor = event.sub_type === 'invite' ? eventOperator : undefined
+        const inviter = event.sub_type === 'invite' ? eventOperator : undefined
         return {
             type: 'join',
             session: {
@@ -781,7 +781,7 @@ export class OneBotAdapter implements AdapterInterface {
             },
             user: createSender(user),
             operator: operator ? createSender(operator) : undefined,
-            invitor: invitor ? createSender(invitor) : undefined,
+            inviter: inviter ? createSender(inviter) : undefined,
             time: event.time,
         }
     }

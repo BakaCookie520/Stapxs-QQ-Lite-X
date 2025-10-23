@@ -24,7 +24,6 @@
             '--head-height': headHeight + 'px',
         }"
         @v-move-right.prevent="exitWin()">
-
         <!-- 聊天基本信息 -->
         <ChatHead :session="chat" />
 
@@ -115,10 +114,11 @@
         </Transition>
 
         <!-- 底部区域 -->
-        <ChatBottom :session="chat" ref="bottom"
+        <ChatBottom ref="bottom" v-model="inputMsg"
+            :session="chat"
             :focus-hide="tags.isMultiselectMode"
             @send-poke="sendPoke"
-            @scroll-bottom="scrollBottom"/>
+            @scroll-bottom="scrollBottom" />
 
         <!-- 合并转发消息预览器 -->
         <MergePan ref="mergePan" />
@@ -204,7 +204,7 @@
             <div class="ss-card msg-menu-body" @click.stop>
                 <div v-show="menuDisplay.at"
                     @click="menuDisplay.menuSelectedUser ?
-                            chat.inputMsg.addSq(new AtSeg(menuDisplay.menuSelectedUser!.user_id)): '';
+                                chat.inputMsg.addSq(new AtSeg(menuDisplay.menuSelectedUser!.user_id)): '';
                             chatBottom?.toMainInput();
                             closeUserMenu();">
                     <div><font-awesome-icon :icon="['fas', 'at']" /></div>
@@ -244,8 +244,8 @@ import { Logger, LogType, PopInfo, PopType } from '@renderer/function/base'
 import {
     MenuEventData,
 } from '@renderer/function/elements/information'
-import { Time } from '@renderer/function/model/data'
 import Emoji from '@renderer/function/model/emoji'
+import { InputMsg } from '@renderer/function/model/inputMsg'
 import { Msg } from '@renderer/function/model/msg'
 import { AtSeg } from '@renderer/function/model/seg'
 import { GroupSession, Session, UserSession } from '@renderer/function/model/session'
@@ -278,6 +278,7 @@ import {
 } from 'vue'
 //#region == 常量声明 ====================================================================
 const { chat } = defineProps<{chat: Session}>()
+const inputMsg = defineModel<InputMsg>({required: true})
 
 const $t = app.config.globalProperties.$t
 const { vh } = useViewportUnits()
@@ -774,15 +775,6 @@ async function sendPrivatePoke() {
         chat as UserSession,
     )
 }
-
-function getMeBan(): Time | undefined {
-    if (!chat) return undefined
-    if (!chat.isActive) return undefined
-    if (!(chat instanceof GroupSession)) return
-    const me = chat.getMe()
-    return me.banTime
-}
-
 //#region == 消息菜单相关 ==================================================
 /**
  * +1

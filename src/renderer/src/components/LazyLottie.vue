@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import { Logger } from '@renderer/function/base'
 import { useTemplateRef, onMounted, onUnmounted } from 'vue'
 import { Vue3Lottie as Lottie } from 'vue3-lottie'
 
@@ -26,7 +27,7 @@ const playAnimation = () => {
     try {
         lottieRef.value.play?.()
     } catch (e) {
-        console.error('Lottie play error:', e)
+        new Logger().error(e as Error, 'Lottie播放错误')
     }
 }
 
@@ -41,7 +42,6 @@ onMounted(() => {
 
     observer = new IntersectionObserver(
         (entries) => {
-            console.log('IntersectionObserver entries:', entries)
             for (const entry of entries) {
                 if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
                     // 至少 50% 可见才渲染和播放

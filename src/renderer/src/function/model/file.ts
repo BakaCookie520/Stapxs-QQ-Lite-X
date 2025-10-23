@@ -149,8 +149,8 @@ export class GroupFileFolder {
         this.count = data.count
         if(data.create_time) this.createTime = new Time(data.create_time)
         let user: IUser | undefined
-        if (data.creater_id) user = group.getUserById(data.creater_id)
-        user ??= new BaseUser(data.creater_id ?? 0, data.creater_name)
+        if (data.creator_id) user = group.getUserById(data.creator_id)
+        user ??= new BaseUser(data.creator_id ?? 0, data.creator_name)
         this.creator = user
         this.group = group
     }

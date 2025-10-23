@@ -1,18 +1,17 @@
 <template>
-    <input v-auto-focus
-        ref="input"
+    <input ref="input"
         v-model="model.value"
+        v-auto-focus
         class="input-pop-box"
         :placeholder="placeholder"
         @keydown="keydown"
         @compositionstart="composition = true"
-        @compositionend="composition = false"
-        />
+        @compositionend="composition = false">
 </template>
 
 <script setup lang="ts">
 import { vAutoFocus } from '@renderer/function/utils/vcmd'
-import { onMounted, shallowRef, useTemplateRef } from 'vue';
+import { onMounted, shallowRef, useTemplateRef } from 'vue'
 
 const input = useTemplateRef('input')
 const composition = shallowRef(false)
