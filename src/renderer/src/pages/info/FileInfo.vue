@@ -12,7 +12,8 @@
                     <font-awesome-icon :icon="['fas', 'file-circle-plus']" />
                 </button>
                 <button
-                    :title="$t('新建文件夹')"
+                    :title="$t('新建文件夹') + (!['admin', 'owner'].includes(chat.getMe().role) ? '（' + $t('仅群主和管理员可用') + '）' : '')"
+                    :disabled="!['admin', 'owner'].includes(chat.getMe().role)"
                     @click="addFolder">
                     <font-awesome-icon :icon="['fas', 'folder-plus']" />
                 </button>

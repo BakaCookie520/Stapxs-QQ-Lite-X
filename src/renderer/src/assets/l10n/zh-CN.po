@@ -2253,3 +2253,6 @@ msgstr ""
 msgid "请输入新的文件名称"
 msgstr ""
 
+msgid "仅群主和管理员可用"
+msgstr ""
+
