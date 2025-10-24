@@ -48,6 +48,25 @@ export default class NapCapOneBot extends OneBotAdapter {
 
     //#region == API ===============================================
     //#region == 获取信息 ======================
+    /**
+     * 设置已读消息
+     * @param session 目标会话
+     * @param msg 目标消息
+     */
+    @api
+    async setMsgReaded(session: Session, _: Msg): Promise<true|undefined> {
+        if (session instanceof UserSession) {
+            await this.connector.send('mark_msg_as_read', {
+                user_id: session.id,
+            })
+        }else {
+            await this.connector.send('mark_msg_as_read', {
+                group_id: session.id,
+            })
+        }
+
+        return true
+    }
     @api
     override async getFriendList(_?: boolean): Promise<FriendData[]> {
         const data: NcObGetFriendsWithCategory = await this.connector.send('get_friends_with_category', {})

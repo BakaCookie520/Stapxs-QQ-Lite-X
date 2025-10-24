@@ -179,6 +179,19 @@ export default class LLTwoBotOneBot extends OneBotAdapter {
     }
     //#endregion
     //#region == 消息相关 ======================
+    /**
+     * 设置已读消息
+     * @param session 目标会话
+     * @param msg 目标消息
+     */
+    @api
+    async setMsgReaded(_: Session, msg: Msg): Promise<true|undefined> {
+        await this.connector.send('mark_msg_as_read', {
+            message_id: msg.message_id!,
+        })
+
+        return true
+    }
     @api
     override async sendMsg(msg: Msg): Promise<string> {
         if (!this.isForward(msg)) return await super.sendMsg(msg)
