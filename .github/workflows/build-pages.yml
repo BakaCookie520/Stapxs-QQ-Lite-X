@@ -46,7 +46,7 @@ jobs:
                 .yarn/cache
                 ~/.npm
                 node_modules
-            key: ${{ runner.os }}-${{ github.ref_name }}-${{ hashFiles('**/yarn.lock') }}
+            key: ${{ runner.os }}-${{ github.ref_name }}-pages
 
       - name: 更新依赖
         run: yarn
