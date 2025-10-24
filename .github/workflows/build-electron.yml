@@ -58,6 +58,17 @@ jobs:
         with:
             node-version: 20.x
 
+      - name: 缓存依赖
+        uses: actions/cache@v4
+        with:
+            # 缓存 yarn/npm/pnpm 以及 node_modules，适配 Yarn v1/v2+ 和 pnpm
+            path: |
+                ~/.cache/yarn
+                .yarn/cache
+                ~/.npm
+                node_modules
+            key: ${{ runner.os }}-${{ github.ref_name }}-${{ hashFiles('**/yarn.lock') }}
+
       - name: 更新依赖
         run: yarn
 
