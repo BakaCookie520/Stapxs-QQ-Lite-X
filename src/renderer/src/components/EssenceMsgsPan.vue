@@ -9,22 +9,23 @@
         <div>
             <font-awesome-icon :icon="['fas', 'message']" />
             <span>{{ $t('精华消息') }}</span>
-            <font-awesome-icon :icon="['fas', 'xmark']" @click="emit('close')" />
+            <font-awesome-icon class="reload" :icon="['fas', 'rotate-right']" @click="session.loadEssenceMsgs(false)" />
+            <font-awesome-icon class="close" :icon="['fas', 'xmark']" @click="emit('close')" />
         </div>
         <div class="jin-pan-body">
-            <template v-if="msgs === undefined">
+            <template v-if="!session.essenceMsgLoaded">
                 <div class="jin-pan-load">
                     <font-awesome-icon :icon="['fas', 'spinner']" />
                 </div>
             </template>
-            <template v-else-if="msgs.length === 0">
+            <template v-else-if="session.essenceMsgs.length === 0">
                 <div class="jin-pan-nomsg">
                     <font-awesome-icon :icon="['fas', 'face-smile']" />
                     <span>{{ $t('空空如也') }}</span>
                 </div>
             </template>
             <template v-else>
-                <div v-for="(item, index) in msgs"
+                <div v-for="(item, index) in session.essenceMsgs"
                     :key="'jin-' + index">
                     <div>
                         <img :src="item.sender.face" :alt="item.sender.name">
@@ -62,6 +63,7 @@
 import { FaceSeg, ImgSeg, TxtSeg } from '@renderer/function/model/seg'
 import { GroupSession } from '@renderer/function/model/session'
 import EmojiFace from './EmojiFace.vue'
+import { watchEffect } from 'vue';
 
 const { session } = defineProps<{
     session: GroupSession
@@ -70,5 +72,7 @@ const emit = defineEmits<{
     close: []
 }>()
 
-const msgs = session.useEssenceList()
+watchEffect(()=>{
+    if (!session.essenceMsgLoaded) session.loadEssenceMsgs()
+})
 </script>

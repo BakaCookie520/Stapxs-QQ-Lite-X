@@ -102,10 +102,10 @@ export abstract class Session {
     /**
      * 激活会话
      */
-    activate(): Promise<void> {
-        if (this.activePromise) return this.activePromise
+    async activate(): Promise<void> {
+        if (this.activePromise) return await this.activePromise
         this.activePromise = this._activate()
-        return this.activePromise
+        return await this.activePromise
     }
     private async _activate() {
         if (this.isActive) return
@@ -134,14 +134,15 @@ export abstract class Session {
         this.preMessage = undefined
         this.highlightInfo.length = 0
         this.isActive = false
-        this.activePromise = undefined
         this.newMsg = 0
         this.showNotice = false
         this.loadHistoryLock.value = undefined
         this.lastLoadFailFlag.value = false
         this.canLoadMoreHistory.value = true
         this.inputMsg.clear()
+        this.activePromise = undefined
         Session.activeSessions.delete(this)
+        this.prepareUnactive()
         this.runHook('afterUnactiveHook')
     }
     abstract prepareUnactive(): void
@@ -664,11 +665,11 @@ export abstract class Session {
     }
 
     get showName(): string {
-        return this._name.toString().replace(/[\u202A-\u202E\u2066-\u2069]/g, '')
+        return this._name.toString()
     }
 
     get showNamePy(): string {
-        return this._name.py.replace(/[\u202A-\u202E\u2066-\u2069]/g, '')
+        return this._name.py.replaceAll(/[\u202A-\u202E\u2066-\u2069]/g, '')
     }
 
     get isActive(): boolean {
@@ -821,13 +822,15 @@ export class GroupSession extends Session {
     }
 
     override prepareUnactive(): void {
+        this.memsLoaded = false
         this.memberList = new Array(this.memberList.length).fill(null)
+        this.me = null
         this.annsLoaded = false
         this.anns.length = 0
         this.filesLoaded = false
         this.files.length = 0
-        this.essenceCache = undefined
-        this.me = null
+        this.essenceMsgLoaded = false
+        this.essenceMsgs.length = 0
     }
 
     override match(str: string): boolean {
@@ -910,6 +913,8 @@ export class GroupSession extends Session {
         this.annsLoadLocker = true
         this.annsLoaded = false
 
+        await this.activate()
+
         if (!runtimeData.nowAdapter?.getGroupAnnouncement) {
             new PopInfo().add(
                 PopType.ERR,
@@ -967,6 +972,8 @@ export class GroupSession extends Session {
         this.filesLoadLocker = true
         this.filesLoaded = false
 
+        await this.activate()
+
         if (!runtimeData.nowAdapter?.getGroupFile) {
             new PopInfo().add(
                 PopType.ERR,
@@ -1013,33 +1020,57 @@ export class GroupSession extends Session {
         this._filesLoaded.value = flag
     }
 
-    private essenceCache?: EssenceMsg[]
+    private readonly _essenceMsgLoaded = shallowRef(false)
+    readonly essenceMsgs = shallowReactive<EssenceMsg[]>([])
+    private essenceMsgsLoadLocker = false
+
     /**
      * 获取群精华消息
      * @param useCache 是否使用缓存
      * @returns
      */
-    async getEssenceList(useCache: boolean = true): Promise<EssenceMsg[]> {
-        if (useCache && this.essenceCache) return this.essenceCache
+    async loadEssenceMsgs(useCache: boolean = true): Promise<void> {
+        if (useCache && this.essenceMsgLoaded) return
+        if (this.essenceMsgsLoadLocker) return
 
-        if (!runtimeData.nowAdapter?.getGroupEssence) return []
+        this.essenceMsgLoaded = false
+        this.essenceMsgsLoadLocker = true
+
+        await this.activate()
+
+        if (!runtimeData.nowAdapter?.getGroupEssence){
+            new PopInfo().add(
+                PopType.ERR,
+                app.config.globalProperties.$t('当前适配器不支持获取群精华消息'),
+            )
+            this.essenceMsgLoaded = true
+            this.essenceMsgsLoadLocker = false
+            return
+        }
 
         const data = await runtimeData.nowAdapter.getGroupEssence(this)
-        if (!data) return []
+        if (!data) {
+            new PopInfo().add(
+                PopType.ERR,
+                app.config.globalProperties.$t('获取群精华消息失败'),
+            )
+            this.essenceMsgLoaded = true
+            this.essenceMsgsLoadLocker = false
+            return
+        }
 
-        this.essenceCache = data.map(item => new EssenceMsg(item, this))
-
-        return this.essenceCache
+        this.essenceMsgs.length = 0
+        this.essenceMsgs.push(...data.map(item => new EssenceMsg(item, this)))
+        this.essenceMsgLoaded = true
+        this.essenceMsgsLoadLocker = false
     }
-    /**
-     * 对 getEssenceList 的封装
-     */
-    useEssenceList(): ShallowRef<EssenceMsg[] | undefined> {
-        const essenceList = shallowRef<EssenceMsg[] | undefined>(undefined)
-        this.getEssenceList().then(data => {
-            essenceList.value = data
-        })
-        return essenceList
+
+    get essenceMsgLoaded(): boolean {
+        return this._essenceMsgLoaded.value
+    }
+
+    set essenceMsgLoaded(flag: boolean) {
+        this._essenceMsgLoaded.value = flag
     }
 }
 

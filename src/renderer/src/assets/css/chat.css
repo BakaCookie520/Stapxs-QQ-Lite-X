@@ -1686,7 +1686,17 @@ body.with-bar .msg-menu {
 .jin-pan > div:first-child > svg {
     color: var(--color-font);
     cursor: pointer;
+    opacity: 0.7;
+}
+
+.jin-pan > div:first-child > svg:hover {
+    opacity: 1;
+}
+
+.jin-pan > div:first-child > svg.close {
     height: 1.5rem;
+    width: 1.5rem;
+    margin-left: 10px;
 }
 
 .jin-pan > div:first-child > span {
