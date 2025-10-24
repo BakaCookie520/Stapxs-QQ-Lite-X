@@ -3,20 +3,22 @@
         :class="{ hide: hide }"
         :style="{
             '--open-reply': inputMsg.reply ? '1' : '0',
-            '--input-height': textAreaHeight + 'px'
+            '--input-height': textAreaHeight + 'px',
+            '--input-pan-height': inputPanHeight + 'px'
         }"
         @mouseenter="hoverStart()"
         @mouseleave="hoverEnd()">
         <!-- 表情面板 -->
         <Transition name="pan">
-            <FacePan v-show="details === 'face' && !focusHide"
+            <FacePan class="chat-bottom-pan" v-show="details === 'face' && !focusHide"
                 @send-msg="sendMsg" />
         </Transition>
         <!-- 精华消息 -->
         <Transition v-if="session instanceof GroupSession" name="pan">
-            <EssenceMsgsPan v-show="details === 'essence' && !focusHide"
+            <EssenceMsgsPan class="chat-bottom-pan" v-show="details === 'essence' && !focusHide"
                 :key="session.id" :session="session" @close="switchDetail('essence')" />
         </Transition>
+        <!-- 定位点 -->
         <div id="chat-bottom-top" />
         <!-- 图片指示器 -->
         <Transition name="img-pan">
@@ -47,7 +49,7 @@
             </div>
         </Transition>
         <!-- 输入栏 -->
-        <div class="input-pan ss-card">
+        <div ref="input-pan" class="input-pan ss-card">
             <!-- 更多功能 -->
             <div class="more-detail">
                 <div
@@ -175,6 +177,7 @@ import { fitScroll } from '@renderer/function/utils/appUtil'
 import { FileSender } from '@renderer/function/utils/fileSender'
 import { uploadFile } from '@renderer/function/input'
 import { InputMsg } from '@renderer/function/model/inputMsg'
+import { useFrame } from '@renderer/function/utils/vuse'
 
 const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
@@ -194,6 +197,7 @@ const atFindList = shallowRef<Member[]>([])
 const atSelected = shallowRef<number>(0)
 const details = shallowRef<'face'|'essence'|undefined>()
 const onAtFind = shallowRef(false)
+const inputPanHeight = shallowRef(0)
 
 const textAreaHeight = computed(()=>{
     inputMsg.value.content
@@ -219,6 +223,7 @@ const hide = computed<boolean>(()=>{
 const mainInput = useTemplateRef('main-input')
 const atFindBar = useTemplateRef('find-bar')
 const atFindItems = useTemplateRef('at-find-items')
+const inputPan = useTemplateRef('input-pan')
 
 function $t(key: string): string {
     return app.config.globalProperties.$t(key)
@@ -235,6 +240,12 @@ watchEffect(()=>{
     sendTimeout.value = setTimeout(()=>{
         sendTimeout.value = undefined
     }, 500)
+})
+
+// 计算输入框高度
+useFrame(()=>{
+    if (!inputPan.value) return
+    inputPanHeight.value = (inputPan.value as HTMLElement).offsetHeight
 })
 
 /**

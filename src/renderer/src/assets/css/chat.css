@@ -180,7 +180,7 @@ body.with-bar .chat-pan {
 }
 
 .chat-bottom.hide {
-    transform: translateY(calc(100% - 25px));
+    transform: translateY(calc(var(--input-pan-height) - 5px));
 }
 
 .chat-bottom > .input-pan {
