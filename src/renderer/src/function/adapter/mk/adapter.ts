@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import driver from '@renderer/function/driver'
 import { GroupFile, GroupFileFolder } from '@renderer/function/model/file'
 import { Msg } from '@renderer/function/model/msg'
@@ -368,18 +369,23 @@ export class MilkyAdapter implements AdapterInterface {
      */
     @api
     async getGroupEssence(group: GroupSession): Promise<EssenceData[]> {
-        const data = await this.callApi(
-            'get_group_essence_messages',
-            Api.GetGroupEssenceMessagesInput.parse({
-                group_id: group.id,
-                page_index: 0,
-                page_size: 999,
-            }),
-            Api.GetGroupEssenceMessagesOutput
-        )
+        const messages: z.infer<typeof Api.GetGroupEssenceMessagesOutput>['messages'] = []
+        for(let id=0;true;id ++) {
+            const data = await this.callApi(
+                'get_group_essence_messages',
+                Api.GetGroupEssenceMessagesInput.parse({
+                    group_id: group.id,
+                    page_index: id,
+                    page_size: 50,
+                }),
+                Api.GetGroupEssenceMessagesOutput
+            )
+            messages.push(...data.messages)
+            if (data.is_end) break
+        }
 
         const out: Promise<EssenceData>[] = []
-        for (const item of data.messages) {
+        for (const item of messages) {
             out.push((async () => ({
                 sender: createSender(item.sender_id, item.sender_name),
                 sender_time: item.message_time,
