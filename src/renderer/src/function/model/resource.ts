@@ -33,7 +33,7 @@ export class Resource {
             const newUrl = await runtimeData.nowAdapter.getResource(this._id as string)
             if (!newUrl) return
             this._url.value = new ProxyUrl(newUrl)
-        }, 30 * 60 * 1000)
+        }, 55 * 60 * 1000)
         timerRegistry.register(this, interval)
     }
 

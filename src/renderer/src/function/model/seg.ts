@@ -129,7 +129,7 @@ export class ImgSeg extends Seg {
             this.summary = data.summary ?? $t('[图片]')
             this.isFace = data.isFace
         }
-        this.imgData = new Img(this._url.proxyUrl)
+        this.imgData = new Img(this._url)
     }
 
     plaintext(_?: Msg): string {
@@ -178,7 +178,7 @@ export class MfaceSeg extends Seg {
         this.packageId = data.packageId
         this.id = data.id
         this.key = data.key
-        this.imgData = new Img(this._url)
+        this.imgData = new Img(data.url)
     }
 
     plaintext(_?: Msg): string {

@@ -7,15 +7,15 @@
  */
 
 import { shallowRef } from 'vue'
-import { ProxyUrl } from './proxyUrl'
+import { Resource } from './resource'
 
 export class Img {
-    _src: ProxyUrl
+    _src: Resource
     readonly _prev = shallowRef<Img | undefined>()
     readonly _next = shallowRef<Img | undefined>()
-    constructor(src: string | ProxyUrl) {
+    constructor(src: string | Resource) {
         if (typeof src === 'string')
-            this._src = new ProxyUrl(src)
+            this._src = Resource.fromUrl(src)
         else
             this._src = src
     }
