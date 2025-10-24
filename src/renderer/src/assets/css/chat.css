@@ -1624,7 +1624,7 @@ body.with-bar .msg-menu {
 }
 
 .face-stickers {
-    height: calc(300px - 145px);
+    height: calc(300px - 160px);
     justify-content: center;
     align-items: center;
     flex-direction: row;
