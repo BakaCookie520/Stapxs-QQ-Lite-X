@@ -356,3 +356,15 @@ export function useDailyDo(flag: string, callback: () => void | Promise<void>) {
         flagRef.value = true
     }
 }
+
+/**
+ * 定时更新一个数值，用于刷新视图
+ * @param interval
+ */
+export function useUpdate(interval: number = 1000): ShallowRef<boolean> {
+    const re = shallowRef(false)
+    useInterval(() => {
+        re.value = !re.value
+    }, interval)
+    return re
+}

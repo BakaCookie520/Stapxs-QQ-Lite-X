@@ -203,6 +203,11 @@ body.with-bar .chat-pan {
     border-radius: 7px;
 }
 
+.chat-bottom > .input-pan > .input > .ban > svg {
+    margin-left: 1rem;
+    color: var(--color-red)
+}
+
 .chat-bottom > .input-pan > .input > textarea {
     color: var(--color-font);
     background: transparent;

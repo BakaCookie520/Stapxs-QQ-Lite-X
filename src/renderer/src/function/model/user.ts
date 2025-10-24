@@ -45,7 +45,7 @@ export class Member implements IUser {
     user_id: number
     unfriendly: boolean
     /**
-     * 禁言时间
+     * 禁言到期时间
      */
     _banTime?: number
     /**
@@ -66,6 +66,10 @@ export class Member implements IUser {
         if (data.nickname) this._nickname = new Name(data.nickname)
         if (data.title) this._title = new Name(data.title)
         this.user = UserSession.getSessionById(data.user_id)
+        if (data.banTime){
+            const banTime = data.banTime - (Date.now() / 1000)
+            if (banTime > 0) this.setBanTime(banTime)
+        }
         switch (data.role) {
             case 'owner':
                 this.role = Role.Owner

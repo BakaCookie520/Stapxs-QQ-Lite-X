@@ -140,7 +140,14 @@
             </div>
             <!-- 消息发送框 -->
             <div class="input">
+                <div v-if="session.isActive && session instanceof GroupSession && session.getMe().banTime"
+                    class="ban"
+                    :u="update">
+                    <font-awesome-icon :icon="['fas', 'ban']" />
+                    {{ $t('禁言ing...剩余时间:') + session.getMe().banTime?.format() }}
+                </div>
                 <textarea
+                    v-else
                     id="main-input"
                     ref="main-input"
                     v-model="inputMsg.content"
@@ -177,7 +184,7 @@ import { fitScroll } from '@renderer/function/utils/appUtil'
 import { FileSender } from '@renderer/function/utils/fileSender'
 import { uploadFile } from '@renderer/function/input'
 import { InputMsg } from '@renderer/function/model/inputMsg'
-import { useFrame } from '@renderer/function/utils/vuse'
+import { useFrame, useUpdate } from '@renderer/function/utils/vuse'
 
 const viewer: TemplateRef<undefined | InstanceType<typeof Viewer>> = inject('viewer')!
 
@@ -198,6 +205,7 @@ const atSelected = shallowRef<number>(0)
 const details = shallowRef<'face'|'essence'|undefined>()
 const onAtFind = shallowRef(false)
 const inputPanHeight = shallowRef(0)
+const update = useUpdate()
 
 const textAreaHeight = computed(()=>{
     inputMsg.value.content
