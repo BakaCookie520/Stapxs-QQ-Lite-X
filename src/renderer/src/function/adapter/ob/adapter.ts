@@ -186,17 +186,19 @@ export class OneBotAdapter implements AdapterInterface {
 
     async redirect(): Promise<AdapterInterface | undefined> {
         // TODO:重定向到其他适配器逻辑
-        // nc llonebot
         const implInfo = await this.getImplInfo()
         if (!implInfo)
             return undefined
 
         const LagrangeOneBot = (await import('./LagrangeOneBot')).default
         const NapCatOneBot = (await import('./NapCapOneBot')).default
+        const LLTwoBotOneBot = (await import('./LLTwoBotOneBot')).default
         if (LagrangeOneBot.match(implInfo))
             return new LagrangeOneBot(this.connector, this.botInfo.value)
         if (NapCatOneBot.match(implInfo))
             return new NapCatOneBot(this.connector, this.botInfo.value)
+        if (LLTwoBotOneBot.match(implInfo))
+            return new LLTwoBotOneBot(this.connector, this.botInfo.value)
         return undefined
 
     }

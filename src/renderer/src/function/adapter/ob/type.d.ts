@@ -896,3 +896,280 @@ export type NcObCreateGroupFileFolder = ObResponse<{
     }
 }>
 //#endregion
+
+//#region == LLTWOBOT =============================================
+
+/* ---------------------------
+   Common / Shared types
+   --------------------------- */
+
+export interface LltbObBuddy {
+    user_id: number,
+    nickname: string,
+    remark: string,
+    sex: string,
+    birthday_year: number,
+    birthday_month: number,
+    birthday_day: number,
+    age: number,
+    qid: string,
+    long_nick: string,
+    level: number,
+    longNick: string,
+    eMail: string,
+    uid: string,
+    categoryId: number,
+    richTime: number
+}
+
+export interface LltbObCategory {
+    categoryId: number
+    categoryName: string
+    categoryMbCount: number
+    buddyList: LltbObBuddy[]
+}
+
+/* Image structure used in some messages / notices */
+export interface LltbObImageItem {
+    height?: string
+    width?: string
+    id: string // note: image url can be constructed with https://gdynamic.qpic.cn/gdynamic/<id>/0
+}
+
+/* Group notice message body */
+export interface LltbObGroupNoticeMessage {
+    text: string
+    images: LltbObImageItem[]
+}
+
+/* Generic message image item (used inside history messages) */
+export interface LltbObMsgImageData {
+    file: string
+    subType?: number
+    url: string
+    file_size?: string | number
+}
+
+/* Message sender shape for friend/group messages */
+export interface LltbObMsgSender {
+    user_id: number
+    nickname: string
+    card?: string
+    role?: string
+    title?: string
+}
+
+/* File & Folder records for group file APIs */
+export interface LltbObGroupFileRecord {
+    group_id: number
+    file_id: string
+    file_name: string
+    busid: number
+    file_size: number
+    upload_time: number
+    dead_time: number
+    modify_time: number
+    download_times: number
+    uploader: number
+    uploader_name: string
+}
+
+export interface LltbObGroupFolderRecord {
+    group_id: number
+    folder_id: string
+    folder_name: string
+    create_time: number
+    creator: number
+    creator_name: string
+    total_file_count: number
+}
+
+/* ---------------------------
+     API response types
+     --------------------------- */
+
+/**
+ * get_friends_with_category
+ * Example `data` is an array of categories, each containing a buddyList.
+ */
+export type LltbObGetFriendsWithCategory = ObResponse<LltbObCategory[]>
+
+/**
+ * get_stranger_info
+ * Example `data` is an object describing a stranger / user profile.
+ */
+export type LltbObGetStrangerInfo = ObResponse<{
+    user_id: number
+    nickname: string
+    sex: 'male' | 'female' | 'unknown'
+    age: number
+    qid: string
+    level: number
+    login_days: number
+    reg_time: number
+    long_nick: string
+    city: string
+    country: string
+    birthday_year: number
+    birthday_month: number
+    birthday_day: number
+}>
+
+/**
+ * _get_group_notice
+ * Example `data` is an array of notices.
+ */
+export type LltbObGetGroupNotice = ObResponse<
+    Array<{
+        sender_id: number
+        publish_time: number
+        message: LltbObGroupNoticeMessage
+    }>
+>
+
+/**
+ * fetch_custom_face
+ * Example `data` is an array of custom face image URLs.
+ */
+export type LltbObFetchCustomFace = ObResponse<string[]>
+
+/**
+ * get_friend_msg_history
+ * Example `data` has a `messages` array with message entries (private).
+ */
+export type LltbObGetMsgHistory = ObResponse<{
+    messages: LltbObMsg[]
+}>
+
+export type LltbObForwardNode = {
+    content: ObSeg[]
+    sender: {
+        nickname: string,
+        user_id: number
+    }
+    time: number
+    message_format: string
+    message_type: string
+}
+
+/**
+ * get_forward_msg
+ * Example `data` includes forwarded messages (content array).
+ */
+export type LltbObGetForwardMsg = ObResponse<{
+    messages: LltbObForwardNode[]
+}>
+
+/**
+ * get_group_root_files
+ * Example `data` contains files and folders in the group root.
+ */
+export type LltbObGetGroupFiles = ObResponse<{
+    files: LltbObGroupFileRecord[]
+    folders: LltbObGroupFolderRecord[]
+}>
+
+/**
+ * get_group_file_url
+ * Example `data` contains a single `url` for a file resource.
+ */
+export type LltbObGetGroupFileUrl = ObResponse<{
+    url: string
+}>
+
+/**
+ * upload_group_file
+ * Example `data` returns an uploaded file id.
+ */
+export type LltbObUploadGroupFile = ObResponse<{
+    file_id: string
+}>
+
+/**
+ * upload_private_file
+ * Example `data` returns an uploaded file id.
+ */
+export type LltbObUploadPrivateFile = ObResponse<{
+    file_id: string
+}>
+
+/**
+ * create_group_file_folder
+ * Example `data` returns a created folder id.
+ */
+export type LltbObCreateGroupFileFolder = ObResponse<{
+    folder_id: string
+}>
+
+export type LltbObGetEssenceMsgList = ObResponse<LltbObEssenceMsg[]>
+
+// == 消息 =================
+
+export type LltbObEssenceMsg = {
+  sender_id: number,
+  sender_nick: string,
+  sender_time: number,
+  operator_id: number,
+  operator_nick: string,
+  operator_time: number,
+  message_id: number,
+}
+
+export type LltbObMdSeg = ObSeg<'markdown', { content: string }>
+
+export type LltbObImageSeg = ObSeg<'image', {
+    file: string,
+    url: string,
+    file_size: string,
+    summary: string,
+    subType: number,
+    type: 'flash' | 'show',
+    thumb: string,
+    name: string,
+}>
+
+export type LltbObMfaceSeg = ObSeg<'mface', {
+    emoji_package_id: number,
+    emoji_id: string,
+    key: string,
+    summary: string,
+    url: string
+}>
+
+export type LltbObFileSeg = ObSeg<'file', {
+    file: string,
+    url: string,
+    path: string,
+    file_size: string,
+    file_id: string,
+    thumb: string,
+    name: string,
+}>
+
+// == 事件 =================
+
+export interface LltbObPokeEvent extends ObPokeEvent {
+    raw_info: [
+        {uid: string},
+        {src: string},
+        {txt: string},
+        {uid: string},
+        {txt: string}
+    ]
+}
+
+export interface LltbObMsg extends ObMsg {
+    message_seq: number
+}
+
+export interface LltbObGroupMsgEmojiLikeEvent extends ObNoticeEvent {
+    notice_type: 'group_msg_emoji_like'
+    likes: [{
+        emoji_id: string
+        count: number
+    }],
+    user_id: number
+    group_id: number
+    message_id: number
+}
+//#endregion

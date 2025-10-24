@@ -2256,3 +2256,5 @@ msgstr ""
 msgid "仅群主和管理员可用"
 msgstr ""
 
+msgid "动画表情"
+msgstr ""
